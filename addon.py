@@ -13,7 +13,6 @@ STRINGS = {
 }
 
 Config = ConfigHelper()
-
 plugin = Plugin()
 
 
@@ -64,7 +63,7 @@ def show_actions():
     return plugin.finish(items)
 
 
-@plugin.route('/actions/create_mapping')
+@plugin.route('/actions/create-mapping')
 def create_mapping():
     xbmcgui.Dialog().ok(
         _('name'),
@@ -169,10 +168,20 @@ def configure_helper(config, binary_path):
     :type config: ConfigHelper
     """
     config.configure(
-        file_path=addon_path,
-        binary_path=binary_path,
-        host_ip=plugin.get_setting('host_ip', unicode)
+        addon_path,
+        binary_path,
+        plugin.get_setting('host_ip', unicode),
+        plugin.get_setting('enable_custom_res', bool),
+        plugin.get_setting('resolution', str),
+        plugin.get_setting('framerate', str),
+        plugin.get_setting('host_optimizations', bool),
+        plugin.get_setting('local_audio', bool),
+        plugin.get_setting('enable_custom_bitrate', bool),
+        plugin.get_setting('enable_custom_input', bool),
+        plugin.get_setting('input_map', str),
+        plugin.get_setting('input_device', str)
     )
+    config.dump_conf()
     return True
 
 

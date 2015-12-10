@@ -41,10 +41,9 @@ class ConfigHelper:
         self.input_device = None
         self.full_path = None
 
-    def configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None, framerate=None,
-                   host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
-                   enable_custom_input=False, input_map=None, input_device=None):
-
+    def _configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None,
+                  framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
+                  enable_custom_input=False, input_map=None, input_device=None):
         self.file_path = file_path
         self.binary_path = binary_path
         self.host_ip = host_ip
@@ -60,16 +59,43 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.file_path, conf])
 
+    def configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None,
+                  framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
+                  enable_custom_input=False, input_map=None, input_device=None):
+
+        self._configure(
+            file_path,
+            binary_path,
+            host_ip,
+            enable_custom_res,
+            resolution,
+            framerate,
+            host_optimizations,
+            local_audio,
+            enable_custom_bitrate,
+            enable_custom_input,
+            input_map,
+            input_device
+        )
+
     def dump_conf(self):
         config = ConfigParser.ConfigParser()
         config.read(self.full_path)
-        existing_sections = config.sections()
-        if 'PairedHosts' not in existing_sections:
-            config.add_section('PairedHosts')
-        config.set('PairedHosts', 'host1', self.host_ip)
-        if 'General' not in existing_sections:
+
+        if 'General' not in config.sections():
             config.add_section('General')
+
         config.set('General', 'binpath', self.binary_path)
+        config.set('General', 'host', self.host_ip)
+        config.set('General', 'enable_custom_resolution', self.enable_custom_res)
+        config.set('General', 'resolution', self.resolution),
+        config.set('General', 'framerate', self.framerate),
+        config.set('General', 'host_optimizations', self.host_optimizations),
+        config.set('General', 'local_audio', self.local_audio),
+        config.set('General', 'enable_custom_bitrate', self.enable_custom_bitrate),
+        config.set('General', 'enable_custom_input', self.enable_custom_input),
+        config.set('General', 'input_map', self.input_map),
+        config.set('General', 'input_device', self.input_device)
 
         with open(self.full_path, 'wb') as configfile:
             config.write(configfile)

@@ -10,7 +10,6 @@ def config_map(section, parser):
     :param section: string
     :type parser: ConfigParser.ConfigParser
     """
-    print 'config_map'
     dict1 = {}
     options = parser.options(section)
     for option in options:
@@ -23,13 +22,11 @@ def config_map(section, parser):
 
 class ConfigHelper:
     def __init__(self, *args, **kwargs):
-        print '__init__'
         self._reset()
         if args or kwargs:
             self.configure(*args, **kwargs)
 
     def _reset(self):
-        print '_reset'
         self.file_path = None
         self.binary_path = None
         self.host_ip = None
@@ -43,13 +40,11 @@ class ConfigHelper:
         self.input_map = None
         self.input_device = None
         self.full_path = None
-        print '_reset done'
 
     def configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None, framerate=None,
                    host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
                    enable_custom_input=False, input_map=None, input_device=None):
 
-        print 'configure'
         self.file_path = file_path
         self.binary_path = binary_path
         self.host_ip = host_ip
@@ -65,14 +60,10 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.file_path, conf])
 
-        print 'configure done'
-
     def dump_conf(self):
-        print 'dump_conf'
         config = ConfigParser.ConfigParser()
         config.read(self.full_path)
         existing_sections = config.sections()
-        print existing_sections
         if 'PairedHosts' not in existing_sections:
             config.add_section('PairedHosts')
         config.set('PairedHosts', 'host1', self.host_ip)
@@ -82,10 +73,8 @@ class ConfigHelper:
 
         with open(self.full_path, 'wb') as configfile:
             config.write(configfile)
-        print 'dumpf_conf done'
 
     def get_binary(self):
-        print 'get_binary'
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
         return config_map('General', cp)['binpath']

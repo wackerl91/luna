@@ -66,7 +66,11 @@ def show_actions():
 
 @plugin.route('/actions/create_mapping')
 def create_mapping():
-    return
+    xbmcgui.Dialog().ok(
+        _('name'),
+        'Controller mapping is soon to come!',
+        'In the meanwhile, please do it manually via moonlight\'s CLI.'
+    )
 
 
 @plugin.route('/actions/pair-host')
@@ -99,16 +103,9 @@ def show_games():
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
                     endpoint='do_full_refresh'
                 )
-            ),
-            (
-                _('pair_host'),
-                'XBMC.RunPlugin(%s)' % plugin.url_for(
-                    endpoint='pair_host'
-                )
             )
         ]
 
-    print 'show_games'
     Config.dump_conf()
     releases = plugin.get_storage('releases')
     releases.clear()
@@ -148,7 +145,6 @@ def get_games():
 
 
 def check_binary():
-    print 'check binary'
     binary = ''
     binary_locations = [
         '/usr/bin/moonlight',
@@ -163,8 +159,6 @@ def check_binary():
             binary = f
             break
 
-    # return os.path.isfile(binary)
-    print 'check binary done'
     return '/usr/bin/moonlight'
 
 
@@ -174,13 +168,11 @@ def configure_helper(config, binary_path):
     :param binary_path: string
     :type config: ConfigHelper
     """
-    print 'get_config_helper'
     config.configure(
         file_path=addon_path,
         binary_path=binary_path,
         host_ip=plugin.get_setting('host_ip', unicode)
     )
-    print 'get_config_helper done'
     return True
 
 

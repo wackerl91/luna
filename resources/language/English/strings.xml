@@ -3,7 +3,7 @@
   <!-- Plugin name -->
   <string id="30000">Luna</string>
   <!-- Settings -->
-  <string id="30001">Basic Settings</string>
+  <string id="30001">Streaming Options</string>
   <string id="30002">Host IP</string>
   <string id="30003">Framerate</string>
   <string id="30004">Resolution</string>

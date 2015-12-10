@@ -92,11 +92,3 @@ class ConfigHelper:
 
     def check_for_config_file(self):
         return os.path.isfile(self.full_path)
-
-    def set_host_ip(self, host_ip):
-        self.host_ip = host_ip
-        self.dump_conf()
-
-    def set_binary_path(self, binary_path):
-        self.binary_path = binary_path
-        self.dump_conf()

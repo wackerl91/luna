@@ -15,10 +15,76 @@ STRINGS = {
 Config = ConfigHelper()
 
 plugin = Plugin()
-script = Script()
 
 
 @plugin.route('/')
+def index():
+    items = [{
+        'label': 'Actions',
+        'path': plugin.url_for(
+            endpoint='show_actions'
+        )
+    }, {
+        'label': 'Games',
+        'path': plugin.url_for(
+            endpoint='show_games'
+        )
+    }, {
+        'label': 'Settings',
+        'path': plugin.url_for(
+            endpoint='open_settings'
+        )
+    }]
+    return plugin.finish(items)
+
+
+@plugin.route('/settings')
+def open_settings():
+    plugin.open_settings()
+
+
+@plugin.route('/actions')
+def show_actions():
+    items = [{
+        'label': 'Create Controller Mapping',
+        'path': plugin.url_for(
+            endpoint='create_mapping'
+        )
+    }, {
+        'label': 'Pair Current Host',
+        'path': plugin.url_for(
+            endpoint='pair_host'
+        )
+    }, {
+        'label': 'Force Quit Moonlight',
+        'path': plugin.url_for(
+            endpoint='quit_moonlight'
+        )
+    }]
+    return plugin.finish(items)
+
+
+@plugin.route('/actions/create_mapping')
+def create_mapping():
+    return
+
+
+@plugin.route('/actions/pair-host')
+def pair_host():
+    ip = '192.168.2.105'
+    code = launch_moonlight_pair(ip)
+    xbmcgui.Dialog().ok(
+        _('name'),
+        code
+    )
+
+
+@plugin.route('/actions/quit-moonlight')
+def quit_moonlight():
+    return
+
+
+@plugin.route('/games')
 def show_games():
     def context_menu():
         return [
@@ -43,48 +109,24 @@ def show_games():
         ]
 
     print 'show_games'
-    if check_binary():
-        if Config.check_for_config_file() or plugin.get_setting('host_ip', unicode):
-            Config.set_host_ip(plugin.get_setting('host_ip', str))
-            Config.set_binary_path(check_binary())
-            releases = plugin.get_storage('releases')
-            releases.clear()
-            games = get_games()
-            items = []
-            for i, game in enumerate(games):
-                label = game
-                items.append({
-                    'label': label,
-                    'replace_context_menu': True,
-                    'context_menu': context_menu(),
-                    'path': plugin.url_for(
-                        endpoint='launch_game',
-                        game_id=game
-                    )
-                })
-            releases.sync()
-            return plugin.finish(items)
-        else:
-            confirmed = xbmcgui.Dialog().yesno(
-                _('name'),
-                'No config file found.',
-                'Do you want to open settings now?'
+    Config.dump_conf()
+    releases = plugin.get_storage('releases')
+    releases.clear()
+    games = get_games()
+    items = []
+    for i, game in enumerate(games):
+        label = game
+        items.append({
+            'label': label,
+            'replace_context_menu': True,
+            'context_menu': context_menu(),
+            'path': plugin.url_for(
+                endpoint='launch_game',
+                game_id=game
             )
-            if confirmed:
-                plugin.open_settings()
-            else:
-                exit()
-    else:
-        xbmcgui.Dialog().ok(
-            _('name'),
-            'Moonlight binary not found',
-            'Please configure the addon first.'
-        )
-
-
-@plugin.route('/settings')
-def open_settings():
-    plugin.open_settings()
+        })
+    releases.sync()
+    return plugin.finish(items)
 
 
 @plugin.route('/games/all/refresh')
@@ -95,16 +137,6 @@ def do_full_refresh():
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     log('Launching game %s' % game_id)
-
-
-@plugin.route('/host/pair')
-def pair_host():
-    ip = '192.168.2.105'
-    code = launch_moonlight_pair(ip)
-    xbmcgui.Dialog().ok(
-        _('name'),
-        code
-    )
 
 
 def launch_moonlight_pair(ip):
@@ -136,14 +168,17 @@ def check_binary():
     return '/usr/bin/moonlight'
 
 
-def configure_helper(config):
+def configure_helper(config, binary_path):
     """
 
+    :param binary_path: string
     :type config: ConfigHelper
     """
     print 'get_config_helper'
     config.configure(
         file_path=addon_path,
+        binary_path=binary_path,
+        host_ip=plugin.get_setting('host_ip', unicode)
     )
     print 'get_config_helper done'
     return True
@@ -163,5 +198,11 @@ def _(string_id):
 
 if __name__ == '__main__':
     log('Launching Luna')
-    if configure_helper(Config):
-        plugin.run()
+    if plugin.get_setting('host_ip', unicode) and check_binary():
+        if configure_helper(Config, check_binary()):
+            plugin.run()
+    else:
+        xbmcgui.Dialog().ok(
+            _('name'),
+            'Please configure the addon first.'
+        )

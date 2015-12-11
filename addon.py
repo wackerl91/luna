@@ -66,7 +66,12 @@ def show_actions():
 
 @plugin.route('/actions/create-mapping')
 def create_mapping():
-    print 'Starting mapping'
+    log('Starting mapping')
+    controllers = ['XBOX', 'PS3', 'Wii']
+    ctrl_type = xbmcgui.Dialog().select('Choose Controller Type', controllers)
+    map_name = xbmcgui.Dialog().input('Enter Controller Map Name')
+    if map_name == '':
+        return
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
         _('name'),
@@ -74,26 +79,25 @@ def create_mapping():
     )
     percent = 0
     print 'Trying to call subprocess'
-    script_path = ''.join([addon_path, '/resources/lib/test.sh'])
-    process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
-    # binary_path = Config.get_binary()
-    # process = subprocess.Popen(binary_path, stdout=subprocess.PIPE)
-    while True:
-        line = process.stdout.readline()
+    map_filename = '/home/osmc/'+ctrl_type+'-'+map_name+'.map'
+    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_filename, '-input',
+                                plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+    lines_iterator = iter(mapping.stdout.readline, b"")
+    for line in lines_iterator:
         progress_dialog.update(percent, line)
         if not line:
             break
     progress_dialog.close()
-    print 'Done Mapping'
+    log('Done Mapping')
 
 
 @plugin.route('/actions/pair-host')
 def pair_host():
-    # ip = '192.168.2.105'
-    ip = Config.get_host()
     code = launch_moonlight_pair()
     if len(code) > 1:
         line = code[1]
+        if line == '':
+            line = 'Failed to pair to server: Already paired'
     else:
         line = code[0]
     xbmcgui.Dialog().ok(
@@ -159,12 +163,10 @@ def launch_moonlight_pair():
     code = []
     # script_path = ''.join([addon_path, '/resources/lib/moonlight-pair.sh'])
     # process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
-    binary_path = Config.get_binary()
-    process = subprocess.Popen([binary_path, 'pair', Config.get_host()])
+    process = subprocess.Popen([Config.get_binary(), 'pair', Config.get_host()], stdout=subprocess.PIPE)
     while True:
         line = process.stdout.readline()
         code.append(line)
-        print line
         if not line:
             break
     return code

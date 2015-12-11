@@ -2,11 +2,25 @@
 <settings>
     <category label="30001">
         <setting label="30002" type="ipaddress" id="host"/>
-        <setting label="30008" type="action" action="RunScript(script.luna, pair_host)"/>
+        <setting label="30008" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/pair-host)"/>
         <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
-        <setting label="30004" enabled="eq(2,false)" visible="eq(2,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
+        <setting label="30004" enable="eq(1,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
         <setting label="30005" type="bool" id="enable_custom_resolution" default="false"/>
-        <setting label="30006" subsetting="true" enabled="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_x" range="640,10,1920" option="int" default="1280"/>
-        <setting label="30007" subsetting="true" enabled="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_y" range="480,10,1080" option="int" default="720"/>
+        <setting label="30006" subsetting="true" enable="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_x" range="640,10,1920" option="int" default="1280"/>
+        <setting label="30007" subsetting="true" enable="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_y" range="480,10,1080" option="int" default="720"/>
+    </category>
+    <category label="30016">
+        <setting label="30017" type="bool" id="enable_custom_input" default="false"/>
+        <setting label="30018" type="file" id="input_map" enable="eq(-1,true)" default=""/>
+        <setting label="30019" type="file" id="input_device" enable="eq(-2,true)" default="/dev/input/event1"/>
+        <setting label="30020" type="action" enable="eq(-3,true)" action="XBMC.RunPlugin(plugin://script.luna/actions/create-mapping)"/>
+    </category>
+    <category label="30009">
+        <setting label="30010" type="bool" id="enable_custom_bitrate" default="false"/>
+        <setting label="30011" type="slider" id="bitrate" enable="eq(-1,true)" range="0,1,50" option="int" default="20"/>
+        <setting label="30012" type="slider" id="packetsize" enable="eq(-2,true)" range="256,8,2048" option="int" default="1024"/>
+        <setting label="30013" type="bool" id="remote_optimizations" default="false"/>
+        <setting label="30014" type="bool" id="graphic_optimizations" default="false"/>
+        <setting label="30015" type="bool" id="local_audio" default="false"/>
     </category>
 </settings>

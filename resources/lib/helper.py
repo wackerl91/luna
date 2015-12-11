@@ -105,5 +105,15 @@ class ConfigHelper:
         cp.read(self.full_path)
         return config_map('General', cp)['binpath']
 
+    def get_host(self):
+        cp = ConfigParser.ConfigParser()
+        cp.read(self.full_path)
+        return config_map('General', cp)['host']
+
     def check_for_config_file(self):
         return os.path.isfile(self.full_path)
+
+    def get_section_setting(self, section, setting):
+        cp = ConfigParser.ConfigParser()
+        cp.read(self.full_path)
+        return config_map(section, cp)[setting]

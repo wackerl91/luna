@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 from resources.lib.helper import ConfigHelper
@@ -65,10 +66,9 @@ def show_actions():
 
 @plugin.route('/actions/create-mapping')
 def create_mapping():
-    import subprocess
     print 'Starting mapping'
-    progressDialog = xbmcgui.DialogProgress()
-    progressDialog.create(
+    progress_dialog = xbmcgui.DialogProgress()
+    progress_dialog.create(
         _('name'),
         'Mapping is now starting...'
     )
@@ -76,23 +76,29 @@ def create_mapping():
     print 'Trying to call subprocess'
     script_path = ''.join([addon_path, '/resources/lib/test.sh'])
     process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
+    # binary_path = Config.get_binary()
+    # process = subprocess.Popen(binary_path, stdout=subprocess.PIPE)
     while True:
-        print 'meow'
         line = process.stdout.readline()
-        progressDialog.update(percent, line)
+        progress_dialog.update(percent, line)
         if not line:
             break
-    progressDialog.close()
+    progress_dialog.close()
     print 'Done Mapping'
 
 
 @plugin.route('/actions/pair-host')
 def pair_host():
-    ip = '192.168.2.105'
+    # ip = '192.168.2.105'
+    ip = Config.get_host()
     code = launch_moonlight_pair(ip)
+    if len(code) > 1:
+        line = code[1]
+    else:
+        line = code[0]
     xbmcgui.Dialog().ok(
         _('name'),
-        code
+        line
     )
 
 
@@ -150,7 +156,18 @@ def launch_game(game_id):
 
 
 def launch_moonlight_pair(ip):
-    return ip + ' 1234'
+    code = []
+    # script_path = ''.join([addon_path, '/resources/lib/moonlight-pair.sh'])
+    # process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
+    binary_path = Config.get_binary()
+    process = subprocess.Popen([binary_path, 'pair', Config.get_host()])
+    while True:
+        line = process.stdout.readline()
+        code.append(line)
+        print line
+        if not line:
+            break
+    return code
 
 
 def get_games():
@@ -170,8 +187,8 @@ def get_binary():
         if os.path.isfile(f):
             return f
 
-    # return None
-    return '/usr/bin/moonlight'
+    return None
+    # return '/usr/bin/moonlight'
 
 
 def configure_helper(config, binary_path):

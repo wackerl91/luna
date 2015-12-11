@@ -10,6 +10,7 @@
   <string id="30005">Enable Custom Resolution</string>
   <string id="30006">Horizontal Resolution</string>
   <string id="30007">Vertical Resolution</string>
+  <string id="30008">Pair Host</string>
   <!-- Context Menu -->
   <string id="30100">Addon Settings</string>
   <string id="30101">Full Refresh</string>

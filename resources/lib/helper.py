@@ -42,8 +42,8 @@ class ConfigHelper:
         self.full_path = None
 
     def _configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None,
-                  framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
-                  enable_custom_input=False, input_map=None, input_device=None):
+                   framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
+                   enable_custom_input=False, input_map=None, input_device=None):
         self.file_path = file_path
         self.binary_path = binary_path
         self.host_ip = host_ip

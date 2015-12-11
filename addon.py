@@ -65,11 +65,25 @@ def show_actions():
 
 @plugin.route('/actions/create-mapping')
 def create_mapping():
-    xbmcgui.Dialog().ok(
+    import subprocess
+    print 'Starting mapping'
+    progressDialog = xbmcgui.DialogProgress()
+    progressDialog.create(
         _('name'),
-        'Controller mapping is soon to come!',
-        'In the meanwhile, please do it manually via moonlight\'s CLI.'
+        'Mapping is now starting...'
     )
+    percent = 0
+    print 'Trying to call subprocess'
+    script_path = ''.join([addon_path, '/resources/lib/test.sh'])
+    process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
+    while True:
+        print 'meow'
+        line = process.stdout.readline()
+        progressDialog.update(percent, line)
+        if not line:
+            break
+    progressDialog.close()
+    print 'Done Mapping'
 
 
 @plugin.route('/actions/pair-host')
@@ -143,8 +157,7 @@ def get_games():
     return ['Steam']
 
 
-def check_binary():
-    binary = ''
+def get_binary():
     binary_locations = [
         '/usr/bin/moonlight',
         '/usr/local/bin/moonlight'
@@ -155,9 +168,9 @@ def check_binary():
 
     for f in binary_locations:
         if os.path.isfile(f):
-            binary = f
-            break
+            return f
 
+    # return None
     return '/usr/bin/moonlight'
 
 
@@ -170,18 +183,20 @@ def configure_helper(config, binary_path):
     config.configure(
         addon_path,
         binary_path,
-        plugin.get_setting('host_ip', unicode),
+        plugin.get_setting('host', unicode),
         plugin.get_setting('enable_custom_res', bool),
         plugin.get_setting('resolution', str),
         plugin.get_setting('framerate', str),
-        plugin.get_setting('host_optimizations', bool),
+        plugin.get_setting('graphic_optimizations', bool),
         plugin.get_setting('local_audio', bool),
         plugin.get_setting('enable_custom_bitrate', bool),
         plugin.get_setting('enable_custom_input', bool),
         plugin.get_setting('input_map', str),
         plugin.get_setting('input_device', str)
     )
+
     config.dump_conf()
+
     return True
 
 
@@ -199,8 +214,8 @@ def _(string_id):
 
 if __name__ == '__main__':
     log('Launching Luna')
-    if plugin.get_setting('host_ip', unicode) and check_binary():
-        if configure_helper(Config, check_binary()):
+    if plugin.get_setting('host', unicode) and get_binary():
+        if configure_helper(Config, get_binary()):
             plugin.run()
     else:
         xbmcgui.Dialog().ok(

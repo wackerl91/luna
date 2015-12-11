@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="30001">
-        <setting label="30002" type="ipaddress" id="host_ip"/>
-        <setting label="30003" type="labelenum" id="target_framerate" values="30|60"/>
-        <setting label="30004" enabled="eq(4,false)" visible="eq(4,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
-        <setting label="30005" enabled="eq(3,true)" visible="eq(3,true)" type="lsep"/>
-        <setting label="30006" subsetting="true" enabled="eq(2,true)" visible="eq(2,true)" type="slider" id="resolution_x" range="640,1,1920" option="int" default="1920"/>
-        <setting label="30007" subsetting="true" enabled="eq(1,true)" visible="eq(1,true)" type="slider" id="resolution_y" range="480,1,1080" option="int" default="1080"/>
+        <setting label="30002" type="ipaddress" id="host"/>
+        <setting label="30008" type="action" action="RunScript(script.luna, pair_host)"/>
+        <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
+        <setting label="30004" enabled="eq(2,false)" visible="eq(2,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
         <setting label="30005" type="bool" id="enable_custom_resolution" default="false"/>
+        <setting label="30006" subsetting="true" enabled="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_x" range="640,10,1920" option="int" default="1280"/>
+        <setting label="30007" subsetting="true" enabled="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_y" range="480,10,1080" option="int" default="720"/>
     </category>
 </settings>

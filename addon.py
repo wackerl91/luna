@@ -70,19 +70,24 @@ def create_mapping():
     controllers = ['XBOX', 'PS3', 'Wii']
     ctrl_type = xbmcgui.Dialog().select('Choose Controller Type', controllers)
     map_name = xbmcgui.Dialog().input('Enter Controller Map Name')
+
     if map_name == '':
         return
+
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
         _('name'),
         'Mapping is now starting...'
     )
     percent = 0
-    print 'Trying to call subprocess'
-    map_filename = '/home/osmc/'+ctrl_type+'-'+map_name+'.map'
+    log('Trying to call subprocess')
+    map_filename = '/home/osmc/'+controllers[ctrl_type]+'-'+map_name+'.map'
+
     mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_filename, '-input',
                                 plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+
     lines_iterator = iter(mapping.stdout.readline, b"")
+
     for line in lines_iterator:
         progress_dialog.update(percent, line)
         if not line:

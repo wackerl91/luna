@@ -91,7 +91,7 @@ def create_mapping():
 def pair_host():
     # ip = '192.168.2.105'
     ip = Config.get_host()
-    code = launch_moonlight_pair(ip)
+    code = launch_moonlight_pair()
     if len(code) > 1:
         line = code[1]
     else:
@@ -155,7 +155,7 @@ def launch_game(game_id):
     log('Launching game %s' % game_id)
 
 
-def launch_moonlight_pair(ip):
+def launch_moonlight_pair():
     code = []
     # script_path = ''.join([addon_path, '/resources/lib/moonlight-pair.sh'])
     # process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)

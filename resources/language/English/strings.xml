@@ -11,6 +11,18 @@
   <string id="30006">Horizontal Resolution</string>
   <string id="30007">Vertical Resolution</string>
   <string id="30008">Pair Host</string>
+  <string id="30009">Advanced Settings</string>
+  <string id="30010">Enable Custom Bitrate</string>
+  <string id="30011">Bitrate (Mbps)</string>
+  <string id="30012">Packetsize (bytes)</string>
+  <string id="30013">Enable Remote Connection Opimizations</string>
+  <string id="30014">Enable GFE Graphics Optimization</string>
+  <string id="30015">Play Audio on Host</string>
+  <string id="30016">Input Settings</string>
+  <string id="30017">Enable Custom Input</string>
+  <string id="30018">Input Map</string>
+  <string id="30019">Input Device</string>
+  <string id="30020">Create Map for Above Device</string>
   <!-- Context Menu -->
   <string id="30100">Addon Settings</string>
   <string id="30101">Full Refresh</string>

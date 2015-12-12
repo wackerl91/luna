@@ -21,11 +21,6 @@ addon_path = plugin.storage_path
 @plugin.route('/')
 def index():
     items = [{
-        'label': 'Actions',
-        'path': plugin.url_for(
-            endpoint='show_actions'
-        )
-    }, {
         'label': 'Games',
         'path': plugin.url_for(
             endpoint='show_games'
@@ -42,27 +37,6 @@ def index():
 @plugin.route('/settings')
 def open_settings():
     plugin.open_settings()
-
-
-@plugin.route('/actions')
-def show_actions():
-    items = [{
-        'label': 'Create Controller Mapping',
-        'path': plugin.url_for(
-            endpoint='create_mapping'
-        )
-    }, {
-        'label': 'Pair Current Host',
-        'path': plugin.url_for(
-            endpoint='pair_host'
-        )
-    }, {
-        'label': 'Force Quit Moonlight',
-        'path': plugin.url_for(
-            endpoint='quit_moonlight'
-        )
-    }]
-    return plugin.finish(items)
 
 
 @plugin.route('/actions/create-mapping')

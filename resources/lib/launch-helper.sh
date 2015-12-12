@@ -9,5 +9,5 @@ sudo openvt -c 7 -s -f clear
 
 sleep 2
 
-sudo su osmc -c "systemctl stop mediacenter &" &
+sudo su -c "systemctl stop mediacenter &" &
 exit

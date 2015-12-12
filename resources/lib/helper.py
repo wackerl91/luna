@@ -1,7 +1,7 @@
 import ConfigParser
 import os
 
-conf = '/resources/luna.conf'
+conf = 'luna.conf'
 
 
 def config_map(section, parser):
@@ -107,7 +107,7 @@ class ConfigHelper:
         config.set('General', 'binpath', self.binary_path)
         config.set('General', 'address', self.host_ip)
 
-        if self.enable_custom_res == 'true':
+        if self.enable_custom_res:
             config.set('General', 'width', int(self.resolution_width))
             config.set('General', 'height', int(self.resolution_height))
 
@@ -118,11 +118,8 @@ class ConfigHelper:
             if self.resolution == '1280x720':
                 config.set('General', 'width', 1280)
                 config.set('General', 'height', 720)
-            else:
-                config.set('General', 'width', 1280)
-                config.set('General', 'height', 720)
 
-        if self.enable_custom_bitrate == 'true':
+        if self.enable_custom_bitrate:
             config.set('General', 'bitrate', int(self.bitrate) * 1000)
         else:
             config.set('General', 'bitrate', -1)
@@ -132,7 +129,7 @@ class ConfigHelper:
         else:
             config.set('General', 'packetsize', 1024)
 
-        if self.enable_custom_input == 'true':
+        if self.enable_custom_input:
             if self.input_map != '':
                 if config.has_option('General', '#mapping'):
                     config.remove_option('General', '#mapping')
@@ -174,7 +171,7 @@ class ConfigHelper:
     def get_host(self):
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
-        return config_map('General', cp)['host']
+        return config_map('General', cp)['address']
 
     def check_for_config_file(self):
         return os.path.isfile(self.full_path)

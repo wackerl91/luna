@@ -1,12 +1,11 @@
 import os
 import subprocess
+import threading
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 from resources.lib.helper import ConfigHelper
 
-addon = xbmcaddon.Addon()
-addon_path = xbmcaddon.Addon.getAddonInfo(addon, 'profile')
-addon_internal_path = xbmcaddon.Addon.getAddonInfo(addon, 'path')
+addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 STRINGS = {
     'name': 30000,
@@ -16,6 +15,7 @@ STRINGS = {
 
 Config = ConfigHelper()
 plugin = Plugin()
+addon_path = plugin.storage_path
 
 
 @plugin.route('/')
@@ -68,6 +68,7 @@ def show_actions():
 @plugin.route('/actions/create-mapping')
 def create_mapping():
     log('Starting mapping')
+
     controllers = ['XBOX', 'PS3', 'Wii']
     ctrl_type = xbmcgui.Dialog().select('Choose Controller Type', controllers)
     map_name = xbmcgui.Dialog().input('Enter Controller Map Name')
@@ -80,22 +81,60 @@ def create_mapping():
         _('name'),
         'Mapping is now starting...'
     )
-    percent = 0
+
     log('Trying to call subprocess')
-    map_file = '%s%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
+    map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
     mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_file, '-input',
                                 plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
     lines_iterator = iter(mapping.stdout.readline, b"")
 
-    for line in lines_iterator:
-        progress_dialog.update(percent, line)
-        if not line:
+    thread = threading.Thread(target=loop_lines, args=(progress_dialog, lines_iterator))
+    thread.start()
+
+    success = 'false'
+
+    while True:
+        xbmc.sleep(1000)
+        if not thread.isAlive():
+            progress_dialog.close()
+            success = 'true'
+            log('Done, created mapping file in: %s' % map_file)
+            break
+        if progress_dialog.iscanceled():
+            mapping.kill()
+            progress_dialog.close()
+            success = 'canceled'
+            log('Mapping canceled')
             break
 
-    progress_dialog.close()
-    log('Done, created mapping file in: %s' % map_file)
+    if os.path.isfile(map_file) and success == 'true':
+        confirmed = xbmcgui.Dialog().yesno(
+            _('name'),
+            'Mapping successful - do you want to set the newly created mapping now?'
+        )
+        log('Dialog Yes No Value: %s' % confirmed)
+        if confirmed:
+            plugin.set_setting('input_map', map_file)
+            return
+        else:
+            return
+
+    else:
+        if success == 'false':
+            xbmcgui.Dialog().ok(
+                _('name'),
+                'Something went wrong, please try again.'
+            )
+        else:
+            return
+
+
+def loop_lines(dialog, iterator):
+    for line in iterator:
+        log(line)
+        dialog.update(0, line)
 
 
 @plugin.route('/actions/pair-host')
@@ -171,7 +210,6 @@ def launch_game(game_id):
     log('Launching game %s' % game_id)
     configure_helper(Config, Config.get_binary())
     log('Reconfigured helper and dumped conf to disk.')
-    # subprocess.Popen(['/bin/sh', addon_path+'/resources/lib/launch.sh'])
     subprocess.call([addon_internal_path+'/resources/lib/launch-helper.sh',
                      addon_internal_path+'/resources/lib/launch.sh',
                      game_id,
@@ -180,8 +218,6 @@ def launch_game(game_id):
 
 def launch_moonlight_pair():
     code = []
-    # script_path = ''.join([addon_path, '/resources/lib/moonlight-pair.sh'])
-    # process = subprocess.Popen(['sh', script_path], stdout=subprocess.PIPE)
     process = subprocess.Popen([Config.get_binary(), 'pair', Config.get_host()], stdout=subprocess.PIPE)
     while True:
         line = process.stdout.readline()
@@ -217,7 +253,6 @@ def get_binary():
             return f
 
     return None
-    # return '/usr/bin/moonlight'
 
 
 def configure_helper(config, binary_path):

@@ -105,12 +105,6 @@ def create_mapping():
             return
 
 
-def loop_lines(dialog, iterator):
-    for line in iterator:
-        log(line)
-        dialog.update(0, line)
-
-
 @plugin.route('/actions/pair-host')
 def pair_host():
     code = launch_moonlight_pair()
@@ -155,8 +149,8 @@ def show_games():
         ]
 
     Config.dump_conf()
-    releases = plugin.get_storage('releases')
-    releases.clear()
+    game_storage = plugin.get_storage('game_storage')
+    game_storage.clear()
     games = get_games()
     items = []
     for i, game in enumerate(games):
@@ -170,7 +164,7 @@ def show_games():
                 game_id=game
             )
         })
-    releases.sync()
+    game_storage.sync()
     return plugin.finish(items)
 
 
@@ -199,6 +193,12 @@ def launch_moonlight_pair():
         if not line:
             break
     return code
+
+
+def loop_lines(dialog, iterator):
+    for line in iterator:
+        log(line)
+        dialog.update(0, line)
 
 
 def get_games():

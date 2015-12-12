@@ -6,8 +6,8 @@
         <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
         <setting label="30004" enable="eq(1,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
         <setting label="30005" type="bool" id="enable_custom_resolution" default="false"/>
-        <setting label="30006" subsetting="true" enable="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_x" range="640,10,1920" option="int" default="1280"/>
-        <setting label="30007" subsetting="true" enable="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_y" range="480,10,1080" option="int" default="720"/>
+        <setting label="30006" subsetting="true" enable="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_width" range="640,10,1920" option="int" default="1280"/>
+        <setting label="30007" subsetting="true" enable="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_height" range="480,10,1080" option="int" default="720"/>
     </category>
     <category label="30016">
         <setting label="30017" type="bool" id="enable_custom_input" default="false"/>

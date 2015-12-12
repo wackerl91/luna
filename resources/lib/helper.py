@@ -1,7 +1,7 @@
 import ConfigParser
 import os
 
-conf = '/resources/luna.ini'
+conf = '/resources/luna.conf'
 
 
 def config_map(section, parser):
@@ -31,54 +31,73 @@ class ConfigHelper:
         self.binary_path = None
         self.host_ip = None
         self.enable_custom_res = None
+        self.resolution_width = None
+        self.resolution_height = None
         self.resolution = None
         self.framerate = None
         self.host_optimizations = None
+        self.remote_optimizations = None
         self.local_audio = None
         self.enable_custom_bitrate = None
+        self.bitrate = None
+        self.packetsize = None
         self.enable_custom_input = None
         self.input_map = None
         self.input_device = None
         self.full_path = None
 
-    def _configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None,
-                   framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
+    def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None, resolution_height=None, resolution=None,
+                   framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False, enable_custom_bitrate=False, bitrate=None, packetsize=None,
                    enable_custom_input=False, input_map=None, input_device=None):
-        self.file_path = file_path
+
+        self.addon_path = addon_path
         self.binary_path = binary_path
         self.host_ip = host_ip
         self.enable_custom_res = enable_custom_res
+        self.resolution_width = resolution_width,
+        self.resolution_height = resolution_height,
         self.resolution = resolution
         self.framerate = framerate
-        self.host_optimizations = host_optimizations
+        self.graphics_optimizations = graphics_optimizations
+        self.remote_optimizations = remote_optimizations
         self.local_audio = local_audio
         self.enable_custom_bitrate = enable_custom_bitrate
+        self.bitrate = bitrate
+        self.packetsize = packetsize
         self.enable_custom_input = enable_custom_input
         self.input_map = input_map
         self.input_device = input_device
 
-        self.full_path = ''.join([self.file_path, conf])
+        self.full_path = ''.join([self.addon_path, conf])
 
-    def configure(self, file_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution=None,
-                  framerate=None, host_optimizations=False, local_audio=False, enable_custom_bitrate=False,
+    def configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None, resolution_height=None, resolution=None,
+                  framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False, enable_custom_bitrate=False, bitrate=None, packetsize=None,
                   enable_custom_input=False, input_map=None, input_device=None):
 
         self._configure(
-            file_path,
+            addon_path,
             binary_path,
             host_ip,
             enable_custom_res,
+            resolution_width,
+            resolution_height,
             resolution,
             framerate,
-            host_optimizations,
+            graphics_optimizations,
+            remote_optimizations,
             local_audio,
             enable_custom_bitrate,
+            bitrate,
+            packetsize,
             enable_custom_input,
             input_map,
             input_device
         )
 
     def dump_conf(self):
+        """
+        This dumps the currently configured helper into a file moonlight can read
+        """
         config = ConfigParser.ConfigParser()
         config.read(self.full_path)
 
@@ -86,16 +105,63 @@ class ConfigHelper:
             config.add_section('General')
 
         config.set('General', 'binpath', self.binary_path)
-        config.set('General', 'host', self.host_ip)
-        config.set('General', 'enable_custom_resolution', self.enable_custom_res)
-        config.set('General', 'resolution', self.resolution),
-        config.set('General', 'framerate', self.framerate),
-        config.set('General', 'host_optimizations', self.host_optimizations),
-        config.set('General', 'local_audio', self.local_audio),
-        config.set('General', 'enable_custom_bitrate', self.enable_custom_bitrate),
-        config.set('General', 'enable_custom_input', self.enable_custom_input),
-        config.set('General', 'input_map', self.input_map),
-        config.set('General', 'input_device', self.input_device)
+        config.set('General', 'address', self.host_ip)
+
+        if self.enable_custom_res == 'true':
+            config.set('General', 'width', int(self.resolution_width))
+            config.set('General', 'height', int(self.resolution_height))
+
+        else:
+            if self.resolution == '1920x1080':
+                config.set('General', 'width', 1920)
+                config.set('General', 'height', 1080)
+            if self.resolution == '1280x720':
+                config.set('General', 'width', 1280)
+                config.set('General', 'height', 720)
+            else:
+                config.set('General', 'width', 1280)
+                config.set('General', 'height', 720)
+
+        if self.enable_custom_bitrate == 'true':
+            config.set('General', 'bitrate', int(self.bitrate) * 1000)
+        else:
+            config.set('General', 'bitrate', -1)
+
+        if self.packetsize != 1024:
+            config.set('General', 'packetsize', self.packetsize)
+        else:
+            config.set('General', 'packetsize', 1024)
+
+        if self.enable_custom_input == 'true':
+            if self.input_map != '':
+                if config.has_option('General', '#mapping'):
+                    config.remove_option('General', '#mapping')
+                config.set('General', 'mapping', self.input_map)
+            else:
+                if config.has_option('General', 'mapping'):
+                    config.remove_option('General', 'mapping')
+                config.set('General', '#mapping')
+
+            if self.input_device != '':
+                if config.has_option('General', '#input'):
+                    config.remove_option('General', '#input')
+                config.set('General', 'input', self.input_device)
+            else:
+                if config.has_option('General', 'input'):
+                    config.remove_option('General', 'input')
+                config.set('General', '#input')
+        else:
+            if config.has_option('General', 'mapping'):
+                config.remove_option('General', 'mapping')
+            config.set('General', '#mapping')
+
+            if config.has_option('General', 'input'):
+                config.remove_option('General', 'input')
+            config.set('General', '#input')
+
+        config.set('General', 'sops', self.graphics_optimizations)
+        config.set('General', 'remote', self.remote_optimizations)
+        config.set('General', 'localaudio', self.local_audio)
 
         with open(self.full_path, 'wb') as configfile:
             config.write(configfile)
@@ -117,3 +183,6 @@ class ConfigHelper:
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
         return config_map(section, cp)[setting]
+
+    def get_config_path(self):
+        return self.full_path

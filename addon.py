@@ -5,7 +5,8 @@ from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 from resources.lib.helper import ConfigHelper
 
 addon = xbmcaddon.Addon()
-addon_path = xbmcaddon.Addon.getAddonInfo(addon, 'path')
+addon_path = xbmcaddon.Addon.getAddonInfo(addon, 'profile')
+addon_internal_path = xbmcaddon.Addon.getAddonInfo(addon, 'path')
 
 STRINGS = {
     'name': 30000,
@@ -81,9 +82,9 @@ def create_mapping():
     )
     percent = 0
     log('Trying to call subprocess')
-    map_filename = '/home/osmc/' + controllers[ctrl_type] + '-' + map_name + '.map'
+    map_file = '%s%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
-    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_filename, '-input',
+    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_file, '-input',
                                 plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
     lines_iterator = iter(mapping.stdout.readline, b"")
@@ -92,19 +93,22 @@ def create_mapping():
         progress_dialog.update(percent, line)
         if not line:
             break
+
     progress_dialog.close()
-    log('Done Mapping')
+    log('Done, created mapping file in: %s' % map_file)
 
 
 @plugin.route('/actions/pair-host')
 def pair_host():
     code = launch_moonlight_pair()
+
     if len(code) > 1:
         line = code[1]
         if line == '':
             line = 'Failed to pair to server: Already paired'
     else:
         line = code[0]
+
     xbmcgui.Dialog().ok(
         _('name'),
         line
@@ -113,7 +117,10 @@ def pair_host():
 
 @plugin.route('/actions/quit-moonlight')
 def quit_moonlight():
-    return
+    xbmcgui.Dialog().ok(
+        _('name'),
+        'This currently doesn\'t do anything and might be removed.'
+    )
 
 
 @plugin.route('/games')
@@ -162,8 +169,13 @@ def do_full_refresh():
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     log('Launching game %s' % game_id)
+    configure_helper(Config, Config.get_binary())
+    log('Reconfigured helper and dumped conf to disk.')
     # subprocess.Popen(['/bin/sh', addon_path+'/resources/lib/launch.sh'])
-    subprocess.call([addon_path+'/resources/lib/launch.sh'])
+    subprocess.call([addon_internal_path+'/resources/lib/launch-helper.sh',
+                     addon_internal_path+'/resources/lib/launch.sh',
+                     game_id,
+                     Config.get_config_path()])
 
 
 def launch_moonlight_pair():
@@ -219,11 +231,16 @@ def configure_helper(config, binary_path):
         binary_path,
         plugin.get_setting('host', unicode),
         plugin.get_setting('enable_custom_res', bool),
+        plugin.get_setting('resolution_width', str),
+        plugin.get_setting('resolution_height', str),
         plugin.get_setting('resolution', str),
         plugin.get_setting('framerate', str),
         plugin.get_setting('graphic_optimizations', bool),
+        plugin.get_setting('remote_optimizations', bool),
         plugin.get_setting('local_audio', bool),
         plugin.get_setting('enable_custom_bitrate', bool),
+        plugin.get_setting('bitrate', int),
+        plugin.get_setting('packetsize', int),
         plugin.get_setting('enable_custom_input', bool),
         plugin.get_setting('input_map', str),
         plugin.get_setting('input_device', str)

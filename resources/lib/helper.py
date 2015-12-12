@@ -108,8 +108,8 @@ class ConfigHelper:
         config.set('General', 'address', self.host_ip)
 
         if self.enable_custom_res:
-            config.set('General', 'width', int(self.resolution_width))
-            config.set('General', 'height', int(self.resolution_height))
+            config.set('General', 'width', int(self.resolution_width[0]))
+            config.set('General', 'height', int(self.resolution_height[0]))
 
         else:
             if self.resolution == '1920x1080':
@@ -119,6 +119,7 @@ class ConfigHelper:
                 config.set('General', 'width', 1280)
                 config.set('General', 'height', 720)
 
+        config.set('General', 'fps', self.framerate)
         if self.enable_custom_bitrate:
             config.set('General', 'bitrate', int(self.bitrate) * 1000)
         else:

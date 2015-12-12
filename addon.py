@@ -265,7 +265,7 @@ def configure_helper(config, binary_path):
         addon_path,
         binary_path,
         plugin.get_setting('host', unicode),
-        plugin.get_setting('enable_custom_res', bool),
+        plugin.get_setting('enable_custom_resolution', bool),
         plugin.get_setting('resolution_width', str),
         plugin.get_setting('resolution_height', str),
         plugin.get_setting('resolution', str),

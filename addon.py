@@ -81,7 +81,7 @@ def create_mapping():
     )
     percent = 0
     log('Trying to call subprocess')
-    map_filename = '/home/osmc/'+controllers[ctrl_type]+'-'+map_name+'.map'
+    map_filename = '/home/osmc/' + controllers[ctrl_type] + '-' + map_name + '.map'
 
     mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_filename, '-input',
                                 plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
@@ -162,6 +162,8 @@ def do_full_refresh():
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     log('Launching game %s' % game_id)
+    # subprocess.Popen(['/bin/sh', addon_path+'/resources/lib/launch.sh'])
+    subprocess.call([addon_path+'/resources/lib/launch.sh'])
 
 
 def launch_moonlight_pair():
@@ -178,7 +180,15 @@ def launch_moonlight_pair():
 
 
 def get_games():
-    return ['Steam']
+    game_list = []
+    list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
+    while True:
+        line = list_proc.stdout.readline()
+        log(line[3:])
+        game_list.append(line[3:].strip())
+        if not line:
+            break
+    return game_list
 
 
 def get_binary():

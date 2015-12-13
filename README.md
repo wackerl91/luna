@@ -1,1 +1,27 @@
-# luna
+# Luna
+Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it's tailored for OSMC right now, it can be easily extended to support pretty much any platform where both Kodi and Moonlight (embedded or PC) are available. Probably OSX will be next, but let me know which platforms you'd like to see supported! If you feel like a specific feature is missing don't hesitate to tell me and I'll see what I can do ;) 
+
+## Prerequisites
+[Moonlight-Embedded](https://github.com/irtimmer/moonlight-embedded) needs to be installed. For setup instructions please follow irtimmer's wiki.
+
+## Installation
+- Download as zip
+- Copy to your OSMC installation or use a network share
+- In Kodi: Settings > Addons > Install from zip file
+- Before first starting the addon, you must enter at least the IP of the GameStream host in the addon settings. 
+
+## Features
+- GameStream Host Pairing can be done from within Luna
+- Controller Mapping can be done there too (that's somewhat buggy though, at times I need to restart xboxdrv on my Pi before it works. Not sure if this is Luna or Moonlight ...)
+- Dynamic Game Library (gets pulled from Moonlight every time you enter the 'Games' Section; so there's no persistence involved right now)
+- the above allows for starting of specific games
+- extensive configuration which supports nearly all of moonlight-embedded's launch options
+
+## Issues
+- Games which contain spaces in their names have not been tested, so not sure if they're going to work properly right now
+- Controller Mapping sometimes not working
+- There's not a single icon currently
+- Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
+
+## Bugs / Feature Requests
+- Please report any bugs or feature requests on the issue tracker

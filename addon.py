@@ -3,7 +3,7 @@ import subprocess
 import threading
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
-from resources.lib.helper import ConfigHelper
+from resources.lib.confighelper import ConfigHelper
 
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
@@ -178,8 +178,9 @@ def launch_game(game_id):
     log('Launching game %s' % game_id)
     configure_helper(Config, Config.get_binary())
     log('Reconfigured helper and dumped conf to disk.')
-    subprocess.call([addon_internal_path+'/resources/lib/launch-helper.sh',
+    subprocess.call([addon_internal_path+'/resources/lib/launch-helper-osmc.sh',
                      addon_internal_path+'/resources/lib/launch.sh',
+                     addon_internal_path+'/resources/lib/moonlight-heartbeat.sh',
                      game_id,
                      Config.get_config_path()])
 

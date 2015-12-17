@@ -26,4 +26,13 @@
   <!-- Context Menu -->
   <string id="30100">Addon Settings</string>
   <string id="30101">Full Refresh</string>
+  <!-- Dialogs -->
+  <string id="30200">Choose Controller Type</string>
+  <string id="30201">Enter Filename for Controller Map</string>
+  <string id="30202">Preparing to start mapping ...</string>
+  <string id="30203">Mapping Successful</string>
+  <string id="30204">Do you want to set the newly created mapping as active?</string>
+  <string id="30205">Something went wrong, please try again.</string>
+  <string id="30206">Failed to pair to server: Already paired</string>
+  <string id="30207">Please configure the addon first.</string>
 </strings>

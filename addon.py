@@ -3,19 +3,28 @@ import subprocess
 import threading
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
-from resources.lib.confighelper import ConfigHelper
 
-addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
+from resources.lib.confighelper import ConfigHelper
 
 STRINGS = {
     'name': 30000,
     'addon_settings': 30100,
-    'full_refresh': 30101
+    'full_refresh': 30101,
+    'choose_ctlr_type': 30200,
+    'enter_filename': 30201,
+    'starting_mapping': 30202,
+    'mapping_success': 30203,
+    'set_mapping_active': 30204,
+    'mapping_failure': 30205,
+    'pair_failure_paired': 30206,
+    'configure_first': 30207
 }
 
-Config = ConfigHelper()
 plugin = Plugin()
+Config = ConfigHelper()
+
 addon_path = plugin.storage_path
+addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 
 @plugin.route('/')
@@ -44,8 +53,8 @@ def create_mapping():
     log('Starting mapping')
 
     controllers = ['XBOX', 'PS3', 'Wii']
-    ctrl_type = xbmcgui.Dialog().select('Choose Controller Type', controllers)
-    map_name = xbmcgui.Dialog().input('Enter Controller Map Name')
+    ctrl_type = xbmcgui.Dialog().select(_('choose_ctlr_type'), controllers)
+    map_name = xbmcgui.Dialog().input(_('enter_filename'))
 
     if map_name == '':
         return
@@ -53,7 +62,7 @@ def create_mapping():
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
         _('name'),
-        'Mapping is now starting...'
+        _('starting_mapping')
     )
 
     log('Trying to call subprocess')
@@ -86,7 +95,8 @@ def create_mapping():
     if os.path.isfile(map_file) and success == 'true':
         confirmed = xbmcgui.Dialog().yesno(
             _('name'),
-            'Mapping successful - do you want to set the newly created mapping now?'
+            _('mapping_success'),
+            _('set_mapping_active')
         )
         log('Dialog Yes No Value: %s' % confirmed)
         if confirmed:
@@ -99,7 +109,7 @@ def create_mapping():
         if success == 'false':
             xbmcgui.Dialog().ok(
                 _('name'),
-                'Something went wrong, please try again.'
+                _('mapping_failure')
             )
         else:
             return
@@ -112,7 +122,7 @@ def pair_host():
     if len(code) > 1:
         line = code[1]
         if line == '':
-            line = 'Failed to pair to server: Already paired'
+            line = _('pair_failure_paired')
     else:
         line = code[0]
 
@@ -122,20 +132,12 @@ def pair_host():
     )
 
 
-@plugin.route('/actions/quit-moonlight')
-def quit_moonlight():
-    xbmcgui.Dialog().ok(
-        _('name'),
-        'This currently doesn\'t do anything and might be removed.'
-    )
-
-
 @plugin.route('/games')
 def show_games():
     def context_menu():
         return [
             (
-                _('open_settings'),
+                _('addon_settings'),
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
                     endpoint='open_settings'
                 )
@@ -220,9 +222,6 @@ def get_binary():
         '/usr/local/bin/moonlight'
     ]
 
-    if plugin.get_setting('use_custom_binary', bool):
-        binary_locations.append(plugin.get_setting('custom_binary_path', unicode))
-
     for f in binary_locations:
         if os.path.isfile(f):
             return f
@@ -233,8 +232,8 @@ def get_binary():
 def configure_helper(config, binary_path):
     """
 
+    :param config: ConfigHelper
     :param binary_path: string
-    :type config: ConfigHelper
     """
     config.configure(
         addon_path,
@@ -281,5 +280,5 @@ if __name__ == '__main__':
     else:
         xbmcgui.Dialog().ok(
             _('name'),
-            'Please configure the addon first.'
+            _('configure_first')
         )

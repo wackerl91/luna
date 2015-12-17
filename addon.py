@@ -10,7 +10,7 @@ STRINGS = {
     'name': 30000,
     'addon_settings': 30100,
     'full_refresh': 30101,
-    'choose_ctlr_type': 30200,
+    'choose_ctrl_type': 30200,
     'enter_filename': 30201,
     'starting_mapping': 30202,
     'mapping_success': 30203,
@@ -53,7 +53,7 @@ def create_mapping():
     log('Starting mapping')
 
     controllers = ['XBOX', 'PS3', 'Wii']
-    ctrl_type = xbmcgui.Dialog().select(_('choose_ctlr_type'), controllers)
+    ctrl_type = xbmcgui.Dialog().select(_('choose_ctrl_type'), controllers)
     map_name = xbmcgui.Dialog().input(_('enter_filename'))
 
     if map_name == '':

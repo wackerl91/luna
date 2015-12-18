@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 sleep 10
+
 while [ true ]; do
         status="$(pidof moonlight | wc -w)"
         if [ ${status} -ne 1 ]; then

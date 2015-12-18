@@ -2,10 +2,13 @@ import os
 import subprocess
 import threading
 import stat
+import json
+import urllib2
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
+from resources.lib.game import Game
 
 STRINGS = {
     'name': 30000,
@@ -161,13 +164,19 @@ def show_games():
     items = []
     for game in games:
         items.append({
-            'label': game.name,
-            'thumbnail': '',
+            'label': game.get('name'),
+            'thumbnail': game.get('thumb', ''),
+            'info': {
+                'originaltitle': game.get('name'),
+                'year': game.get('year'),
+                'plot': game.get('plot'),
+                'genre': game.get('genre'),
+            },
             'replace_context_menu': True,
             'context_menu': context_menu(),
             'path': plugin.url_for(
                 endpoint='launch_game',
-                game_id=game.name
+                game_id=game.get('name')
             )
         })
     return plugin.finish(items)
@@ -209,19 +218,23 @@ def loop_lines(dialog, iterator):
 
 
 def get_games():
+    api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
     configure_helper(Config, Config.get_binary())
     game_list = []
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
     while True:
         line = list_proc.stdout.readline()
         log(line[3:])
-        game_list.append(line[3:].strip())
-        if not line:
-            break
+        if line[3:] != '':
+            game_list.append(line[3:].strip())
+            if not line:
+                break
     game_storage = plugin.get_storage('game_storage')
     game_storage.clear()
-    for game in game_list:
-        game_storage['game'] = {'name': game}
+    for game_name in game_list:
+        response = json.load(urllib2.urlopen(api_url % game_name))
+        game = Game(game_name, response)
+        game_storage[game_name] = game
     game_storage.sync()
 
 

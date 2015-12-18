@@ -9,7 +9,7 @@ GAME=$3
 CONF_PATH=$4
 
 sudo su osmc -c "sh $HEARTBEAT_PATH &" &
-sudo su osmc -c "nohup openvt -c 7 -s -f sh $LAUNCHER_PATH $GAME $CONF_PATH >/dev/null 2>&1 &" &
+sudo su osmc -c "nohup openvt -c 7 -s -f sh $LAUNCHER_PATH \"${GAME}\" $CONF_PATH >/dev/null 2>&1 &" &
 
 sudo openvt -c 7 -s -f clear
 

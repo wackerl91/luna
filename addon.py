@@ -32,11 +32,13 @@ addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 def index():
     items = [{
         'label': 'Games',
+        'thumbnail': addon_internal_path+'/resources/icons/cog.png',
         'path': plugin.url_for(
             endpoint='show_games'
         )
     }, {
         'label': 'Settings',
+        'thumbnail': addon_internal_path+'/resources/icons/controller.png',
         'path': plugin.url_for(
             endpoint='open_settings'
         )
@@ -151,29 +153,29 @@ def show_games():
             )
         ]
 
-    Config.dump_conf()
-    game_storage = plugin.get_storage('game_storage')
-    game_storage.clear()
-    games = get_games()
+    games = plugin.get_storage('game_storage')
+
+    if len(games) == 0:
+        get_games()
+
     items = []
-    for i, game in enumerate(games):
-        label = game
+    for game in games:
         items.append({
-            'label': label,
+            'label': game.name,
+            'thumbnail': '',
             'replace_context_menu': True,
             'context_menu': context_menu(),
             'path': plugin.url_for(
                 endpoint='launch_game',
-                game_id=game
+                game_id=game.name
             )
         })
-    game_storage.sync()
     return plugin.finish(items)
 
 
 @plugin.route('/games/all/refresh')
 def do_full_refresh():
-    return get_games()
+    get_games()
 
 
 @plugin.route('/games/launch/<game_id>')
@@ -189,6 +191,7 @@ def launch_game(game_id):
 
 
 def launch_moonlight_pair():
+    configure_helper(Config, Config.get_binary())
     code = []
     process = subprocess.Popen([Config.get_binary(), 'pair', Config.get_host()], stdout=subprocess.PIPE)
     while True:
@@ -206,6 +209,7 @@ def loop_lines(dialog, iterator):
 
 
 def get_games():
+    configure_helper(Config, Config.get_binary())
     game_list = []
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
     while True:
@@ -214,7 +218,11 @@ def get_games():
         game_list.append(line[3:].strip())
         if not line:
             break
-    return game_list
+    game_storage = plugin.get_storage('game_storage')
+    game_storage.clear()
+    for game in game_list:
+        game_storage['game'] = {'name': game}
+    game_storage.sync()
 
 
 def get_binary():

@@ -1,6 +1,7 @@
 import os
 import subprocess
 import threading
+import stat
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
@@ -260,6 +261,23 @@ def configure_helper(config, binary_path):
     return True
 
 
+def check_script_permissions():
+    st = os.stat(addon_internal_path+'/resources/lib/launch.sh')
+    if not bool(st.st_mode & stat.S_IXUSR):
+        os.chmod(addon_internal_path+'/resources/lib/launch.sh', st.st_mode | 0111)
+        log('Changed file permissions for launch')
+
+    st = os.stat(addon_internal_path+'/resources/lib/launch-helper-osmc.sh')
+    if not bool(st.st_mode & stat.S_IXUSR):
+        os.chmod(addon_internal_path+'/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
+        log('Changed file permissions for launch-helper-osmc')
+
+    st = os.stat(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh')
+    if not bool(st.st_mode & stat.S_IXUSR):
+        os.chmod(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
+        log('Changed file permissions for moonlight-heartbeat')
+
+
 def log(text):
     plugin.log.info(text)
 
@@ -274,6 +292,7 @@ def _(string_id):
 
 if __name__ == '__main__':
     log('Launching Luna')
+    check_script_permissions()
     if plugin.get_setting('host', unicode) and get_binary():
         if configure_helper(Config, get_binary()):
             plugin.run()

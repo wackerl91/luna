@@ -4,8 +4,9 @@
         <setting label="30002" type="ipaddress" id="host"/>
         <setting label="30008" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/pair-host)"/>
         <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
-        <setting label="30004" enable="eq(1,false)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
-        <setting label="30005" type="bool" id="enable_custom_resolution" default="false"/>
+        <setting label="30023" type="bool" id="override_default_resolution" default="false"/>
+        <setting label="30004" enable="eq(1,false) + eq(-1,true)" visible="eq(-1,true)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
+        <setting label="30005" enable="eq(-2,true)" visible="eq(-2,true)" type="bool" id="enable_custom_resolution" default="false"/>
         <setting label="30006" subsetting="true" enable="eq(-1,true)" visible="eq(-1,true)" type="slider" id="resolution_width" range="640,10,1920" option="int" default="1280"/>
         <setting label="30007" subsetting="true" enable="eq(-2,true)" visible="eq(-2,true)" type="slider" id="resolution_height" range="480,10,1080" option="int" default="720"/>
     </category>
@@ -22,5 +23,8 @@
         <setting label="30013" type="bool" id="remote_optimizations" default="false"/>
         <setting label="30014" type="bool" id="graphic_optimizations" default="false"/>
         <setting label="30015" type="bool" id="local_audio" default="false"/>
+    </category>
+    <category label="30021">
+        <setting label="30022" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/reset-cache)"/>
     </category>
 </settings>

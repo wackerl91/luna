@@ -1,7 +1,8 @@
 import os
+import stat
 import subprocess
 import threading
-import stat
+
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
@@ -134,43 +135,47 @@ def pair_host():
     thread = threading.Thread(target=loop_lines, args=(pair_dialog, lines_iterator))
     thread.start()
 
-    success = ''
+    success = False
 
     while True:
         xbmc.sleep(1000)
         if not thread.isAlive():
-            pair_dialog.close()
-            success = 'try'
+            success = True
             break
         if pair_dialog.iscanceled():
             pairing.kill()
             pair_dialog.close()
-            success = 'canceled'
+            success = False
             log('Pairing canceled')
             break
 
-    if success == 'try':
-        pairing = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
-                                   stdout=subprocess.PIPE)
-
-        lines_iterator = iter(pairing.stdout.readline, b"")
+    if success:
+        pair_dialog.update(0, 'Checking if pairing has been successful.')
+        xbmc.sleep(1000)
+        pairing_check = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()],
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         last_line = ''
-        for line in lines_iterator:
-            log('Output while checking for pairing state: ' + line)
-            last_line = line
-            if not line:
-                pairing.kill()
+        while True:
+            line = pairing_check.stdout.readline()
+            err = pairing_check.stderr.readline()
+            if line != '':
+                last_line = line
+            if err != '':
+                last_line = err
+            if not line and not err:
                 break
-        if last_line == 'Failed to pair to server: Already paired':
+
+        pair_dialog.close()
+        if last_line.lower().strip() != 'You must pair with the PC first'.lower().strip():
             xbmcgui.Dialog().ok(
                     _('name'),
                     'Successfully paired'
             )
         else:
             confirmed = xbmcgui.Dialog().yesno(
-                _('name'),
-                'Pairing failed - do you want to try again?'
+                    _('name'),
+                    'Pairing failed - do you want to try again?'
             )
             if confirmed:
                 pair_host()
@@ -206,7 +211,6 @@ def show_games():
     items = []
     for i, game_name in enumerate(games):
         game = games.get(game_name)
-        print game.thumb
         items.append({
             'label': game.name,
             'icon': game.thumb,
@@ -273,7 +277,8 @@ def get_games():
 
     for game_name in game_list:
         if cache.has_key(game_name):
-            game_storage[game_name] = cache.get(game_name)
+            if not game_storage.get(game_name):
+                game_storage[game_name] = cache.get(game_name)
         else:
             game_storage[game_name] = scraper.query_game_information(game_name)
 

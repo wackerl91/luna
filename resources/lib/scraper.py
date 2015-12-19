@@ -2,7 +2,7 @@ import json
 import os
 import subprocess
 import urllib2
-from xml.etree.ElementTree import ElementTree
+import xml.etree.ElementTree as ET
 
 from game import Game
 
@@ -15,8 +15,10 @@ class ScraperCollection:
         self.img_path = addon_path + '/boxarts/'
 
     def query_game_information(self, game_name):
-        game_name = game_name.replace(" ", "+").replace(":", "")
-        return _get_information(self, game_name)
+        request_name = game_name.replace(" ", "+").replace(":", "")
+        game = _get_information(self, request_name)
+        game.name = game_name
+        return game
 
 
 class OmdbScraper:
@@ -48,30 +50,28 @@ def _get_information(self, game_name):
 
     omdb_response = json.load(urllib2.urlopen(self.omdb.api_url % game_name))
 
-    full_img_url = ''
-    full_img_path = ''
-
     if omdb_response['Response'] == 'False':
         file_path = self.tgdb.api_cache + game_name + '.xml'
         _cache_tgdb_response_data(self, file_path, game_name)
 
-        root = ElementTree(file=file_path)
+        root = ET.ElementTree(file=file_path).getroot()
 
         omdb_response = _parse_xml(root)
+
         full_img_url = omdb_response['Poster']
         full_img_path = self.img_path + os.path.basename(full_img_url)
 
-    if omdb_response['Response'] == 'True':
+    else:
         if omdb_response['Poster'] == 'N/A':
             file_path = self.tgdb.api_cache + game_name + '.xml'
             _cache_tgdb_response_data(self, file_path, game_name)
 
-            root = ElementTree(file=file_path)
+            root = ET.ElementTree(file=file_path).getroot()
 
             full_img_url = _build_image_path(_get_img_base_url(root), _get_image(root))
             full_img_path = self.img_path + os.path.basename(full_img_url)
         else:
-            full_img_url = omdb_response['Poser']
+            full_img_url = omdb_response['Poster']
             full_img_path = self.img_path + os.path.basename(full_img_url)
 
     _dump_image(full_img_path, full_img_url)
@@ -97,7 +97,7 @@ def _get_img_base_url(r):
 
 def _get_image(r):
     for i in r.findall('Game'):
-        if i.find('Platform') == 'PC':
+        if i.find('Platform').text == 'PC':
             for b in i.find('Images'):
                 if b.get('side') == 'front':
                     return b.text
@@ -108,7 +108,7 @@ def _parse_xml(r):
     data = {}
     img_base_url = _get_img_base_url(r)
     for i in r.findall('Game'):
-        if i.find('Platform') == 'PC':
+        if i.find('Platform').text == 'PC':
             if i.find('ReleaseDate'):
                 data['Year'] = os.path.basename(i.find('ReleaseDate').text)
             else:
@@ -123,9 +123,11 @@ def _parse_xml(r):
                     data['Poster'] = img_base_url + b.text
             if not i.find('Genres'):
                 data['Genre'] = 'N/A'
-            for g in i.find('Genres'):
-                data['Genre'] = ', '.join([data['Genre'], g.text])
-            return data
+            else:
+                for g in i.find('Genres'):
+                    data['Genre'] = ', '.join([data['Genre'], g.text])
+            break
+    return data
 
 
 def _build_image_path(base_url, img_url=None):

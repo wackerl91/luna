@@ -33,13 +33,13 @@ addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 def index():
     items = [{
         'label': 'Games',
-        'thumbnail': addon_internal_path + '/resources/icons/cog.png',
+        'thumbnail': addon_internal_path + '/resources/icons/controller.png',
         'path': plugin.url_for(
                 endpoint='show_games'
         )
     }, {
         'label': 'Settings',
-        'thumbnail': addon_internal_path + '/resources/icons/controller.png',
+        'thumbnail': addon_internal_path + '/resources/icons/cog.png',
         'path': plugin.url_for(
                 endpoint='open_settings'
         )

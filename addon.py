@@ -124,19 +124,29 @@ def create_mapping():
 
 @plugin.route('/actions/pair-host')
 def pair_host():
-    code = launch_moonlight_pair()
-
-    if len(code) > 1:
-        line = code[1]
-        if line == '':
-            line = _('pair_failure_paired')
-    else:
-        line = code[0]
-
-    xbmcgui.Dialog().ok(
+    pair_dialog = xbmcgui.DialogProgress()
+    pair_dialog.create(
             _('name'),
-            line
+            'Starting Pairing'
     )
+
+    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
+                               stdout=subprocess.PIPE)
+
+    lines_iterator = iter(mapping.stdout.readline, b"")
+
+    thread = threading.Thread(target=loop_lines, args=(pair_dialog, lines_iterator))
+    thread.start()
+
+    while True:
+        xbmc.sleep(1000)
+        if not thread.isAlive():
+            pair_dialog.close()
+            xbmcgui.Dialog().ok(
+                    _('name'),
+                    'Successfully paired'
+            )
+            break
 
 
 @plugin.route('/games')

@@ -4,6 +4,7 @@ import threading
 import stat
 import json
 import urllib2
+import xml.etree.ElementTree as ET
 
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
@@ -35,15 +36,15 @@ addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 def index():
     items = [{
         'label': 'Games',
-        'thumbnail': addon_internal_path+'/resources/icons/cog.png',
+        'thumbnail': addon_internal_path + '/resources/icons/cog.png',
         'path': plugin.url_for(
-            endpoint='show_games'
+                endpoint='show_games'
         )
     }, {
         'label': 'Settings',
-        'thumbnail': addon_internal_path+'/resources/icons/controller.png',
+        'thumbnail': addon_internal_path + '/resources/icons/controller.png',
         'path': plugin.url_for(
-            endpoint='open_settings'
+                endpoint='open_settings'
         )
     }]
     return plugin.finish(items)
@@ -67,8 +68,8 @@ def create_mapping():
 
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
-        _('name'),
-        _('starting_mapping')
+            _('name'),
+            _('starting_mapping')
     )
 
     log('Trying to call subprocess')
@@ -100,9 +101,9 @@ def create_mapping():
 
     if os.path.isfile(map_file) and success == 'true':
         confirmed = xbmcgui.Dialog().yesno(
-            _('name'),
-            _('mapping_success'),
-            _('set_mapping_active')
+                _('name'),
+                _('mapping_success'),
+                _('set_mapping_active')
         )
         log('Dialog Yes No Value: %s' % confirmed)
         if confirmed:
@@ -114,8 +115,8 @@ def create_mapping():
     else:
         if success == 'false':
             xbmcgui.Dialog().ok(
-                _('name'),
-                _('mapping_failure')
+                    _('name'),
+                    _('mapping_failure')
             )
         else:
             return
@@ -133,8 +134,8 @@ def pair_host():
         line = code[0]
 
     xbmcgui.Dialog().ok(
-        _('name'),
-        line
+            _('name'),
+            line
     )
 
 
@@ -145,38 +146,41 @@ def show_games():
             (
                 _('addon_settings'),
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
-                    endpoint='open_settings'
+                        endpoint='open_settings'
                 )
             ),
             (
                 _('full_refresh'),
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
-                    endpoint='do_full_refresh'
+                        endpoint='do_full_refresh'
                 )
             )
         ]
 
     games = plugin.get_storage('game_storage')
 
-    if len(games) == 0:
+    if len(games.raw_dict()) == 0:
         get_games()
 
     items = []
-    for game in games:
+    for i, game_name in enumerate(games):
+        game = games.get(game_name)
+        print game.thumb
         items.append({
-            'label': game.get('name'),
-            'thumbnail': game.get('thumb', ''),
+            'label': game.name,
+            'icon': game.thumb,
+            'thumbnail': game.thumb,
             'info': {
-                'originaltitle': game.get('name'),
-                'year': game.get('year'),
-                'plot': game.get('plot'),
-                'genre': game.get('genre'),
+                'originaltitle': game.name,
+                'year': game.year,
+                'plot': game.plot,
+                'genre': game.genre,
             },
             'replace_context_menu': True,
             'context_menu': context_menu(),
             'path': plugin.url_for(
-                endpoint='launch_game',
-                game_id=game.get('name')
+                    endpoint='launch_game',
+                    game_id=game.name
             )
         })
     return plugin.finish(items)
@@ -192,9 +196,9 @@ def launch_game(game_id):
     log('Launching game %s' % game_id)
     configure_helper(Config, Config.get_binary())
     log('Reconfigured helper and dumped conf to disk.')
-    subprocess.call([addon_internal_path+'/resources/lib/launch-helper-osmc.sh',
-                     addon_internal_path+'/resources/lib/launch.sh',
-                     addon_internal_path+'/resources/lib/moonlight-heartbeat.sh',
+    subprocess.call([addon_internal_path + '/resources/lib/launch-helper-osmc.sh',
+                     addon_internal_path + '/resources/lib/launch.sh',
+                     addon_internal_path + '/resources/lib/moonlight-heartbeat.sh',
                      game_id,
                      Config.get_config_path()])
 
@@ -219,21 +223,78 @@ def loop_lines(dialog, iterator):
 
 def get_games():
     api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
+    fallback_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
+
+    def find_image(e):
+        for i in e.findall('Game'):
+            if i.find('Platform').text == 'PC':
+                for boxart in i.find('Images'):
+                    if boxart.get('side') == 'front':
+                        return boxart.text
+        return None
+
+    if not os.path.exists(addon_path + '/boxarts'):
+        os.makedirs(addon_path + '/boxarts')
+
     configure_helper(Config, Config.get_binary())
     game_list = []
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
     while True:
         line = list_proc.stdout.readline()
-        log(line[3:])
         if line[3:] != '':
+            log(line[3:])
             game_list.append(line[3:].strip())
-            if not line:
-                break
+        if not line:
+            break
+    log('Done getting games from moonlight')
     game_storage = plugin.get_storage('game_storage')
     game_storage.clear()
     for game_name in game_list:
-        response = json.load(urllib2.urlopen(api_url % game_name))
-        game = Game(game_name, response)
+        # TODO: this should be a little scraper inside lib
+        request_name = game_name.replace(" ", "+")
+        request_name = request_name.replace(":", "")
+        log('Trying to query API %s' % api_url % request_name)
+        response = json.load(urllib2.urlopen(api_url % request_name))
+        print response
+
+        if response['Response'] == 'False':
+            game = Game(game_name, None)
+
+        else:
+            if response['Poster'] == 'N/A':
+                img_base_url = None
+                log('Trying to query fallback API %s' % fallback_url % request_name)
+                # TODO: properly cache game information and load from disk before querying this API
+                # TODO 2: build an option to clear the cached information
+                curl = subprocess.Popen(['curl', '-XGET', fallback_url % request_name], stdout=subprocess.PIPE)
+                with open(addon_path + request_name + '.xml', 'w') as last_request:
+                    last_request.write(curl.stdout.read())
+
+                root = ET.ElementTree(file=addon_path + request_name + '.xml').getroot()
+
+                for item in root:
+                    if item.tag == 'baseImgUrl':
+                        img_base_url = item.text
+
+                image_url = find_image(root)
+
+                if img_base_url is not None and image_url is not None:
+                    if not os.path.isfile(addon_path + '/boxarts/' + os.path.basename(image_url)):
+                        with open(addon_path + '/boxarts/' + os.path.basename(image_url), 'wb') as img:
+                            img_curl = subprocess.Popen(['curl', '-XGET', img_base_url+image_url], stdout=subprocess.PIPE)
+                            img.write(img_curl.stdout.read())
+                            img.close()
+                    response['Poster'] = addon_path + '/boxarts/' + os.path.basename(image_url)
+            else:
+                if not os.path.isfile(addon_path + '/boxarts/' + os.path.basename(response['Poster'])):
+                    with open(addon_path + '/boxarts/' + os.path.basename(response['Poster']), 'wb') as img:
+                        img_curl = subprocess.Popen(['curl', '-XGET', response['Poster']], stdout=subprocess.PIPE)
+                        img.write(img_curl.stdout.read())
+                        img.close()
+                response['Poster'] = addon_path + '/boxarts/' + os.path.basename(response['Poster'])
+
+            game = Game(game_name, response)
+
         game_storage[game_name] = game
     game_storage.sync()
 
@@ -258,23 +319,23 @@ def configure_helper(config, binary_path):
     :param binary_path: string
     """
     config.configure(
-        addon_path,
-        binary_path,
-        plugin.get_setting('host', unicode),
-        plugin.get_setting('enable_custom_resolution', bool),
-        plugin.get_setting('resolution_width', str),
-        plugin.get_setting('resolution_height', str),
-        plugin.get_setting('resolution', str),
-        plugin.get_setting('framerate', str),
-        plugin.get_setting('graphic_optimizations', bool),
-        plugin.get_setting('remote_optimizations', bool),
-        plugin.get_setting('local_audio', bool),
-        plugin.get_setting('enable_custom_bitrate', bool),
-        plugin.get_setting('bitrate', int),
-        plugin.get_setting('packetsize', int),
-        plugin.get_setting('enable_custom_input', bool),
-        plugin.get_setting('input_map', str),
-        plugin.get_setting('input_device', str)
+            addon_path,
+            binary_path,
+            plugin.get_setting('host', unicode),
+            plugin.get_setting('enable_custom_resolution', bool),
+            plugin.get_setting('resolution_width', str),
+            plugin.get_setting('resolution_height', str),
+            plugin.get_setting('resolution', str),
+            plugin.get_setting('framerate', str),
+            plugin.get_setting('graphic_optimizations', bool),
+            plugin.get_setting('remote_optimizations', bool),
+            plugin.get_setting('local_audio', bool),
+            plugin.get_setting('enable_custom_bitrate', bool),
+            plugin.get_setting('bitrate', int),
+            plugin.get_setting('packetsize', int),
+            plugin.get_setting('enable_custom_input', bool),
+            plugin.get_setting('input_map', str),
+            plugin.get_setting('input_device', str)
     )
 
     config.dump_conf()
@@ -283,19 +344,19 @@ def configure_helper(config, binary_path):
 
 
 def check_script_permissions():
-    st = os.stat(addon_internal_path+'/resources/lib/launch.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/launch.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/launch.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/launch.sh', st.st_mode | 0111)
         log('Changed file permissions for launch')
 
-    st = os.stat(addon_internal_path+'/resources/lib/launch-helper-osmc.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/launch-helper-osmc.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
         log('Changed file permissions for launch-helper-osmc')
 
-    st = os.stat(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/moonlight-heartbeat.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
         log('Changed file permissions for moonlight-heartbeat')
 
 
@@ -319,6 +380,6 @@ if __name__ == '__main__':
             plugin.run()
     else:
         xbmcgui.Dialog().ok(
-            _('name'),
-            _('configure_first')
+                _('name'),
+                _('configure_first')
         )

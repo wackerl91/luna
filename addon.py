@@ -8,6 +8,7 @@ from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
 from resources.lib.scraper import ScraperCollection
+from resources.lib.game import Game
 
 STRINGS = {
     'name': 30000,
@@ -301,11 +302,15 @@ def get_games():
     scraper = ScraperCollection(addon_path)
 
     for game_name in game_list:
-        if cache.has_key(game_name):
-            if not game_storage.get(game_name):
-                game_storage[game_name] = cache.get(game_name)
+        if plugin.get_setting('disable_scraper', bool):
+            log('Scraper have been disabled, just adding game names to list.')
+            game_storage[game_name] = Game(game_name, None)
         else:
-            game_storage[game_name] = scraper.query_game_information(game_name)
+            if cache.has_key(game_name):
+                if not game_storage.get(game_name):
+                    game_storage[game_name] = cache.get(game_name)
+            else:
+                game_storage[game_name] = scraper.query_game_information(game_name)
 
     game_storage.sync()
 

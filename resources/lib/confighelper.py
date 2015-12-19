@@ -46,9 +46,11 @@ class ConfigHelper:
         self.input_device = None
         self.full_path = None
 
-    def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None, resolution_height=None, resolution=None,
-                   framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False, enable_custom_bitrate=False, bitrate=None, packetsize=None,
-                   enable_custom_input=False, input_map=None, input_device=None):
+    def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
+                   resolution_height=None, resolution=None,
+                   framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
+                   enable_custom_bitrate=False, bitrate=None, packetsize=None,
+                   enable_custom_input=False, input_map=None, input_device=None, override_default_resolution=False):
 
         self.addon_path = addon_path
         self.binary_path = binary_path
@@ -67,31 +69,35 @@ class ConfigHelper:
         self.enable_custom_input = enable_custom_input
         self.input_map = input_map
         self.input_device = input_device
+        self.override_default_resolution = override_default_resolution
 
         self.full_path = ''.join([self.addon_path, conf])
 
-    def configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None, resolution_height=None, resolution=None,
-                  framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False, enable_custom_bitrate=False, bitrate=None, packetsize=None,
-                  enable_custom_input=False, input_map=None, input_device=None):
+    def configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
+                  resolution_height=None, resolution=None,
+                  framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
+                  enable_custom_bitrate=False, bitrate=None, packetsize=None,
+                  enable_custom_input=False, input_map=None, input_device=None, override_default_resolution=False):
 
         self._configure(
-            addon_path,
-            binary_path,
-            host_ip,
-            enable_custom_res,
-            resolution_width,
-            resolution_height,
-            resolution,
-            framerate,
-            graphics_optimizations,
-            remote_optimizations,
-            local_audio,
-            enable_custom_bitrate,
-            bitrate,
-            packetsize,
-            enable_custom_input,
-            input_map,
-            input_device
+                addon_path,
+                binary_path,
+                host_ip,
+                enable_custom_res,
+                resolution_width,
+                resolution_height,
+                resolution,
+                framerate,
+                graphics_optimizations,
+                remote_optimizations,
+                local_audio,
+                enable_custom_bitrate,
+                bitrate,
+                packetsize,
+                enable_custom_input,
+                input_map,
+                input_device,
+                override_default_resolution
         )
 
     def dump_conf(self):
@@ -107,17 +113,23 @@ class ConfigHelper:
         config.set('General', 'binpath', self.binary_path)
         config.set('General', 'address', self.host_ip)
 
-        if self.enable_custom_res:
-            config.set('General', 'width', int(self.resolution_width[0]))
-            config.set('General', 'height', int(self.resolution_height[0]))
-
+        if not self.override_default_resolution:
+            if config.has_option('General', 'height'):
+                config.remove_option('General', 'height')
+            if config.has_option('General', 'width'):
+                config.remove_option('General', 'width')
         else:
-            if self.resolution == '1920x1080':
-                config.set('General', 'width', 1920)
-                config.set('General', 'height', 1080)
-            if self.resolution == '1280x720':
-                config.set('General', 'width', 1280)
-                config.set('General', 'height', 720)
+            if self.enable_custom_res:
+                config.set('General', 'width', int(self.resolution_width[0]))
+                config.set('General', 'height', int(self.resolution_height[0]))
+
+            else:
+                if self.resolution == '1920x1080':
+                    config.set('General', 'width', 1920)
+                    config.set('General', 'height', 1080)
+                if self.resolution == '1280x720':
+                    config.set('General', 'width', 1280)
+                    config.set('General', 'height', 720)
 
         config.set('General', 'fps', self.framerate)
         if self.enable_custom_bitrate:

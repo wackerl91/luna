@@ -25,6 +25,7 @@
   <string id="30020">Create Map for Above Device</string>
   <string id="30021">Cache Control</string>
   <string id="30022">Remove Game Cache</string>
+  <string id="30023">Override Default Resolution</string>
   <!-- Context Menu -->
   <string id="30100">Addon Settings</string>
   <string id="30101">Full Refresh</string>

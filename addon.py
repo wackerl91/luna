@@ -33,12 +33,12 @@ def index():
     items = [{
         'label': 'Games',
         'path': plugin.url_for(
-            endpoint='show_games'
+                endpoint='show_games'
         )
     }, {
         'label': 'Settings',
         'path': plugin.url_for(
-            endpoint='open_settings'
+                endpoint='open_settings'
         )
     }]
     return plugin.finish(items)
@@ -62,8 +62,8 @@ def create_mapping():
 
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
-        _('name'),
-        _('starting_mapping')
+            _('name'),
+            _('starting_mapping')
     )
 
     log('Trying to call subprocess')
@@ -95,9 +95,9 @@ def create_mapping():
 
     if os.path.isfile(map_file) and success == 'true':
         confirmed = xbmcgui.Dialog().yesno(
-            _('name'),
-            _('mapping_success'),
-            _('set_mapping_active')
+                _('name'),
+                _('mapping_success'),
+                _('set_mapping_active')
         )
         log('Dialog Yes No Value: %s' % confirmed)
         if confirmed:
@@ -109,8 +109,8 @@ def create_mapping():
     else:
         if success == 'false':
             xbmcgui.Dialog().ok(
-                _('name'),
-                _('mapping_failure')
+                    _('name'),
+                    _('mapping_failure')
             )
         else:
             return
@@ -118,19 +118,29 @@ def create_mapping():
 
 @plugin.route('/actions/pair-host')
 def pair_host():
-    code = launch_moonlight_pair()
-
-    if len(code) > 1:
-        line = code[1]
-        if line == '':
-            line = _('pair_failure_paired')
-    else:
-        line = code[0]
-
-    xbmcgui.Dialog().ok(
-        _('name'),
-        line
+    pair_dialog = xbmcgui.DialogProgress()
+    pair_dialog.create(
+            _('name'),
+            'Starting Pairing'
     )
+
+    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
+                               stdout=subprocess.PIPE)
+
+    lines_iterator = iter(mapping.stdout.readline, b"")
+
+    thread = threading.Thread(target=loop_lines, args=(pair_dialog, lines_iterator))
+    thread.start()
+
+    while True:
+        xbmc.sleep(1000)
+        if not thread.isAlive():
+            pair_dialog.close()
+            xbmcgui.Dialog().ok(
+                    _('name'),
+                    'Successfully paired'
+            )
+            break
 
 
 @plugin.route('/games')
@@ -140,13 +150,13 @@ def show_games():
             (
                 _('addon_settings'),
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
-                    endpoint='open_settings'
+                        endpoint='open_settings'
                 )
             ),
             (
                 _('full_refresh'),
                 'XBMC.RunPlugin(%s)' % plugin.url_for(
-                    endpoint='do_full_refresh'
+                        endpoint='do_full_refresh'
                 )
             )
         ]
@@ -163,8 +173,8 @@ def show_games():
             'replace_context_menu': True,
             'context_menu': context_menu(),
             'path': plugin.url_for(
-                endpoint='launch_game',
-                game_id=game
+                    endpoint='launch_game',
+                    game_id=game
             )
         })
     game_storage.sync()
@@ -181,9 +191,9 @@ def launch_game(game_id):
     log('Launching game %s' % game_id)
     configure_helper(Config, Config.get_binary())
     log('Reconfigured helper and dumped conf to disk.')
-    subprocess.call([addon_internal_path+'/resources/lib/launch-helper-osmc.sh',
-                     addon_internal_path+'/resources/lib/launch.sh',
-                     addon_internal_path+'/resources/lib/moonlight-heartbeat.sh',
+    subprocess.call([addon_internal_path + '/resources/lib/launch-helper-osmc.sh',
+                     addon_internal_path + '/resources/lib/launch.sh',
+                     addon_internal_path + '/resources/lib/moonlight-heartbeat.sh',
                      game_id,
                      Config.get_config_path()])
 
@@ -237,23 +247,23 @@ def configure_helper(config, binary_path):
     :param binary_path: string
     """
     config.configure(
-        addon_path,
-        binary_path,
-        plugin.get_setting('host', unicode),
-        plugin.get_setting('enable_custom_resolution', bool),
-        plugin.get_setting('resolution_width', str),
-        plugin.get_setting('resolution_height', str),
-        plugin.get_setting('resolution', str),
-        plugin.get_setting('framerate', str),
-        plugin.get_setting('graphic_optimizations', bool),
-        plugin.get_setting('remote_optimizations', bool),
-        plugin.get_setting('local_audio', bool),
-        plugin.get_setting('enable_custom_bitrate', bool),
-        plugin.get_setting('bitrate', int),
-        plugin.get_setting('packetsize', int),
-        plugin.get_setting('enable_custom_input', bool),
-        plugin.get_setting('input_map', str),
-        plugin.get_setting('input_device', str)
+            addon_path,
+            binary_path,
+            plugin.get_setting('host', unicode),
+            plugin.get_setting('enable_custom_resolution', bool),
+            plugin.get_setting('resolution_width', str),
+            plugin.get_setting('resolution_height', str),
+            plugin.get_setting('resolution', str),
+            plugin.get_setting('framerate', str),
+            plugin.get_setting('graphic_optimizations', bool),
+            plugin.get_setting('remote_optimizations', bool),
+            plugin.get_setting('local_audio', bool),
+            plugin.get_setting('enable_custom_bitrate', bool),
+            plugin.get_setting('bitrate', int),
+            plugin.get_setting('packetsize', int),
+            plugin.get_setting('enable_custom_input', bool),
+            plugin.get_setting('input_map', str),
+            plugin.get_setting('input_device', str)
     )
 
     config.dump_conf()
@@ -262,19 +272,19 @@ def configure_helper(config, binary_path):
 
 
 def check_script_permissions():
-    st = os.stat(addon_internal_path+'/resources/lib/launch.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/launch.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/launch.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/launch.sh', st.st_mode | 0111)
         log('Changed file permissions for launch')
 
-    st = os.stat(addon_internal_path+'/resources/lib/launch-helper-osmc.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/launch-helper-osmc.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
         log('Changed file permissions for launch-helper-osmc')
 
-    st = os.stat(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh')
+    st = os.stat(addon_internal_path + '/resources/lib/moonlight-heartbeat.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(addon_internal_path+'/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
+        os.chmod(addon_internal_path + '/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
         log('Changed file permissions for moonlight-heartbeat')
 
 
@@ -298,6 +308,6 @@ if __name__ == '__main__':
             plugin.run()
     else:
         xbmcgui.Dialog().ok(
-            _('name'),
-            _('configure_first')
+                _('name'),
+                _('configure_first')
         )

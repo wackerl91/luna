@@ -23,4 +23,7 @@
         <setting label="30014" type="bool" id="graphic_optimizations" default="false"/>
         <setting label="30015" type="bool" id="local_audio" default="false"/>
     </category>
+    <category label="30021">
+        <setting label="30022" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/reset-cache)"/>
+    </category>
 </settings>

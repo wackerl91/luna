@@ -1,4 +1,5 @@
 import os
+import shutil
 import stat
 import subprocess
 import threading
@@ -181,6 +182,30 @@ def pair_host():
                 pair_host()
             else:
                 return
+    else:
+        return
+
+
+@plugin.route('/actions/reset-cache')
+def reset_cache():
+    confirmed = xbmcgui.Dialog().yesno(
+            _('name'),
+            'This will remove all cached game information and clear the game storage. Next time you\'re going to ' +
+            'visit the game view it will take some time until all information is available again. ' +
+            'Are you sure you want to do this?'
+    )
+    if confirmed:
+        plugin.get_storage('game_storage').clear()
+        if os.path.exists(addon_path + '/boxarts'):
+            shutil.rmtree(addon_path + '/boxarts', ignore_errors=True)
+            log('Deleted boxarts folder on user request')
+        if os.path.exists(addon_path + '/api_cache'):
+            shutil.rmtree(addon_path + '/api_cache', ignore_errors=True)
+            log('Deleted api cache on user request')
+        xbmcgui.Dialog().ok(
+            _('name'),
+            'Deleted cache.'
+        )
     else:
         return
 

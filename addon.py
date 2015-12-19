@@ -126,23 +126,58 @@ def pair_host():
             'Starting Pairing'
     )
 
-    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
+    pairing = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
                                stdout=subprocess.PIPE)
 
-    lines_iterator = iter(mapping.stdout.readline, b"")
+    lines_iterator = iter(pairing.stdout.readline, b"")
 
     thread = threading.Thread(target=loop_lines, args=(pair_dialog, lines_iterator))
     thread.start()
+
+    success = ''
 
     while True:
         xbmc.sleep(1000)
         if not thread.isAlive():
             pair_dialog.close()
+            success = 'try'
+            break
+        if pair_dialog.iscanceled():
+            pairing.kill()
+            pair_dialog.close()
+            success = 'canceled'
+            log('Pairing canceled')
+            break
+
+    if success == 'try':
+        pairing = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
+                                   stdout=subprocess.PIPE)
+
+        lines_iterator = iter(pairing.stdout.readline, b"")
+
+        last_line = ''
+        for line in lines_iterator:
+            log('Output while checking for pairing state: ' + line)
+            last_line = line
+            if not line:
+                pairing.kill()
+                break
+        if last_line == 'Failed to pair to server: Already paired':
             xbmcgui.Dialog().ok(
                     _('name'),
                     'Successfully paired'
             )
-            break
+        else:
+            confirmed = xbmcgui.Dialog().yesno(
+                _('name'),
+                'Pairing failed - do you want to try again?'
+            )
+            if confirmed:
+                pair_host()
+            else:
+                return
+    else:
+        return
 
 
 @plugin.route('/games')
@@ -209,18 +244,6 @@ def launch_game(game_id):
                      Config.get_config_path()])
 
 
-def launch_moonlight_pair():
-    configure_helper(Config, Config.get_binary())
-    code = []
-    process = subprocess.Popen([Config.get_binary(), 'pair', Config.get_host()], stdout=subprocess.PIPE)
-    while True:
-        line = process.stdout.readline()
-        code.append(line)
-        if not line:
-            break
-    return code
-
-
 def loop_lines(dialog, iterator):
     for line in iterator:
         log(line)
@@ -243,12 +266,16 @@ def get_games():
     log('Done getting games from moonlight')
 
     game_storage = plugin.get_storage('game_storage')
+    cache = game_storage.raw_dict()
     game_storage.clear()
 
     scraper = ScraperCollection(addon_path)
 
     for game_name in game_list:
-        game_storage[game_name] = scraper.query_game_information(game_name)
+        if cache.has_key(game_name):
+            game_storage[game_name] = cache.get(game_name)
+        else:
+            game_storage[game_name] = scraper.query_game_information(game_name)
 
     game_storage.sync()
 

@@ -41,7 +41,11 @@ def _get_information(self, game_name):
     """
 
     :type self: ScraperCollection
+    :rtype Game
     """
+    if game_name == 'Steam':
+        return Game(game_name, None)
+
     omdb_response = json.load(urllib2.urlopen(self.omdb.api_url % game_name))
 
     full_img_url = ''

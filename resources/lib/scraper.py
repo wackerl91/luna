@@ -124,6 +124,7 @@ def _parse_xml(r):
             if not i.find('Genres'):
                 data['Genre'] = 'N/A'
             else:
+                data['Genre'] = ''
                 for g in i.find('Genres'):
                     data['Genre'] = ', '.join([data['Genre'], g.text])
             break

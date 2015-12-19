@@ -26,5 +26,6 @@
     </category>
     <category label="30021">
         <setting label="30022" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/reset-cache)"/>
+        <setting label="30024" type="bool" id="disable_scraper" default="false"/>
     </category>
 </settings>

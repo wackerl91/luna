@@ -2,14 +2,10 @@ import os
 import subprocess
 import threading
 import stat
-import json
-import urllib2
-import xml.etree.ElementTree as ET
-
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
-from resources.lib.game import Game
+from resources.lib.scraper import ScraperCollection
 
 STRINGS = {
     'name': 30000,
@@ -232,23 +228,10 @@ def loop_lines(dialog, iterator):
 
 
 def get_games():
-    api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
-    fallback_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
-
-    def find_image(e):
-        for i in e.findall('Game'):
-            if i.find('Platform').text == 'PC':
-                for boxart in i.find('Images'):
-                    if boxart.get('side') == 'front':
-                        return boxart.text
-        return None
-
-    if not os.path.exists(addon_path + '/boxarts'):
-        os.makedirs(addon_path + '/boxarts')
-
-    configure_helper(Config, Config.get_binary())
     game_list = []
+    configure_helper(Config, Config.get_binary())
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
+
     while True:
         line = list_proc.stdout.readline()
         if line[3:] != '':
@@ -256,56 +239,17 @@ def get_games():
             game_list.append(line[3:].strip())
         if not line:
             break
+
     log('Done getting games from moonlight')
+
     game_storage = plugin.get_storage('game_storage')
     game_storage.clear()
+
+    scraper = ScraperCollection(addon_path)
+
     for game_name in game_list:
-        # TODO: this should be a little scraper inside lib
-        request_name = game_name.replace(" ", "+")
-        request_name = request_name.replace(":", "")
-        log('Trying to query API %s' % api_url % request_name)
-        response = json.load(urllib2.urlopen(api_url % request_name))
-        print response
+        game_storage[game_name] = scraper.query_game_information(game_name)
 
-        if response['Response'] == 'False':
-            game = Game(game_name, None)
-
-        else:
-            if response['Poster'] == 'N/A':
-                img_base_url = None
-                log('Trying to query fallback API %s' % fallback_url % request_name)
-                # TODO: properly cache game information and load from disk before querying this API
-                # TODO 2: build an option to clear the cached information
-                curl = subprocess.Popen(['curl', '-XGET', fallback_url % request_name], stdout=subprocess.PIPE)
-                with open(addon_path + request_name + '.xml', 'w') as last_request:
-                    last_request.write(curl.stdout.read())
-
-                root = ET.ElementTree(file=addon_path + request_name + '.xml').getroot()
-
-                for item in root:
-                    if item.tag == 'baseImgUrl':
-                        img_base_url = item.text
-
-                image_url = find_image(root)
-
-                if img_base_url is not None and image_url is not None:
-                    if not os.path.isfile(addon_path + '/boxarts/' + os.path.basename(image_url)):
-                        with open(addon_path + '/boxarts/' + os.path.basename(image_url), 'wb') as img:
-                            img_curl = subprocess.Popen(['curl', '-XGET', img_base_url+image_url], stdout=subprocess.PIPE)
-                            img.write(img_curl.stdout.read())
-                            img.close()
-                    response['Poster'] = addon_path + '/boxarts/' + os.path.basename(image_url)
-            else:
-                if not os.path.isfile(addon_path + '/boxarts/' + os.path.basename(response['Poster'])):
-                    with open(addon_path + '/boxarts/' + os.path.basename(response['Poster']), 'wb') as img:
-                        img_curl = subprocess.Popen(['curl', '-XGET', response['Poster']], stdout=subprocess.PIPE)
-                        img.write(img_curl.stdout.read())
-                        img.close()
-                response['Poster'] = addon_path + '/boxarts/' + os.path.basename(response['Poster'])
-
-            game = Game(game_name, response)
-
-        game_storage[game_name] = game
     game_storage.sync()
 
 

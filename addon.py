@@ -346,7 +346,8 @@ def configure_helper(config, binary_path):
             plugin.get_setting('packetsize', int),
             plugin.get_setting('enable_custom_input', bool),
             plugin.get_setting('input_map', str),
-            plugin.get_setting('input_device', str)
+            plugin.get_setting('input_device', str),
+            plugin.get_setting('override_default_resolution', bool)
     )
 
     config.dump_conf()

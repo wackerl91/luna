@@ -105,25 +105,18 @@ def _get_image(r):
 
 
 def _parse_xml(r):
-    data = {}
+    data = {'Year': 'N/A', 'Plot': 'N/A', 'Poster': 'N/A', 'Genre': 'N/A'}
     img_base_url = _get_img_base_url(r)
     for i in r.findall('Game'):
         if i.find('Platform').text == 'PC':
             if i.find('ReleaseDate'):
                 data['Year'] = os.path.basename(i.find('ReleaseDate').text)
-            else:
-                data['Year'] = 'N/A'
             if i.find('Overview'):
                 data['Plot'] = i.find('Overview').text
-            else:
-                data['Plot'] = 'N/A'
-            data['Poster'] = 'N/A'
             for b in i.find('Images'):
                 if b.get('side') == 'front':
                     data['Poster'] = img_base_url + b.text
-            if not i.find('Genres'):
-                data['Genre'] = 'N/A'
-            else:
+            if i.find('Genres'):
                 data['Genre'] = ''
                 for g in i.find('Genres'):
                     data['Genre'] = ', '.join([data['Genre'], g.text])

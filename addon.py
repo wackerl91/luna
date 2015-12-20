@@ -204,8 +204,8 @@ def reset_cache():
             shutil.rmtree(addon_path + '/api_cache', ignore_errors=True)
             log('Deleted api cache on user request')
         xbmcgui.Dialog().ok(
-            _('name'),
-            'Deleted cache.'
+                _('name'),
+                'Deleted cache.'
         )
     else:
         return
@@ -310,7 +310,12 @@ def get_games():
                 if not game_storage.get(game_name):
                     game_storage[game_name] = cache.get(game_name)
             else:
-                game_storage[game_name] = scraper.query_game_information(game_name)
+                try:
+                    game_storage[game_name] = scraper.query_game_information(game_name)
+                except KeyError:
+                    log('Key Error thrown while getting information for game {0}: {1}'.format(game_name,
+                                                                                              KeyError.message))
+                    game_storage[game_name] = Game(game_name, None)
 
     game_storage.sync()
 

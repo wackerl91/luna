@@ -16,11 +16,10 @@ Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it'
 - Dynamic Game Library (gets pulled from Moonlight every time you enter the 'Games' Section; so there's no persistence involved right now)
 - the above allows for starting of specific games
 - extensive configuration which supports nearly all of moonlight-embedded's launch options
+- Game covers inside game view (kind of work in progress, can be enabled/disabled in 'cache control')
 
 ## Issues
-- Games which contain spaces in their names have not been tested, so not sure if they're going to work properly right now
 - Controller Mapping sometimes not working
-- There's not a single icon currently
 - Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
 
 ## Credits
@@ -29,4 +28,6 @@ Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it'
 - Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)
 
 ## Bugs / Feature Requests
-- Please report any bugs or feature requests on the issue tracker
+- Please report any bugs or feature requests on the issue tracker - I can only make Luna better if you're willing to report every issue you run into!
+- If you're running into _any_ issue while using the scraper feature, please post the logs on the issue tracker or send me a PN on [OSMC forums](https://discourse.osmc.tv), my username is exxe (you may redact them if you don't want to post what games you're playing). They might be stupid bugs, but they're still there.
+- Should you also run into issues using the controller mapping feature (i.e. not taking any input) please let me know in the issue tracker or via OSMC forum (see above) which controller / driver you're using

@@ -4,7 +4,7 @@ import stat
 import subprocess
 import threading
 
-from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
+from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon, ListItem
 
 from resources.lib.confighelper import ConfigHelper
 from resources.lib.scraper import ScraperCollection
@@ -21,7 +21,8 @@ STRINGS = {
     'set_mapping_active': 30204,
     'mapping_failure': 30205,
     'pair_failure_paired': 30206,
-    'configure_first': 30207
+    'configure_first': 30207,
+    'reset_cache_warning': 30208
 }
 
 plugin = Plugin()
@@ -191,9 +192,7 @@ def pair_host():
 def reset_cache():
     confirmed = xbmcgui.Dialog().yesno(
             _('name'),
-            'This will remove all cached game information and clear the game storage. Next time you\'re going to ' +
-            'visit the game view it will take some time until all information is available again. ' +
-            'Are you sure you want to do this?'
+            _('reset_cache_warning')
     )
     if confirmed:
         plugin.get_storage('game_storage').clear()
@@ -237,23 +236,23 @@ def show_games():
     items = []
     for i, game_name in enumerate(games):
         game = games.get(game_name)
-        items.append({
-            'label': game.name,
-            'icon': game.thumb,
-            'thumbnail': game.thumb,
-            'info': {
+        li = xbmcgui.ListItem()
+        li.setLabel(game.name)
+        li.setIconImage(game.thumb)
+        info = {
                 'originaltitle': game.name,
                 'year': game.year,
                 'plot': game.plot,
                 'genre': game.genre,
-            },
-            'replace_context_menu': True,
-            'context_menu': context_menu(),
-            'path': plugin.url_for(
+            }
+        li.setInfo('video', info)
+        li.setArt({'thumb': game.thumb, 'fanart': game.thumb})
+        li.addContextMenuItems(context_menu())
+        li.setPath(plugin.url_for(
                     endpoint='launch_game',
                     game_id=game.name
-            )
-        })
+            ))
+        items.append(li)
     return plugin.finish(items)
 
 

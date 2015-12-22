@@ -12,7 +12,8 @@ class ScraperCollection:
         _configure(addon_path)
         self.omdb = OmdbScraper()
         self.tgdb = TgdbScraper(addon_path)
-        self.img_path = addon_path + '/boxarts/'
+        self.cover_path = addon_path + 'art/poster/'
+        self.fanart_path = addon_path + 'art/fanart/'
 
     def query_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
@@ -33,10 +34,10 @@ class TgdbScraper:
 
 
 def _configure(addon_path):
-    if not os.path.exists(addon_path + '/boxarts'):
-        os.makedirs(addon_path + '/boxarts')
-    if not os.path.exists(addon_path + '/api_cache'):
-        os.makedirs(addon_path + '/api_cache')
+    if not os.path.exists(addon_path + 'art/poster/'):
+        os.makedirs(addon_path + 'art/poster/')
+    if not os.path.exists(addon_path + '/api_cache/'):
+        os.makedirs(addon_path + '/api_cache/')
 
 
 def _get_information(self, game_name):
@@ -49,6 +50,13 @@ def _get_information(self, game_name):
         return Game(game_name, None)
 
     omdb_response = json.load(urllib2.urlopen(self.omdb.api_url % game_name))
+    cover_path = self.cover_path + game_name + '/'
+    fanart_path = self.fanart_path + game_name + '/'
+
+    if not os.path.exists(cover_path):
+        os.makedirs(cover_path)
+    if not os.path.exists(fanart_path):
+        os.makedirs(fanart_path)
 
     if omdb_response['Response'] == 'False':
         file_path = self.tgdb.api_cache + game_name + '.xml'
@@ -59,23 +67,31 @@ def _get_information(self, game_name):
         omdb_response = _parse_xml(root)
 
         full_img_url = omdb_response['Poster']
-        full_img_path = self.img_path + os.path.basename(full_img_url)
+        full_img_path = cover_path + os.path.basename(full_img_url)
 
     else:
-        if omdb_response['Poster'] == 'N/A':
-            file_path = self.tgdb.api_cache + game_name + '.xml'
-            _cache_tgdb_response_data(self, file_path, game_name)
+        file_path = self.tgdb.api_cache + game_name + '.xml'
+        _cache_tgdb_response_data(self, file_path, game_name)
 
-            root = ET.ElementTree(file=file_path).getroot()
+        root = ET.ElementTree(file=file_path).getroot()
+        if omdb_response['Poster'] == 'N/A':
 
             full_img_url = _build_image_path(_get_img_base_url(root), _get_image(root))
-            full_img_path = self.img_path + os.path.basename(full_img_url)
+            full_img_path = cover_path + os.path.basename(full_img_url)
         else:
             full_img_url = omdb_response['Poster']
-            full_img_path = self.img_path + os.path.basename(full_img_url)
+            full_img_path = cover_path + os.path.basename(full_img_url)
 
     _dump_image(full_img_path, full_img_url)
     omdb_response['Poster'] = full_img_path
+
+    fanarts = _get_fanart(root)
+    local_arts = []
+    for art in fanarts:
+        _dump_image(fanart_path + os.path.basename(art), art)
+        local_arts.append(fanart_path + os.path.basename(art))
+
+    omdb_response['Fanarts'] = local_arts
 
     return Game(game_name, omdb_response)
 
@@ -101,6 +117,23 @@ def _get_image(r):
             for b in i.find('Images'):
                 if b.get('side') == 'front':
                     return b.text
+    return None
+
+
+def _get_fanart(r):
+    """
+
+    :rtype: list
+    """
+    fanarts = []
+    base_url = r.find('baseImgUrl').text
+    for i in r.findall('Game'):
+        if i.find('Platform').text == 'PC':
+            for image in i.find('Images'):
+                if image.tag == 'fanart':
+                    fanarts.append(base_url + image.find('original').text)
+            return fanarts
+
     return None
 
 

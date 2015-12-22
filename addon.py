@@ -202,6 +202,9 @@ def reset_cache():
         if os.path.exists(addon_path + '/api_cache'):
             shutil.rmtree(addon_path + '/api_cache', ignore_errors=True)
             log('Deleted api cache on user request')
+        if os.path.exists(addon_path + 'art'):
+            shutil.rmtree(addon_path + 'art', ignore_errors=True)
+            log('Deleted new art folder on user request.')
         xbmcgui.Dialog().ok(
                 _('name'),
                 'Deleted cache.'
@@ -228,6 +231,7 @@ def show_games():
             )
         ]
 
+    plugin.set_content('movies')
     games = plugin.get_storage('game_storage')
 
     if len(games.raw_dict()) == 0:
@@ -236,24 +240,28 @@ def show_games():
     items = []
     for i, game_name in enumerate(games):
         game = games.get(game_name)
-        li = xbmcgui.ListItem()
-        li.setLabel(game.name)
-        li.setIconImage(game.thumb)
-        info = {
+        items.append({
+            'label': game.name,
+            'icon': game.thumb,
+            'thumbnail': game.thumb,
+            'info': {
                 'originaltitle': game.name,
                 'year': game.year,
                 'plot': game.plot,
                 'genre': game.genre,
-            }
-        li.setInfo('video', info)
-        li.setArt({'thumb': game.thumb, 'fanart': game.thumb})
-        li.addContextMenuItems(context_menu())
-        li.setPath(plugin.url_for(
+            },
+            'replace_context_menu': True,
+            'context_menu': context_menu(),
+            'path': plugin.url_for(
                     endpoint='launch_game',
                     game_id=game.name
-            ))
-        items.append(li)
-    return plugin.finish(items)
+            ),
+            'properties': {
+                'fanart_image': game.fanarts[0]
+            }
+        })
+
+    return plugin.finish(items, sort_methods=['label'])
 
 
 @plugin.route('/games/all/refresh')

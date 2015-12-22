@@ -4,11 +4,13 @@ import stat
 import subprocess
 import threading
 
-from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon, ListItem
+from resources.lib.model.game import Game
+from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
-from resources.lib.scraper import ScraperCollection
-from resources.lib.game import Game
+from resources.lib.scraperchain import ScraperChain
+from resources.lib.scraper.omdbscraper import OmdbScraper
+from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 STRINGS = {
     'name': 30000,
@@ -306,13 +308,17 @@ def get_games():
     cache = game_storage.raw_dict()
     game_storage.clear()
 
-    scraper = ScraperCollection(addon_path)
-
     for game_name in game_list:
+
         if plugin.get_setting('disable_scraper', bool):
             log('Scraper have been disabled, just adding game names to list.')
             game_storage[game_name] = Game(game_name, None)
+
         else:
+            scraper = ScraperChain()
+            scraper.append_scraper(OmdbScraper(addon_path))
+            scraper.append_scraper(TgdbScraper(addon_path))
+
             if cache.has_key(game_name):
                 if not game_storage.get(game_name):
                     game_storage[game_name] = cache.get(game_name)

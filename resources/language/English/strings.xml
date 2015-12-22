@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-  <!-- Plugin name -->
-  <string id="30000">Luna</string>
-  <!-- Settings -->
-  <string id="30001">Streaming Options</string>
-  <string id="30002">Host IP</string>
-  <string id="30003">Framerate</string>
-  <string id="30004">Resolution</string>
-  <string id="30005">Enable Custom Resolution</string>
-  <string id="30006">Horizontal Resolution</string>
-  <string id="30007">Vertical Resolution</string>
-  <string id="30008">Pair Host</string>
-  <string id="30009">Advanced Settings</string>
-  <string id="30010">Enable Custom Bitrate</string>
-  <string id="30011">Bitrate (Mbps)</string>
-  <string id="30012">Packetsize (bytes)</string>
-  <string id="30013">Enable Remote Connection Opimizations</string>
-  <string id="30014">Enable GFE Graphics Optimization</string>
-  <string id="30015">Play Audio on Host</string>
-  <string id="30016">Input Settings</string>
-  <string id="30017">Enable Custom Input</string>
-  <string id="30018">Input Map</string>
-  <string id="30019">Input Device</string>
-  <string id="30020">Create Map for Above Device</string>
-  <string id="30021">Cache Control</string>
-  <string id="30022">Remove Game Cache</string>
-  <string id="30023">Override Default Resolution</string>
-  <string id="30024">Disable Experimental Scraper Feature</string>
-  <!-- Context Menu -->
-  <string id="30100">Addon Settings</string>
-  <string id="30101">Full Refresh</string>
-  <!-- Dialogs -->
-  <string id="30200">Choose Controller Type</string>
-  <string id="30201">Enter Filename for Controller Map</string>
-  <string id="30202">Preparing to start mapping ...</string>
-  <string id="30203">Mapping Successful</string>
-  <string id="30204">Do you want to set the newly created mapping as active?</string>
-  <string id="30205">Something went wrong, please try again.</string>
-  <string id="30206">Failed to pair to server: Already paired</string>
-  <string id="30207">Please configure the addon first.</string>
+    <!-- Plugin name -->
+    <string id="30000">Luna</string>
+    <!-- Settings -->
+    <string id="30001">Streaming Options</string>
+    <string id="30002">Host IP</string>
+    <string id="30003">Framerate</string>
+    <string id="30004">Resolution</string>
+    <string id="30005">Enable Custom Resolution</string>
+    <string id="30006">Horizontal Resolution</string>
+    <string id="30007">Vertical Resolution</string>
+    <string id="30008">Pair Host</string>
+    <string id="30009">Advanced Settings</string>
+    <string id="30010">Enable Custom Bitrate</string>
+    <string id="30011">Bitrate (Mbps)</string>
+    <string id="30012">Packetsize (bytes)</string>
+    <string id="30013">Enable Remote Connection Opimizations</string>
+    <string id="30014">Enable GFE Graphics Optimization</string>
+    <string id="30015">Play Audio on Host</string>
+    <string id="30016">Input Settings</string>
+    <string id="30017">Enable Custom Input</string>
+    <string id="30018">Input Map</string>
+    <string id="30019">Input Device</string>
+    <string id="30020">Create Map for Above Device</string>
+    <string id="30021">Cache Control</string>
+    <string id="30022">Remove Game Cache</string>
+    <string id="30023">Override Default Resolution</string>
+    <string id="30024">Disable Experimental Scraper Feature</string>
+    <!-- Context Menu -->
+    <string id="30100">Addon Settings</string>
+    <string id="30101">Full Refresh</string>
+    <!-- Dialogs -->
+    <string id="30200">Choose Controller Type</string>
+    <string id="30201">Enter Filename for Controller Map</string>
+    <string id="30202">Preparing to start mapping ...</string>
+    <string id="30203">Mapping Successful</string>
+    <string id="30204">Do you want to set the newly created mapping as active?</string>
+    <string id="30205">Something went wrong, please try again.</string>
+    <string id="30206">Failed to pair to server: Already paired</string>
+    <string id="30207">Please configure the addon first.</string>
+    <string id="30208">This will remove all cached game information and clear the game storage. Next time you're going to visit the game view it will take some time until all information is available again. Are you sure you want to do this?</string>
 </strings>

@@ -6,6 +6,9 @@ import xml.etree.ElementTree as ET
 
 from game import Game
 
+from scraper.tgdbscraper import TgdbScraper
+from scraper.omdbscraper import OmdbScraper
+
 
 class ScraperCollection:
     def __init__(self, addon_path):

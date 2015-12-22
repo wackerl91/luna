@@ -13,17 +13,17 @@ from resources.lib.scraper.omdbscraper import OmdbScraper
 from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 STRINGS = {
-    'name': 30000,
-    'addon_settings': 30100,
-    'full_refresh': 30101,
-    'choose_ctrl_type': 30200,
-    'enter_filename': 30201,
-    'starting_mapping': 30202,
-    'mapping_success': 30203,
-    'set_mapping_active': 30204,
-    'mapping_failure': 30205,
+    'name':                30000,
+    'addon_settings':      30100,
+    'full_refresh':        30101,
+    'choose_ctrl_type':    30200,
+    'enter_filename':      30201,
+    'starting_mapping':    30202,
+    'mapping_success':     30203,
+    'set_mapping_active':  30204,
+    'mapping_failure':     30205,
     'pair_failure_paired': 30206,
-    'configure_first': 30207,
+    'configure_first':     30207,
     'reset_cache_warning': 30208
 }
 
@@ -243,14 +243,14 @@ def show_games():
     for i, game_name in enumerate(games):
         game = games.get(game_name)
         items.append({
-            'label': game.name,
-            'icon': game.thumb,
+            'label':     game.name,
+            'icon':      game.thumb,
             'thumbnail': game.thumb,
             'info': {
-                'originaltitle': game.name,
-                'year': game.year,
-                'plot': game.plot,
+                'year':  game.year,
+                'plot':  game.plot,
                 'genre': game.genre,
+                'originaltitle': game.name,
             },
             'replace_context_menu': True,
             'context_menu': context_menu(),
@@ -320,7 +320,7 @@ def get_games():
             scraper.append_scraper(TgdbScraper(addon_path))
             scraper.query_game_information(game_name)
 
-            if cache.has_key(game_name):
+            if game_name in cache:
                 if not game_storage.get(game_name):
                     game_storage[game_name] = cache.get(game_name)
             else:

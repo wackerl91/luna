@@ -4,24 +4,26 @@ import stat
 import subprocess
 import threading
 
-from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon, ListItem
+from resources.lib.model.game import Game
+from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
-from resources.lib.scraper import ScraperCollection
-from resources.lib.game import Game
+from resources.lib.scraperchain import ScraperChain
+from resources.lib.scraper.omdbscraper import OmdbScraper
+from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 STRINGS = {
-    'name': 30000,
-    'addon_settings': 30100,
-    'full_refresh': 30101,
-    'choose_ctrl_type': 30200,
-    'enter_filename': 30201,
-    'starting_mapping': 30202,
-    'mapping_success': 30203,
-    'set_mapping_active': 30204,
-    'mapping_failure': 30205,
+    'name':                30000,
+    'addon_settings':      30100,
+    'full_refresh':        30101,
+    'choose_ctrl_type':    30200,
+    'enter_filename':      30201,
+    'starting_mapping':    30202,
+    'mapping_success':     30203,
+    'set_mapping_active':  30204,
+    'mapping_failure':     30205,
     'pair_failure_paired': 30206,
-    'configure_first': 30207,
+    'configure_first':     30207,
     'reset_cache_warning': 30208
 }
 
@@ -241,14 +243,14 @@ def show_games():
     for i, game_name in enumerate(games):
         game = games.get(game_name)
         items.append({
-            'label': game.name,
-            'icon': game.thumb,
+            'label':     game.name,
+            'icon':      game.thumb,
             'thumbnail': game.thumb,
             'info': {
-                'originaltitle': game.name,
-                'year': game.year,
-                'plot': game.plot,
+                'year':  game.year,
+                'plot':  game.plot,
                 'genre': game.genre,
+                'originaltitle': game.name,
             },
             'replace_context_menu': True,
             'context_menu': context_menu(),
@@ -306,14 +308,18 @@ def get_games():
     cache = game_storage.raw_dict()
     game_storage.clear()
 
-    scraper = ScraperCollection(addon_path)
-
     for game_name in game_list:
+
         if plugin.get_setting('disable_scraper', bool):
             log('Scraper have been disabled, just adding game names to list.')
             game_storage[game_name] = Game(game_name, None)
+
         else:
-            if cache.has_key(game_name):
+            scraper = ScraperChain()
+            scraper.append_scraper(OmdbScraper(addon_path))
+            scraper.append_scraper(TgdbScraper(addon_path))
+
+            if game_name in cache:
                 if not game_storage.get(game_name):
                     game_storage[game_name] = cache.get(game_name)
             else:

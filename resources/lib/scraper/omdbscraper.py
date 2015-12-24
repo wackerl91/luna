@@ -22,23 +22,28 @@ class OmdbScraper(AbstractScraper):
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
+        game_cache_path = self._set_up_path(os.path.join(self.api_cache, game))
 
-        raw_json = open(self._get_json_data(game)).read()
+        raw_json = open(self._get_json_data(game_cache_path, game))
         json_data = json.load(raw_json)
         if json_data['Response'] != 'False':
             cover_path = self._dump_image(game_cover_path, json_data['Poster'])
             json_data['Poster'] = cover_path
-            # TODO: Response doesn't match game construct
-            return json_data
+            response = dict((k.lower(), v) for k, v in json_data.iteritems())
+            if 'genre' in response:
+                response['genre'] = response.get('genre').split(',')
+                response['genre'] = [str(v).strip() for v in response.get('genre')]
+
+            return response
         else:
 
             return None
 
-    def _get_json_data(self, game):
-        file_path = os.path.join(self.api_cache, game, '.json')
+    def _get_json_data(self, path, game):
+        file_path = os.path.join(path, game+'.json')
         if not os.path.exists(file_path):
             json_response = json.load(urllib2.urlopen(self.api_url % game))
             with open(file_path, 'w') as response_file:
-                response_file.write(json_response)
+                json.dump(json_response, response_file)
 
         return file_path

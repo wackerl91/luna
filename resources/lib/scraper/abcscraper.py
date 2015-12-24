@@ -4,7 +4,9 @@ import subprocess
 from abc import ABCMeta, abstractmethod
 
 
-class AbstractScraper(metaclass=ABCMeta):
+class AbstractScraper:
+    __metaclass__ = ABCMeta
+
     def __init__(self, addon_path):
         self.base_path = addon_path
 

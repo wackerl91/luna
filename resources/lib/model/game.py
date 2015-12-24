@@ -1,20 +1,15 @@
 class Game:
-    def __init__(self, name, year=None, genre=None, plot=None, cover=None, fanarts=None):
+    def __init__(self, name, year=None, genre=None, plot=None, poster=None, fanart=None):
         self.name = name
-        if year is not None:
-            self.year = year
-        if genre is not None:
-            self.genre = genre
-        if plot is not None:
-            self.plot = plot
-        if cover is not None:
-            self.cover = cover
-        if fanarts is not None:
-            self.fanarts = fanarts
+        self.year = year
+        self.genre = genre
+        self.plot = plot
+        self.poster = poster
+        self.fanart = fanart
 
     @classmethod
-    def from_dict(cls, name=None, year=None, genre=None, plot=None, cover=None, fanarts=None):
-        game = cls(name, year, genre, plot, cover, fanarts)
+    def from_dict(cls, name=None, year=None, genre=None, plot=None, poster=None, fanart=None, **kwargs):
+        game = cls(name, year, genre, plot, poster, fanart)
 
         return game
 
@@ -26,19 +21,19 @@ class Game:
             self.year = other.year
 
         if self.genre is None:
-            self.genre = other.genre
+            self.genre = sorted(other.genre, key=str.lower)
         elif other.genre is not None:
-            self.genre = list(set(self.genre) | set(other.genre))
+            self.genre = sorted(list(set(self.genre) | set(other.genre)), key=str.lower)
 
         if self.plot is None:
             self.plot = other.plot
-        if len(other.plot) > len(self.plot):
+        elif len(other.plot) > len(self.plot):
             self.plot = other.plot
 
-        if self.cover is None:
-            self.cover = other.cover
+        if self.poster is None:
+            self.poster = other.poster
 
-        if self.fanarts is None:
-            self.fanarts = other.fanarts
-        elif other.fanarts is not None:
-            self.fanarts = list(set(self.fanarts) | set(other.fanarts))
+        if self.fanart is None:
+            self.fanart = other.fanart
+        elif other.fanart is not None:
+            self.fanart = list(set(self.fanart) | set(other.fanart))

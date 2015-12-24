@@ -352,26 +352,27 @@ def configure_helper(config, binary_path):
     :param config: ConfigHelper
     :param binary_path: string
     """
-    config.configure(
-            addon_path,
-            binary_path,
-            plugin.get_setting('host', unicode),
-            plugin.get_setting('enable_custom_resolution', bool),
-            plugin.get_setting('resolution_width', str),
-            plugin.get_setting('resolution_height', str),
-            plugin.get_setting('resolution', str),
-            plugin.get_setting('framerate', str),
-            plugin.get_setting('graphic_optimizations', bool),
-            plugin.get_setting('remote_optimizations', bool),
-            plugin.get_setting('local_audio', bool),
-            plugin.get_setting('enable_custom_bitrate', bool),
-            plugin.get_setting('bitrate', int),
-            plugin.get_setting('packetsize', int),
-            plugin.get_setting('enable_custom_input', bool),
-            plugin.get_setting('input_map', str),
-            plugin.get_setting('input_device', str),
-            plugin.get_setting('override_default_resolution', bool)
-    )
+    settings = {
+        'addon_path':                   addon_path,
+        'binary_path':                  binary_path,
+        'host_ip':                      plugin.get_setting('host', unicode),
+        'enable_custom_res':            plugin.get_setting('enable_custom_res', bool),
+        'resolution_width':             plugin.get_setting('resolution_width', str),
+        'resolution_height':            plugin.get_setting('resolution_height', str),
+        'resolution':                   plugin.get_setting('resolution', str),
+        'framerate':                    plugin.get_setting('framerate', str),
+        'graphics_optimizations':       plugin.get_setting('graphic_optimizations', bool),
+        'remote_optimizations':         plugin.get_setting('remote_optimizations', bool),
+        'local_audio':                  plugin.get_setting('local_audio', bool),
+        'enable_custom_bitrate':        plugin.get_setting('enable_custom_bitrate', bool),
+        'bitrate':                      plugin.get_setting('bitrate', int),
+        'packetsize':                   plugin.get_setting('packetsize', int),
+        'enable_custom_input':          plugin.get_setting('enable_custom_input', bool),
+        'input_map':                    plugin.get_setting('input_map', str),
+        'input_device':                 plugin.get_setting('input_device', str),
+        'override_default_resolution':  plugin.get_setting('override_default_resolution', bool)
+    }
+    config.configure(settings)
 
     config.dump_conf()
 

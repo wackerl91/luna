@@ -4,24 +4,27 @@ import stat
 import subprocess
 import threading
 
+from resources.lib.model.game import Game
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
 
 from resources.lib.confighelper import ConfigHelper
-from resources.lib.scraper import ScraperCollection
-from resources.lib.game import Game
+from resources.lib.scraperchain import ScraperChain
+from resources.lib.scraper.omdbscraper import OmdbScraper
+from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 STRINGS = {
-    'name': 30000,
-    'addon_settings': 30100,
-    'full_refresh': 30101,
-    'choose_ctrl_type': 30200,
-    'enter_filename': 30201,
-    'starting_mapping': 30202,
-    'mapping_success': 30203,
-    'set_mapping_active': 30204,
-    'mapping_failure': 30205,
+    'name':                30000,
+    'addon_settings':      30100,
+    'full_refresh':        30101,
+    'choose_ctrl_type':    30200,
+    'enter_filename':      30201,
+    'starting_mapping':    30202,
+    'mapping_success':     30203,
+    'set_mapping_active':  30204,
+    'mapping_failure':     30205,
     'pair_failure_paired': 30206,
-    'configure_first': 30207
+    'configure_first':     30207,
+    'reset_cache_warning': 30208
 }
 
 plugin = Plugin()
@@ -191,9 +194,7 @@ def pair_host():
 def reset_cache():
     confirmed = xbmcgui.Dialog().yesno(
             _('name'),
-            'This will remove all cached game information and clear the game storage. Next time you\'re going to ' +
-            'visit the game view it will take some time until all information is available again. ' +
-            'Are you sure you want to do this?'
+            _('reset_cache_warning')
     )
     if confirmed:
         plugin.get_storage('game_storage').clear()
@@ -203,6 +204,9 @@ def reset_cache():
         if os.path.exists(addon_path + '/api_cache'):
             shutil.rmtree(addon_path + '/api_cache', ignore_errors=True)
             log('Deleted api cache on user request')
+        if os.path.exists(addon_path + 'art'):
+            shutil.rmtree(addon_path + 'art', ignore_errors=True)
+            log('Deleted new art folder on user request.')
         xbmcgui.Dialog().ok(
                 _('name'),
                 'Deleted cache.'
@@ -229,6 +233,7 @@ def show_games():
             )
         ]
 
+    plugin.set_content('movies')
     games = plugin.get_storage('game_storage')
 
     if len(games.raw_dict()) == 0:
@@ -238,23 +243,27 @@ def show_games():
     for i, game_name in enumerate(games):
         game = games.get(game_name)
         items.append({
-            'label': game.name,
-            'icon': game.thumb,
+            'label':     game.name,
+            'icon':      game.thumb,
             'thumbnail': game.thumb,
             'info': {
-                'originaltitle': game.name,
-                'year': game.year,
-                'plot': game.plot,
+                'year':  game.year,
+                'plot':  game.plot,
                 'genre': game.genre,
+                'originaltitle': game.name,
             },
             'replace_context_menu': True,
             'context_menu': context_menu(),
             'path': plugin.url_for(
                     endpoint='launch_game',
                     game_id=game.name
-            )
+            ),
+            'properties': {
+                'fanart_image': game.fanarts[0]
+            }
         })
-    return plugin.finish(items)
+
+    return plugin.finish(items, sort_methods=['label'])
 
 
 @plugin.route('/games/all/refresh')
@@ -299,14 +308,18 @@ def get_games():
     cache = game_storage.raw_dict()
     game_storage.clear()
 
-    scraper = ScraperCollection(addon_path)
-
     for game_name in game_list:
+
         if plugin.get_setting('disable_scraper', bool):
             log('Scraper have been disabled, just adding game names to list.')
             game_storage[game_name] = Game(game_name, None)
+
         else:
-            if cache.has_key(game_name):
+            scraper = ScraperChain()
+            scraper.append_scraper(OmdbScraper(addon_path))
+            scraper.append_scraper(TgdbScraper(addon_path))
+
+            if game_name in cache:
                 if not game_storage.get(game_name):
                     game_storage[game_name] = cache.get(game_name)
             else:
@@ -339,26 +352,27 @@ def configure_helper(config, binary_path):
     :param config: ConfigHelper
     :param binary_path: string
     """
-    config.configure(
-            addon_path,
-            binary_path,
-            plugin.get_setting('host', unicode),
-            plugin.get_setting('enable_custom_resolution', bool),
-            plugin.get_setting('resolution_width', str),
-            plugin.get_setting('resolution_height', str),
-            plugin.get_setting('resolution', str),
-            plugin.get_setting('framerate', str),
-            plugin.get_setting('graphic_optimizations', bool),
-            plugin.get_setting('remote_optimizations', bool),
-            plugin.get_setting('local_audio', bool),
-            plugin.get_setting('enable_custom_bitrate', bool),
-            plugin.get_setting('bitrate', int),
-            plugin.get_setting('packetsize', int),
-            plugin.get_setting('enable_custom_input', bool),
-            plugin.get_setting('input_map', str),
-            plugin.get_setting('input_device', str),
-            plugin.get_setting('override_default_resolution', bool)
-    )
+    settings = {
+        'addon_path':                   addon_path,
+        'binary_path':                  binary_path,
+        'host_ip':                      plugin.get_setting('host', unicode),
+        'enable_custom_res':            plugin.get_setting('enable_custom_res', bool),
+        'resolution_width':             plugin.get_setting('resolution_width', str),
+        'resolution_height':            plugin.get_setting('resolution_height', str),
+        'resolution':                   plugin.get_setting('resolution', str),
+        'framerate':                    plugin.get_setting('framerate', str),
+        'graphics_optimizations':       plugin.get_setting('graphic_optimizations', bool),
+        'remote_optimizations':         plugin.get_setting('remote_optimizations', bool),
+        'local_audio':                  plugin.get_setting('local_audio', bool),
+        'enable_custom_bitrate':        plugin.get_setting('enable_custom_bitrate', bool),
+        'bitrate':                      plugin.get_setting('bitrate', int),
+        'packetsize':                   plugin.get_setting('packetsize', int),
+        'enable_custom_input':          plugin.get_setting('enable_custom_input', bool),
+        'input_map':                    plugin.get_setting('input_map', str),
+        'input_device':                 plugin.get_setting('input_device', str),
+        'override_default_resolution':  plugin.get_setting('override_default_resolution', bool)
+    }
+    config.configure(settings)
 
     config.dump_conf()
 

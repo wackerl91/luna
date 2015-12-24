@@ -73,32 +73,12 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.addon_path, conf])
 
-    def configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
-                  resolution_height=None, resolution=None,
-                  framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
-                  enable_custom_bitrate=False, bitrate=None, packetsize=None,
-                  enable_custom_input=False, input_map=None, input_device=None, override_default_resolution=False):
+    def configure(self, settings_dict):
 
-        self._configure(
-                addon_path,
-                binary_path,
-                host_ip,
-                enable_custom_res,
-                resolution_width,
-                resolution_height,
-                resolution,
-                framerate,
-                graphics_optimizations,
-                remote_optimizations,
-                local_audio,
-                enable_custom_bitrate,
-                bitrate,
-                packetsize,
-                enable_custom_input,
-                input_map,
-                input_device,
-                override_default_resolution
-        )
+        """
+        :type settings_dict: dict
+        """
+        self._configure(**settings_dict)
 
     def dump_conf(self):
         """

@@ -15,8 +15,10 @@ class OmdbScraper(AbstractScraper):
 
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
+        response = self._gather_information(request_name)
+        response['name'] = game_name
         # TODO: This should return an instance of a specific response object
-        return self._gather_information(request_name)
+        return response
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
@@ -26,7 +28,7 @@ class OmdbScraper(AbstractScraper):
         if json_data['Response'] != 'False':
             cover_path = self._dump_image(game_cover_path, json_data['Poster'])
             json_data['Poster'] = cover_path
-
+            # TODO: Response doesn't match game construct
             return json_data
         else:
 

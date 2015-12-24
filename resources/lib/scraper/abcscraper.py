@@ -13,7 +13,7 @@ class AbstractScraper(metaclass=ABCMeta):
         """
         Queries game information from API and returns it as a dict
         :type game_name: str
-        :rtype: object
+        :rtype: dict
         """
         pass
 

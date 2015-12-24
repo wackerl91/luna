@@ -318,7 +318,6 @@ def get_games():
             scraper = ScraperChain()
             scraper.append_scraper(OmdbScraper(addon_path))
             scraper.append_scraper(TgdbScraper(addon_path))
-            scraper.query_game_information(game_name)
 
             if game_name in cache:
                 if not game_storage.get(game_name):

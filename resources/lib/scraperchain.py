@@ -1,3 +1,4 @@
+from resources.lib.model.game import Game
 from scraper.abcscraper import AbstractScraper
 
 
@@ -6,11 +7,20 @@ class ScraperChain:
         self.scraper_chain = []
 
     def query_game_information(self, game_name):
+        """
+        :type game_name: str
+        :rtype game: Game
+        """
         game_info = []
         for scraper in self.scraper_chain:
-            game_info.append(scraper.get_game_information(game_name))
+            game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
 
-        return game_info
+        game = game_info[0]
+        while len(game_info) > 1:
+            next_game = game_info.pop()
+            game.merge(next_game)
+
+        return game
 
     def append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):

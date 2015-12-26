@@ -4,13 +4,13 @@ import stat
 import subprocess
 import threading
 
-from resources.lib.model.game import Game
 from xbmcswift2 import Plugin, xbmcgui, xbmc, xbmcaddon
+
+from resources.lib.model.game import Game
+from resources.lib.moonlighthelper import MoonlightHelper
 
 from resources.lib.confighelper import ConfigHelper
 from resources.lib.scraperchain import ScraperChain
-from resources.lib.scraper.omdbscraper import OmdbScraper
-from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 STRINGS = {
     'name':                30000,
@@ -29,6 +29,7 @@ STRINGS = {
 
 plugin = Plugin()
 Config = ConfigHelper()
+MoonlightHelper = MoonlightHelper(Config)
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -49,6 +50,7 @@ def index():
                 endpoint='open_settings'
         )
     }]
+
     return plugin.finish(items)
 
 
@@ -274,7 +276,7 @@ def do_full_refresh():
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     log('Launching game %s' % game_id)
-    configure_helper(Config, Config.get_binary())
+    Config.configure()
     log('Reconfigured helper and dumped conf to disk.')
     subprocess.call([addon_internal_path + '/resources/lib/launch-helper-osmc.sh',
                      addon_internal_path + '/resources/lib/launch.sh',
@@ -291,7 +293,7 @@ def loop_lines(dialog, iterator):
 
 def get_games():
     game_list = []
-    configure_helper(Config, Config.get_binary())
+    Config.configure()
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
 
     while True:
@@ -331,52 +333,6 @@ def get_games():
     game_storage.sync()
 
 
-def get_binary():
-    binary_locations = [
-        '/usr/bin/moonlight',
-        '/usr/local/bin/moonlight'
-    ]
-
-    for f in binary_locations:
-        if os.path.isfile(f):
-            return f
-
-    return None
-
-
-def configure_helper(config, binary_path):
-    """
-
-    :param config: ConfigHelper
-    :param binary_path: string
-    """
-    settings = {
-        'addon_path':                   addon_path,
-        'binary_path':                  binary_path,
-        'host_ip':                      plugin.get_setting('host', unicode),
-        'enable_custom_res':            plugin.get_setting('enable_custom_res', bool),
-        'resolution_width':             plugin.get_setting('resolution_width', str),
-        'resolution_height':            plugin.get_setting('resolution_height', str),
-        'resolution':                   plugin.get_setting('resolution', str),
-        'framerate':                    plugin.get_setting('framerate', str),
-        'graphics_optimizations':       plugin.get_setting('graphic_optimizations', bool),
-        'remote_optimizations':         plugin.get_setting('remote_optimizations', bool),
-        'local_audio':                  plugin.get_setting('local_audio', bool),
-        'enable_custom_bitrate':        plugin.get_setting('enable_custom_bitrate', bool),
-        'bitrate':                      plugin.get_setting('bitrate', int),
-        'packetsize':                   plugin.get_setting('packetsize', int),
-        'enable_custom_input':          plugin.get_setting('enable_custom_input', bool),
-        'input_map':                    plugin.get_setting('input_map', str),
-        'input_device':                 plugin.get_setting('input_device', str),
-        'override_default_resolution':  plugin.get_setting('override_default_resolution', bool)
-    }
-    config.configure(settings)
-
-    config.dump_conf()
-
-    return True
-
-
 def check_script_permissions():
     st = os.stat(addon_internal_path + '/resources/lib/launch.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
@@ -409,9 +365,9 @@ def _(string_id):
 if __name__ == '__main__':
     log('Launching Luna')
     check_script_permissions()
-    if plugin.get_setting('host', unicode) and get_binary():
-        if configure_helper(Config, get_binary()):
-            plugin.run()
+    if plugin.get_setting('host', unicode):
+        Config.configure()
+        plugin.run()
     else:
         xbmcgui.Dialog().ok(
                 _('name'),

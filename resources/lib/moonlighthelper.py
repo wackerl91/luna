@@ -4,7 +4,7 @@ import threading
 
 from xbmcswift2 import Plugin, xbmc, xbmcaddon
 
-from resources.lib.confighelper import ConfigHelper
+from addon import container as plugin_container
 
 
 def loop_lines(dialog, iterator):
@@ -17,11 +17,8 @@ def loop_lines(dialog, iterator):
 
 
 class MoonlightHelper:
-    def __init__(self, helper):
-        """
-        :type helper: ConfigHelper
-        """
-        self.config_helper = helper
+    def __init__(self):
+        self.config_helper = plugin_container.get_config_helper()
         self.plugin = Plugin('script.luna')
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
 

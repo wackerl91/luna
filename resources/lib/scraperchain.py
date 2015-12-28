@@ -1,7 +1,6 @@
 import os
 import shutil
 
-import core.corefunctions as core
 
 from xbmcswift2 import Plugin
 
@@ -35,14 +34,17 @@ class ScraperChain:
         return game
 
     def reset_cache(self):
-        unique_paths = []
+        self.plugin.get_storage('game_storage').clear()
+
+        paths = []
         for scraper in self.scraper_chain:
-            unique_paths.append(scraper.return_paths())
-        for path in set(unique_paths):
-            self.plugin.get_storage('game_storage').clear()
+            for path in scraper.return_paths():
+                paths.append(path)
+        unique_paths = set(paths)
+
+        for path in unique_paths:
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-                core.Logger.info('Deleted folder %s on user request' % path)
 
     def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):

@@ -1,5 +1,7 @@
 import resources.lib.core.corefunctions as core
 
+from addon import container as plugin_container
+
 from resources.lib.model.game import Game
 from resources.lib.scraperchain import ScraperChain
 
@@ -8,13 +10,13 @@ def get_games():
     """
     Fills local game storage with scraper results (if enabled) or game names (if scrapers are disabled)
     """
-    game_list = core.get_moonlight().list_games()
+    game_list = plugin_container.get_moonlight_helper().list_games()
     storage = core.get_storage()
     cache = storage.raw_dict()
     storage.clear()
 
     for game_name in game_list:
-        if core.get_plugin().get_setting('disable_scraper', bool):
+        if plugin_container.get_plugin().get_setting('disable_scraper', bool):
             core.Logger.info('Scraper have been disabled, just adding game names to list.')
             storage[game_name] = Game(game_name, None)
         else:
@@ -43,19 +45,19 @@ def get_games_as_list():
     context_menu = [
         (
             core.string('addon_settings'),
-            'XBMC.RunPlugin(%s)' % core.get_plugin().url_for(
+            'XBMC.RunPlugin(%s)' % plugin_container.get_plugin().url_for(
                     endpoint='open_settings'
             )
         ),
         (
             core.string('full_refresh'),
-            'XBMC.RunPlugin(%s)' % core.get_plugin().url_for(
+            'XBMC.RunPlugin(%s)' % plugin_container.get_plugin().url_for(
                     endpoint='do_full_refresh'
             )
         )
     ]
 
-    core.get_plugin().set_content('movies')
+    plugin_container.get_plugin().set_content('movies')
     storage = core.get_storage()
 
     if len(storage.raw_dict()) == 0:
@@ -75,7 +77,7 @@ def get_games_as_list():
             },
             'replace_context_menu': True,
             'context_menu': context_menu,
-            'path': core.get_plugin().url_for(
+            'path': plugin_container.get_plugin().url_for(
                     endpoint='launch_game',
                     game_id=game.name
             ),

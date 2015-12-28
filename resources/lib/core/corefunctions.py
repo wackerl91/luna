@@ -1,11 +1,9 @@
 import os
 import stat
 
-from xbmcswift2 import Plugin, xbmcaddon
+from xbmcswift2 import xbmcaddon
 
-from resources.lib.moonlighthelper import MoonlightHelper
-
-from resources.lib.confighelper import ConfigHelper
+from addon import container as plugin_container
 
 STRINGS = {
     'name':                30000,
@@ -22,16 +20,12 @@ STRINGS = {
     'reset_cache_warning': 30208
 }
 
-plugin = Plugin('script.luna')
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
-
-Config = ConfigHelper()
-MLHelper = MoonlightHelper(Config)
 
 
 def string(string_id):
     if string_id in STRINGS:
-        return plugin.get_string(STRINGS[string_id]).encode('utf-8')
+        return plugin_container.get_plugin().get_string(STRINGS[string_id]).encode('utf-8')
     else:
         return string_id
 
@@ -54,15 +48,7 @@ def check_script_permissions():
 
 
 def get_storage():
-    return plugin.get_storage('game_storage')
-
-
-def get_moonlight():
-    return MLHelper
-
-
-def get_plugin():
-    return plugin
+    return plugin_container.get_plugin().get_storage('game_storage')
 
 
 class Logger:
@@ -71,12 +57,12 @@ class Logger:
 
     @staticmethod
     def info(text):
-        plugin.log.info(text)
+        plugin_container.get_plugin().log.info(text)
 
     @staticmethod
     def debug(text):
-        plugin.log.debug(text)
+        plugin_container.get_plugin().log.debug(text)
 
     @staticmethod
     def error(text):
-        plugin.log.error(text)
+        plugin_container.get_plugin().log.error(text)

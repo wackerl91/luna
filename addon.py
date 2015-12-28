@@ -1,19 +1,13 @@
 import os
-
-import resources.lib.core.corefunctions as core
 import resources.lib.controller.gamecontroller as game_controller
+import resources.lib.core.corefunctions as core
 
 from xbmcswift2 import Plugin, xbmcgui, xbmcaddon
-
-from resources.lib.moonlighthelper import MoonlightHelper
-
-from resources.lib.confighelper import ConfigHelper
-from resources.lib.scraperchain import ScraperChain
+from resources.lib.plugincontainer import PluginContainer
 
 
 plugin = Plugin()
-Config = ConfigHelper()
-MLHelper = MoonlightHelper(Config)
+container = PluginContainer(plugin)
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -62,7 +56,7 @@ def create_mapping():
     map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
     # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by config controller
-    success = MLHelper.create_ctrl_map(progress_dialog, map_file)
+    success = container.get_moonlight_helper().create_ctrl_map(progress_dialog, map_file)
 
     if success:
         confirmed = xbmcgui.Dialog().yesno(
@@ -92,7 +86,7 @@ def pair_host():
     )
 
     # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by config controller
-    success = MLHelper.pair_host(pair_dialog)
+    success = container.get_moonlight_helper().pair_host(pair_dialog)
 
     if success:
         xbmcgui.Dialog().ok(
@@ -116,7 +110,7 @@ def reset_cache():
     )
 
     if confirmed:
-        ScraperChain().reset_cache()
+        container.get_scraper_chain().reset_cache()
     else:
         return
 
@@ -135,14 +129,14 @@ def do_full_refresh():
 def launch_game(game_id):
     core.Logger.info('Launching game %s' % game_id)
     # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by game controller
-    MLHelper.launch_game(game_id)
+    container.get_moonlight_helper().launch_game(game_id)
 
 
 if __name__ == '__main__':
     core.Logger.info('Launching Luna')
     core.check_script_permissions()
     if plugin.get_setting('host', unicode):
-        Config.configure()
+        container.get_config_helper().configure()
         plugin.run()
     else:
         xbmcgui.Dialog().ok(

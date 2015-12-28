@@ -9,9 +9,6 @@ from resources.lib.scraperchain import ScraperChain
 class TestScraperChain(unittest.TestCase):
 
     def setUp(self):
-        path = os.path.join(os.path.expanduser('~'), 'LunaTestTemp')
-        if not os.path.exists(path):
-            os.makedirs(path)
         chain = ScraperChain()
         self.chain = chain
 
@@ -28,5 +25,4 @@ class TestScraperChain(unittest.TestCase):
         self.assertEqual(os.path.isfile(game.poster), True)
 
     def tearDown(self):
-        path = os.path.join(os.path.expanduser('~'), 'LunaTestTemp')
-        shutil.rmtree(path, ignore_errors=True)
+        self.chain.reset_cache()

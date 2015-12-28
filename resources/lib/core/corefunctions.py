@@ -3,6 +3,10 @@ import stat
 
 from xbmcswift2 import Plugin, xbmcaddon
 
+from resources.lib.moonlighthelper import MoonlightHelper
+
+from resources.lib.confighelper import ConfigHelper
+
 STRINGS = {
     'name':                30000,
     'addon_settings':      30100,
@@ -20,6 +24,9 @@ STRINGS = {
 
 plugin = Plugin('script.luna')
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
+
+Config = ConfigHelper()
+MLHelper = MoonlightHelper(Config)
 
 
 def string(string_id):
@@ -44,6 +51,18 @@ def check_script_permissions():
     if not bool(st.st_mode & stat.S_IXUSR):
         os.chmod(internal_path + '/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
         Logger.info('Changed file permissions for moonlight-heartbeat')
+
+
+def get_storage():
+    return plugin.get_storage('game_storage')
+
+
+def get_moonlight():
+    return MLHelper
+
+
+def get_plugin():
+    return plugin
 
 
 class Logger:

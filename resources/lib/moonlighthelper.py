@@ -2,6 +2,8 @@ import os
 import subprocess
 import threading
 
+import core.corefunctions as Core
+
 from xbmcswift2 import Plugin, xbmc, xbmcaddon
 from xbmcgui import DialogProgress
 
@@ -123,3 +125,19 @@ class MoonlightHelper:
             game_id,
             self.config_helper.get_config_path()
         ])
+
+    def list_games(self):
+        self.config_helper.configure()
+        game_list = []
+        list_proc = subprocess.Popen([self.config_helper.get_binary(), 'list', self.config_helper.get_host()],
+                                     stdout=subprocess.PIPE)
+
+        while True:
+            line = list_proc.stdout.readline()
+            if line[3:] != '':
+                Core.Logger.info(line[3:])
+                game_list.append(line[3:].strip())
+            if not line:
+                break
+
+        return game_list

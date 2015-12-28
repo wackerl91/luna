@@ -1,11 +1,10 @@
 import os
-import subprocess
 
 import resources.lib.core.corefunctions as core
+import resources.lib.controller.gamecontroller as GameController
 
 from xbmcswift2 import Plugin, xbmcgui, xbmcaddon
 
-from resources.lib.model.game import Game
 from resources.lib.moonlighthelper import MoonlightHelper
 
 from resources.lib.confighelper import ConfigHelper
@@ -62,6 +61,7 @@ def create_mapping():
     core.Logger.info('Trying to call subprocess')
     map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
+    # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by config controller
     success = MLHelper.create_ctrl_map(progress_dialog, map_file)
 
     if success:
@@ -91,6 +91,7 @@ def pair_host():
             'Starting Pairing'
     )
 
+    # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by config controller
     success = MLHelper.pair_host(pair_dialog)
 
     if success:
@@ -122,108 +123,19 @@ def reset_cache():
 
 @plugin.route('/games')
 def show_games():
-    # TODO: This should be handled by some kind of game controller
-    def context_menu():
-        return [
-            (
-                core.string('addon_settings'),
-                'XBMC.RunPlugin(%s)' % plugin.url_for(
-                        endpoint='open_settings'
-                )
-            ),
-            (
-                core.string('full_refresh'),
-                'XBMC.RunPlugin(%s)' % plugin.url_for(
-                        endpoint='do_full_refresh'
-                )
-            )
-        ]
-
-    plugin.set_content('movies')
-    games = plugin.get_storage('game_storage')
-
-    if len(games.raw_dict()) == 0:
-        get_games()
-
-    items = []
-    for i, game_name in enumerate(games):
-        game = games.get(game_name)
-        items.append({
-            'label':     game.name,
-            'icon':      game.thumb,
-            'thumbnail': game.thumb,
-            'info': {
-                'year':  game.year,
-                'plot':  game.plot,
-                'genre': game.genre,
-                'originaltitle': game.name,
-            },
-            'replace_context_menu': True,
-            'context_menu': context_menu(),
-            'path': plugin.url_for(
-                    endpoint='launch_game',
-                    game_id=game.name
-            ),
-            'properties': {
-                'fanart_image': game.fanarts[0]
-            }
-        })
-
-    return plugin.finish(items, sort_methods=['label'])
+    return plugin.finish(GameController.get_games_as_list(), sort_methods=['label'])
 
 
-@plugin.route('/games/all/refresh')
+@plugin.route('/games/refresh')
 def do_full_refresh():
-    get_games()
+    GameController.get_games()
 
 
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     core.Logger.info('Launching game %s' % game_id)
+    # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by game controller
     MLHelper.launch_game(game_id)
-
-
-def get_games():
-    # TODO: This is an interaction between MLHelper and some kind of game controller
-    game_list = []
-    Config.configure()
-    list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
-
-    while True:
-        line = list_proc.stdout.readline()
-        if line[3:] != '':
-            core.Logger.info(line[3:])
-            game_list.append(line[3:].strip())
-        if not line:
-            break
-
-    core.Logger.info('Done getting games from moonlight')
-
-    game_storage = plugin.get_storage('game_storage')
-    cache = game_storage.raw_dict()
-    game_storage.clear()
-
-    for game_name in game_list:
-
-        if plugin.get_setting('disable_scraper', bool):
-            core.Logger.info('Scraper have been disabled, just adding game names to list.')
-            game_storage[game_name] = Game(game_name, None)
-
-        else:
-            scraper = ScraperChain()
-
-            if game_name in cache:
-                if not game_storage.get(game_name):
-                    game_storage[game_name] = cache.get(game_name)
-            else:
-                try:
-                    game_storage[game_name] = scraper.query_game_information(game_name)
-                except KeyError:
-                    core.Logger.info('Key Error thrown while getting information for game {0}: {1}'.format(game_name,
-                                                                                              KeyError.message))
-                    game_storage[game_name] = Game(game_name, None)
-
-    game_storage.sync()
 
 
 if __name__ == '__main__':

@@ -2,10 +2,12 @@ import os
 import xbmcgui
 
 from xbmcswift2 import Plugin, xbmcaddon
+
 from resources.lib.plugincontainer import PluginContainer
 
 plugin = Plugin()
 container = PluginContainer(plugin)
+core = container.get_core()
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -134,7 +136,6 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
-    import resources.lib.core.corefunctions as core
     core.Logger.info('Launching Luna')
     core.check_script_permissions()
     if plugin.get_setting('host', unicode):

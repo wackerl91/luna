@@ -111,9 +111,9 @@ class MoonlightHelper:
         """
         self.config_helper.configure()
         subprocess.call([
-            self.internal_path + '/resources/lib/launch-helper-osmc.sh',
-            self.internal_path + '/resources/lib/launch.sh',
-            self.internal_path + '/resources/lib/moonlight-heartbeat.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh',
             game_id,
             self.config_helper.get_config_path()
         ])

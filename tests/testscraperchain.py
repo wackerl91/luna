@@ -1,9 +1,8 @@
 import os
-import shutil
 import unittest
 
 from resources.lib.model.game import Game
-from resources.lib.scraperchain import ScraperChain
+from resources.lib.scraper.scraperchain import ScraperChain
 
 
 class TestScraperChain(unittest.TestCase):

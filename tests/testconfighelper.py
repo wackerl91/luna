@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-from resources.lib.confighelper import ConfigHelper
+from resources.lib.util.confighelper import ConfigHelper
 
 
 class TestConfigHelper(unittest.TestCase):

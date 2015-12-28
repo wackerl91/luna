@@ -1,6 +1,8 @@
-from resources.lib.confighelper import ConfigHelper
-from resources.lib.moonlighthelper import MoonlightHelper
-from resources.lib.scraperchain import ScraperChain
+from resources.lib.util.moonlighthelper import MoonlightHelper
+
+from resources.lib.core.corefunctions import Core
+from resources.lib.scraper.scraperchain import ScraperChain
+from resources.lib.util.confighelper import ConfigHelper
 
 
 class PluginContainer:
@@ -8,7 +10,8 @@ class PluginContainer:
         self.plugin = plugin
         self.config_helper = ConfigHelper()
         self.moonlight_helper = MoonlightHelper(self.config_helper)
-        self.scraper_chain = ScraperChain()
+        self.scraper_chain = ScraperChain(self.plugin)
+        self.core = Core(self.plugin)
 
     def get_plugin(self):
         return self.plugin
@@ -21,3 +24,6 @@ class PluginContainer:
 
     def get_scraper_chain(self):
         return self.scraper_chain
+
+    def get_core(self):
+        return self.core

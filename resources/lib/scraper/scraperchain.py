@@ -1,19 +1,15 @@
 import os
 import shutil
 
-
-from model.game import Game
-
-from xbmcswift2 import Plugin
-
-from scraper.abcscraper import AbstractScraper
-from scraper.omdbscraper import OmdbScraper
-from scraper.tgdbscraper import TgdbScraper
+from resources.lib.model.game import Game
+from resources.lib.scraper.abcscraper import AbstractScraper
+from resources.lib.scraper.omdbscraper import OmdbScraper
+from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 
 class ScraperChain:
-    def __init__(self):
-        self.plugin = Plugin('script.luna')
+    def __init__(self, plugin):
+        self.plugin = plugin
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
         self._configure()
@@ -24,7 +20,7 @@ class ScraperChain:
         :rtype game: Game
         """
         game_info = []
-        if not game_name in self.game_blacklist:
+        if game_name not in self.game_blacklist:
             for scraper in self.scraper_chain:
                 game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
         else:

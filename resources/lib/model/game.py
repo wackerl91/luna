@@ -48,3 +48,9 @@ class Game:
                 response = alt
 
             return response
+
+    def get_genre_as_string(self):
+        if self.genre is not None:
+            return ', '.join(self.genre)
+        else:
+            return ''

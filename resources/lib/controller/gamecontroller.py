@@ -72,7 +72,7 @@ def get_games_as_list():
             'info': {
                 'year':  game.year,
                 'plot':  game.plot,
-                'genre': game.genre,
+                'genre': game.get_genre_as_string(),
                 'originaltitle': game.name,
             },
             'replace_context_menu': True,

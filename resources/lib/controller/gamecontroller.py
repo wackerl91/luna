@@ -1,6 +1,6 @@
-import resources.lib.core.corefunctions as core
-
 from addon import container as plugin_container
+
+import resources.lib.core.corefunctions as core
 
 from resources.lib.model.game import Game
 from resources.lib.scraperchain import ScraperChain
@@ -57,18 +57,18 @@ def get_games_as_list():
         )
     ]
 
-    plugin_container.get_plugin().set_content('movies')
     storage = core.get_storage()
 
     if len(storage.raw_dict()) == 0:
         get_games()
 
     items = []
-    for game in storage:
+    for i, game_name in enumerate(storage):
+        game = storage.get(game_name)
         items.append({
             'label':     game.name,
-            'icon':      game.thumb,
-            'thumbnail': game.thumb,
+            'icon':      game.poster,
+            'thumbnail': game.poster,
             'info': {
                 'year':  game.year,
                 'plot':  game.plot,
@@ -82,7 +82,7 @@ def get_games_as_list():
                     game_id=game.name
             ),
             'properties': {
-                'fanart_image': game.fanarts[0]
+                'fanart_image': game.get_fanart(0, '')
             }
         })
 

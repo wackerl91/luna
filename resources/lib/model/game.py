@@ -37,3 +37,14 @@ class Game:
             self.fanart = other.fanart
         elif other.fanart is not None:
             self.fanart = list(set(self.fanart) | set(other.fanart))
+
+    def get_fanart(self, index, alt):
+        if self.fanart is None:
+            return alt
+        else:
+            try:
+                response = self.fanart[index]
+            except:
+                response = alt
+
+            return response

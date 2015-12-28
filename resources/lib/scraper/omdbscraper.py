@@ -16,6 +16,8 @@ class OmdbScraper(AbstractScraper):
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
         response = self._gather_information(request_name)
+        if response is None:
+            response = {}
         response['name'] = game_name
         # TODO: This should return an instance of a specific response object
         return response

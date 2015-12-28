@@ -7,7 +7,7 @@ class PluginContainer:
     def __init__(self, plugin):
         self.plugin = plugin
         self.config_helper = ConfigHelper()
-        self.moonlight_helper = MoonlightHelper()
+        self.moonlight_helper = MoonlightHelper(self.config_helper)
         self.scraper_chain = ScraperChain()
 
     def get_plugin(self):

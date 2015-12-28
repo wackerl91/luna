@@ -1,10 +1,8 @@
 import os
-import resources.lib.controller.gamecontroller as game_controller
-import resources.lib.core.corefunctions as core
+import xbmcgui
 
-from xbmcswift2 import Plugin, xbmcgui, xbmcaddon
+from xbmcswift2 import Plugin, xbmcaddon
 from resources.lib.plugincontainer import PluginContainer
-
 
 plugin = Plugin()
 container = PluginContainer(plugin)
@@ -117,11 +115,14 @@ def reset_cache():
 
 @plugin.route('/games')
 def show_games():
+    import resources.lib.controller.gamecontroller as game_controller
+    plugin.set_content('movies')
     return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
 
 
 @plugin.route('/games/refresh')
 def do_full_refresh():
+    import resources.lib.controller.gamecontroller as game_controller
     game_controller.get_games()
 
 
@@ -133,6 +134,7 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
+    import resources.lib.core.corefunctions as core
     core.Logger.info('Launching Luna')
     core.check_script_permissions()
     if plugin.get_setting('host', unicode):

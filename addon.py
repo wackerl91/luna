@@ -1,7 +1,7 @@
 import os
 
 import resources.lib.core.corefunctions as core
-import resources.lib.controller.gamecontroller as GameController
+import resources.lib.controller.gamecontroller as game_controller
 
 from xbmcswift2 import Plugin, xbmcgui, xbmcaddon
 
@@ -123,12 +123,12 @@ def reset_cache():
 
 @plugin.route('/games')
 def show_games():
-    return plugin.finish(GameController.get_games_as_list(), sort_methods=['label'])
+    return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
 
 
 @plugin.route('/games/refresh')
 def do_full_refresh():
-    GameController.get_games()
+    game_controller.get_games()
 
 
 @plugin.route('/games/launch/<game_id>')

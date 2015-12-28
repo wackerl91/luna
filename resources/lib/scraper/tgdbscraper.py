@@ -22,6 +22,9 @@ class TgdbScraper(AbstractScraper):
         # TODO: This should return an instance of a specific response object
         return response
 
+    def return_paths(self):
+        return [self.cover_cache, self.fanart_cache, self.api_cache]
+
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
         game_fanart_path = self._set_up_path(os.path.join(self.fanart_cache, game))

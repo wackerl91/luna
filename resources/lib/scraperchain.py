@@ -1,6 +1,12 @@
+import os
+import shutil
+
+import core.corefunctions as core
+
 from xbmcswift2 import Plugin
 
-from resources.lib.model.game import Game
+from model.game import Game
+
 from scraper.abcscraper import AbstractScraper
 from scraper.omdbscraper import OmdbScraper
 from scraper.tgdbscraper import TgdbScraper
@@ -9,6 +15,7 @@ from scraper.tgdbscraper import TgdbScraper
 class ScraperChain:
     def __init__(self):
         self.scraper_chain = []
+        self.plugin = Plugin(name='script.luna')
         self._configure()
 
     def query_game_information(self, game_name):
@@ -27,15 +34,24 @@ class ScraperChain:
 
         return game
 
-    def append_scraper(self, scraper):
+    def reset_cache(self):
+        unique_paths = []
+        for scraper in self.scraper_chain:
+            unique_paths.append(scraper.return_paths())
+        for path in set(unique_paths):
+            self.plugin.get_storage('game_storage').clear()
+            if os.path.exists(path):
+                shutil.rmtree(path, ignore_errors=True)
+                core.Logger.info('Deleted folder %s on user request' % path)
+
+    def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):
             self.scraper_chain.append(scraper)
         else:
             raise AssertionError('Expected to receive an instance of AbstractScraper, got %s instead' % type(scraper))
 
     def _configure(self):
-        plugin = Plugin(name='script.luna')
-        if plugin.get_setting('enable_omdb', bool):
-            self.append_scraper(OmdbScraper(plugin.storage_path))
-        if plugin.get_setting('enable_tgdb', bool):
-            self.append_scraper(TgdbScraper(plugin.storage_path))
+        if self.plugin.get_setting('enable_omdb', bool):
+            self._append_scraper(OmdbScraper(self.plugin.storage_path))
+        if self.plugin.get_setting('enable_tgdb', bool):
+            self._append_scraper(TgdbScraper(self.plugin.storage_path))

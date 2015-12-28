@@ -19,6 +19,14 @@ class AbstractScraper:
         """
         pass
 
+    @abstractmethod
+    def return_paths(self):
+        """
+        Returns a list of used cache paths by this scraper
+        :rtype: list
+        """
+        pass
+
     @staticmethod
     def _set_up_path(path):
         if not os.path.exists(path):

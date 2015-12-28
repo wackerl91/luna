@@ -2,7 +2,7 @@ import os
 import subprocess
 import threading
 
-from xbmcswift2 import Plugin, xbmc
+from xbmcswift2 import Plugin, xbmc, xbmcaddon
 from xbmcgui import DialogProgress
 
 from resources.lib.confighelper import ConfigHelper
@@ -24,6 +24,7 @@ class MoonlightHelper:
         """
         self.config_helper = helper
         self.plugin = Plugin('script.luna')
+        self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
     def create_ctrl_map(self, dialog, map_file):
         """
@@ -105,8 +106,20 @@ class MoonlightHelper:
 
             dialog.close()
             if last.lower().strip() != 'You must pair with the PC first'.lower().strip():
-
                 return True
         else:
 
             return False
+
+    def launch_game(self, game_id):
+        """
+        :type game_id: str
+        """
+        self.config_helper.configure()
+        subprocess.call([
+            self.internal_path + '/resources/lib/launch-helper-osmc.sh',
+            self.internal_path + '/resources/lib/launch.sh',
+            self.internal_path + '/resources/lib/moonlight-heartbeat.sh',
+            game_id,
+            self.config_helper.get_config_path()
+        ])

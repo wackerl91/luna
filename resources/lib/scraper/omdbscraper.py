@@ -20,6 +20,9 @@ class OmdbScraper(AbstractScraper):
         # TODO: This should return an instance of a specific response object
         return response
 
+    def return_paths(self):
+        return [self.cover_cache, self.api_cache]
+
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
         game_cache_path = self._set_up_path(os.path.join(self.api_cache, game))

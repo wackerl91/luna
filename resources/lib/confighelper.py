@@ -1,30 +1,15 @@
 import ConfigParser
 import os
 
+from xbmcswift2 import Plugin
+
 conf = 'luna.conf'
-
-
-def config_map(section, parser):
-    """
-
-    :param section: string
-    :type parser: ConfigParser.ConfigParser
-    """
-    dict1 = {}
-    options = parser.options(section)
-    for option in options:
-        try:
-            dict1[option] = parser.get(section, option)
-        except:
-            dict1[option] = None
-    return dict1
 
 
 class ConfigHelper:
     def __init__(self, *args, **kwargs):
         self._reset()
-        if args or kwargs:
-            self.configure(*args, **kwargs)
+        self.plugin = Plugin('script.luna')
 
     def _reset(self):
         self.file_path = None
@@ -73,14 +58,32 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.addon_path, conf])
 
-    def configure(self, settings_dict):
+    def configure(self):
+        settings = {
+            'addon_path':                   self.plugin.storage_path,
+            'binary_path':                  self._find_binary(),
+            'host_ip':                      self.plugin.get_setting('host', unicode),
+            'enable_custom_res':            self.plugin.get_setting('enable_custom_res', bool),
+            'resolution_width':             self.plugin.get_setting('resolution_width', str),
+            'resolution_height':            self.plugin.get_setting('resolution_height', str),
+            'resolution':                   self.plugin.get_setting('resolution', str),
+            'framerate':                    self.plugin.get_setting('framerate', str),
+            'graphics_optimizations':       self.plugin.get_setting('graphic_optimizations', bool),
+            'remote_optimizations':         self.plugin.get_setting('remote_optimizations', bool),
+            'local_audio':                  self.plugin.get_setting('local_audio', bool),
+            'enable_custom_bitrate':        self.plugin.get_setting('enable_custom_bitrate', bool),
+            'bitrate':                      self.plugin.get_setting('bitrate', int),
+            'packetsize':                   self.plugin.get_setting('packetsize', int),
+            'enable_custom_input':          self.plugin.get_setting('enable_custom_input', bool),
+            'input_map':                    self.plugin.get_setting('input_map', str),
+            'input_device':                 self.plugin.get_setting('input_device', str),
+            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool)
+        }
+        self._configure(**settings)
 
-        """
-        :type settings_dict: dict
-        """
-        self._configure(**settings_dict)
+        self._dump_conf()
 
-    def dump_conf(self):
+    def _dump_conf(self):
         """
         This dumps the currently configured helper into a file moonlight can read
         """
@@ -159,12 +162,12 @@ class ConfigHelper:
     def get_binary(self):
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
-        return config_map('General', cp)['binpath']
+        return self._config_map('General', cp)['binpath']
 
     def get_host(self):
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
-        return config_map('General', cp)['address']
+        return self._config_map('General', cp)['address']
 
     def check_for_config_file(self):
         return os.path.isfile(self.full_path)
@@ -172,7 +175,36 @@ class ConfigHelper:
     def get_section_setting(self, section, setting):
         cp = ConfigParser.ConfigParser()
         cp.read(self.full_path)
-        return config_map(section, cp)[setting]
+        return self._config_map(section, cp)[setting]
 
     def get_config_path(self):
         return self.full_path
+
+    @staticmethod
+    def _find_binary():
+        binary_locations = [
+            '/usr/bin/moonlight',
+            '/usr/local/bin/moonlight'
+        ]
+
+        for f in binary_locations:
+            if os.path.isfile(f):
+                return f
+
+        return None
+
+    @staticmethod
+    def _config_map(section, parser):
+        """
+
+        :param section: string
+        :type parser: ConfigParser.ConfigParser
+        """
+        dict1 = {}
+        options = parser.options(section)
+        for option in options:
+            try:
+                dict1[option] = parser.get(section, option)
+            except:
+                dict1[option] = None
+        return dict1

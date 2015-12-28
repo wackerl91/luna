@@ -2,10 +2,7 @@ import os
 import subprocess
 import threading
 
-import core.corefunctions as Core
-
 from xbmcswift2 import Plugin, xbmc, xbmcaddon
-from xbmcgui import DialogProgress
 
 from resources.lib.confighelper import ConfigHelper
 
@@ -135,7 +132,6 @@ class MoonlightHelper:
         while True:
             line = list_proc.stdout.readline()
             if line[3:] != '':
-                Core.Logger.info(line[3:])
                 game_list.append(line[3:].strip())
             if not line:
                 break

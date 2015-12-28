@@ -3,8 +3,6 @@ import shutil
 import unittest
 
 from resources.lib.model.game import Game
-from resources.lib.scraper.omdbscraper import OmdbScraper
-from resources.lib.scraper.tgdbscraper import TgdbScraper
 from resources.lib.scraperchain import ScraperChain
 
 
@@ -15,8 +13,6 @@ class TestScraperChain(unittest.TestCase):
         if not os.path.exists(path):
             os.makedirs(path)
         chain = ScraperChain()
-        chain.append_scraper(OmdbScraper(path))
-        chain.append_scraper(TgdbScraper(path))
         self.chain = chain
 
     def testReturnType(self):

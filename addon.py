@@ -29,7 +29,7 @@ STRINGS = {
 
 plugin = Plugin()
 Config = ConfigHelper()
-MoonlightHelper = MoonlightHelper(Config)
+MLHelper = MoonlightHelper(Config)
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -56,6 +56,7 @@ def index():
 
 @plugin.route('/settings')
 def open_settings():
+    # TODO: Check if there's a listener for closed settings. Use a file watcher if there's none?
     plugin.open_settings()
 
 
@@ -67,9 +68,6 @@ def create_mapping():
     ctrl_type = xbmcgui.Dialog().select(_('choose_ctrl_type'), controllers)
     map_name = xbmcgui.Dialog().input(_('enter_filename'))
 
-    if map_name == '':
-        return
-
     progress_dialog = xbmcgui.DialogProgress()
     progress_dialog.create(
             _('name'),
@@ -79,51 +77,25 @@ def create_mapping():
     log('Trying to call subprocess')
     map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
-    mapping = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'map', map_file, '-input',
-                                plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+    success = MLHelper.create_ctrl_map(progress_dialog, map_file)
 
-    lines_iterator = iter(mapping.stdout.readline, b"")
-
-    thread = threading.Thread(target=loop_lines, args=(progress_dialog, lines_iterator))
-    thread.start()
-
-    success = 'false'
-
-    while True:
-        xbmc.sleep(1000)
-        if not thread.isAlive():
-            progress_dialog.close()
-            success = 'true'
-            log('Done, created mapping file in: %s' % map_file)
-            break
-        if progress_dialog.iscanceled():
-            mapping.kill()
-            progress_dialog.close()
-            success = 'canceled'
-            log('Mapping canceled')
-            break
-
-    if os.path.isfile(map_file) and success == 'true':
+    if success:
         confirmed = xbmcgui.Dialog().yesno(
                 _('name'),
                 _('mapping_success'),
                 _('set_mapping_active')
         )
+
         log('Dialog Yes No Value: %s' % confirmed)
+
         if confirmed:
             plugin.set_setting('input_map', map_file)
-            return
-        else:
-            return
 
     else:
-        if success == 'false':
-            xbmcgui.Dialog().ok(
-                    _('name'),
-                    _('mapping_failure')
-            )
-        else:
-            return
+        xbmcgui.Dialog().ok(
+                _('name'),
+                _('mapping_failure')
+        )
 
 
 @plugin.route('/actions/pair-host')
@@ -134,62 +106,20 @@ def pair_host():
             'Starting Pairing'
     )
 
-    pairing = subprocess.Popen(['stdbuf', '-oL', Config.get_binary(), 'pair', Config.get_host()],
-                               stdout=subprocess.PIPE)
-
-    lines_iterator = iter(pairing.stdout.readline, b"")
-
-    thread = threading.Thread(target=loop_lines, args=(pair_dialog, lines_iterator))
-    thread.start()
-
-    success = False
-
-    while True:
-        xbmc.sleep(1000)
-        if not thread.isAlive():
-            success = True
-            break
-        if pair_dialog.iscanceled():
-            pairing.kill()
-            pair_dialog.close()
-            success = False
-            log('Pairing canceled')
-            break
+    success = MLHelper.pair_host(pair_dialog)
 
     if success:
-        pair_dialog.update(0, 'Checking if pairing has been successful.')
-        xbmc.sleep(1000)
-        pairing_check = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()],
-                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        last_line = ''
-        while True:
-            line = pairing_check.stdout.readline()
-            err = pairing_check.stderr.readline()
-            if line != '':
-                last_line = line
-            if err != '':
-                last_line = err
-            if not line and not err:
-                break
-
-        pair_dialog.close()
-        if last_line.lower().strip() != 'You must pair with the PC first'.lower().strip():
-            xbmcgui.Dialog().ok(
-                    _('name'),
-                    'Successfully paired'
-            )
-        else:
-            confirmed = xbmcgui.Dialog().yesno(
-                    _('name'),
-                    'Pairing failed - do you want to try again?'
-            )
-            if confirmed:
-                pair_host()
-            else:
-                return
+        xbmcgui.Dialog().ok(
+                _('name'),
+                'Successfully paired'
+        )
     else:
-        return
+        confirmed = xbmcgui.Dialog().yesno(
+                _('name'),
+                'Pairing failed - do you want to try again?'
+        )
+        if confirmed:
+            pair_host()
 
 
 @plugin.route('/actions/reset-cache')
@@ -198,6 +128,7 @@ def reset_cache():
             _('name'),
             _('reset_cache_warning')
     )
+    # TODO: ScraperChain should be aware of this
     if confirmed:
         plugin.get_storage('game_storage').clear()
         if os.path.exists(addon_path + '/boxarts'):
@@ -219,6 +150,7 @@ def reset_cache():
 
 @plugin.route('/games')
 def show_games():
+    # TODO: This should be handled by some kind of game controller
     def context_menu():
         return [
             (
@@ -275,6 +207,7 @@ def do_full_refresh():
 
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
+    # TODO: MLHelper
     log('Launching game %s' % game_id)
     Config.configure()
     log('Reconfigured helper and dumped conf to disk.')
@@ -285,13 +218,8 @@ def launch_game(game_id):
                      Config.get_config_path()])
 
 
-def loop_lines(dialog, iterator):
-    for line in iterator:
-        log(line)
-        dialog.update(0, line)
-
-
 def get_games():
+    # TODO: This is an interaction between MLHelper and some kind of game controller
     game_list = []
     Config.configure()
     list_proc = subprocess.Popen([Config.get_binary(), 'list', Config.get_host()], stdout=subprocess.PIPE)
@@ -334,6 +262,7 @@ def get_games():
 
 
 def check_script_permissions():
+    # TODO: Core functionality (static)
     st = os.stat(addon_internal_path + '/resources/lib/launch.sh')
     if not bool(st.st_mode & stat.S_IXUSR):
         os.chmod(addon_internal_path + '/resources/lib/launch.sh', st.st_mode | 0111)
@@ -351,10 +280,12 @@ def check_script_permissions():
 
 
 def log(text):
+    # TODO: Core functionality (static)
     plugin.log.info(text)
 
 
 def _(string_id):
+    # TODO: Core functionality (static)
     if string_id in STRINGS:
         return plugin.get_string(STRINGS[string_id]).encode('utf-8')
     else:

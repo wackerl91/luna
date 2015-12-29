@@ -8,10 +8,10 @@ from resources.lib.util.confighelper import ConfigHelper
 class PluginContainer:
     def __init__(self, plugin):
         self.plugin = plugin
-        self.config_helper = ConfigHelper()
-        self.moonlight_helper = MoonlightHelper(self.config_helper)
-        self.scraper_chain = ScraperChain(self.plugin)
         self.core = Core(self.plugin)
+        self.config_helper = ConfigHelper(self.plugin)
+        self.scraper_chain = ScraperChain(self.plugin)
+        self.moonlight_helper = MoonlightHelper(self.config_helper)
 
     def get_plugin(self):
         return self.plugin

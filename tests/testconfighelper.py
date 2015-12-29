@@ -2,6 +2,8 @@ import os
 import shutil
 import unittest
 
+from xbmcswift2 import Plugin
+
 from resources.lib.util.confighelper import ConfigHelper
 
 
@@ -35,14 +37,16 @@ class TestConfigHelper(unittest.TestCase):
         }
 
     def testConfigurationDump(self):
-        config = ConfigHelper()
+        plugin = Plugin()
+        config = ConfigHelper(plugin)
         config._configure(**self.fake_settings)
         config._dump_conf()
 
         self.assertEqual(os.path.isfile(config.full_path), True)
 
     def testConfigurationCorrectness(self):
-        config = ConfigHelper()
+        plugin = Plugin()
+        config = ConfigHelper(plugin)
         config._configure(**self.fake_settings)
         config._dump_conf()
 

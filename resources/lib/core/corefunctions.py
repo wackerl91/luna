@@ -34,19 +34,19 @@ class Core:
             return string_id
 
     def check_script_permissions(self):
-        st = os.stat(internal_path + '/resources/lib/launch.sh')
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/launch.sh', st.st_mode | 0111)
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for launch')
 
-        st = os.stat(internal_path + '/resources/lib/launch-helper-osmc.sh')
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for launch-helper-osmc')
 
-        st = os.stat(internal_path + '/resources/lib/moonlight-heartbeat.sh')
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for moonlight-heartbeat')
 
     def get_storage(self):

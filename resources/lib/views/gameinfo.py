@@ -8,145 +8,61 @@ _addon_path = xbmcaddon.Addon().getAddonInfo('path')
 
 
 class GameInfo(pyxbmct.AddonDialogWindow):
-    def __init__(self, title=''):
+    def __init__(self, container, game, title=''):
         super(GameInfo, self).__init__(title)
-        self.setGeometry(700, 450, 9, 4)
-        self.set_info_controls()
+        background = None
+        if container.get_core().get_active_skin() == 'skin.osmc':
+            media_path = '/usr/share/kodi/addons/skin.osmc/media'
+            if os.path.exists(media_path):
+                background = os.path.join(media_path, 'dialogs/DialogBackground_old.png')
+
+        if background is not None:
+            self.background.setImage(background)
+            self.removeControl(self.title_background)
+            self.removeControl(self.window_close_button)
+            self.removeControl(self.title_bar)
+
+        self.setGeometry(1280, 720, 12, 4, padding=50)
+        self.set_info_controls(game)
         self.set_active_controls()
         self.set_navigation()
         self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
 
-    def set_info_controls(self):
-        no_int_label = pyxbmct.Label('Information output', alignment=pyxbmct.ALIGN_CENTER)
-        self.placeControl(no_int_label, 0, 0, 1, 2)
+    def set_info_controls(self, game):
+        title_label = pyxbmct.Label(game.name, alignment=pyxbmct.ALIGN_LEFT, font='font14')
+        self.placeControl(title_label, 0, 0, 2, 3)
 
-        label_label = pyxbmct.Label('Label')
-        self.placeControl(label_label, 1, 0)
+        self.image = pyxbmct.Image(game.poster)
+        self.placeControl(self.image, 2, 0, 6, 1)
 
-        self.label = pyxbmct.Label('Simple Label')
-        self.placeControl(self.label, 1, 1)
+        genre_label = pyxbmct.Label('Genre')
+        self.placeControl(genre_label, 2, 1)
+        self.genre = pyxbmct.Label(game.get_genre_as_string())
+        self.placeControl(self.genre, 2, 2)
 
-        fadelabel_label = pyxbmct.Label('FadeLabel')
-        self.placeControl(fadelabel_label, 2, 0)
+        year_label = pyxbmct.Label('Year')
+        self.placeControl(year_label, 3, 1)
+        self.year = pyxbmct.Label(game.year)
+        self.placeControl(self.year, 3, 2)
 
-        self.fade_label = pyxbmct.FadeLabel()
-        self.placeControl(self.fade_label, 2, 1)
-        self.fade_label.addLabel('This should support very long strings')
-
-        textbox_label = pyxbmct.Label('Textbox')
-        self.placeControl(textbox_label, 3, 0)
-
-        self.textbox = pyxbmct.TextBox()
-        self.placeControl(self.textbox, 3, 1, 2, 1)
-        self.textbox.setText('Text box. \n It should support multiple lines')
-
-        image_label = pyxbmct.Label('Image')
-        self.placeControl(image_label, 5, 0)
-
-        self.image = pyxbmct.Image(os.path.join(_addon_path, 'resources/icons/controller.png'))
-        self.placeControl(self.image, 5, 1, 2, 1)
+        self.plot = pyxbmct.TextBox()
+        self.placeControl(self.plot, 4, 1, 3, 3)
+        self.plot.setText(game.plot)
 
     def set_active_controls(self):
-        int_label = pyxbmct.Label('Interactive Controls', alignment=pyxbmct.ALIGN_CENTER)
-        self.placeControl(int_label, 0, 2, 1, 2)
+        self.button_play = pyxbmct.Button('Play', focusTexture='', noFocusTexture='', focusedColor='0xFFE50000')
+        self.placeControl(self.button_play, 11, 0)
 
-        radiobutton_label = pyxbmct.Label('Radiobutton')
-        self.placeControl(radiobutton_label, 1, 2)
-
-        self.radiobutton = pyxbmct.RadioButton('Off')
-        self.placeControl(self.radiobutton, 1, 3)
-        self.connect(self.radiobutton, self.radio_update)
-
-        edit_label = pyxbmct.Label('Edit')
-        self.placeControl(edit_label, 2, 2)
-
-        self.edit = pyxbmct.Edit('Edit')
-        self.placeControl(self.edit, 2, 3)
-        self.edit.setText('Enter text here')
-
-        list_label = pyxbmct.Label('List')
-        self.placeControl(list_label, 3, 2)
-
-        self.list_item_label = pyxbmct.Label('', textColor='0xFF808080')
-        self.placeControl(self.list_item_label, 4, 2)
-
-        self.list = pyxbmct.List()
-        self.placeControl(self.list, 3, 3, 3, 1)
-        items = ['Item {0}'.format(i) for i in range(1, 8)]
-        self.list.addItems(items)
-
-        self.connect(self.list, lambda: xbmc.executebuiltin('Notification(Note!, {0} selected.)'.format(
-            self.list.getListItem(self.list.getSelectedPosition()).getLabel()
-        )))
-
-        self.connectEventList(
-            [pyxbmct.ACTION_MOVE_UP,
-             pyxbmct.ACTION_MOVE_DOWN],
-            self.list_update
-        )
-
-        SLIDER_INIT = 25.0
-        self.slider_value = pyxbmct.Label(str(SLIDER_INIT), alignment=pyxbmct.ALIGN_CENTER)
-        self.placeControl(self.slider_value, 6, 3)
-
-        slider_caption = pyxbmct.Label('Slider')
-        self.placeControl(slider_caption, 7, 2)
-
-        self.slider = pyxbmct.Slider()
-        self.placeControl(self.slider, 7, 3, pad_y=10)
-        self.slider.setPercent(SLIDER_INIT)
-        self.connectEventList(
-            [
-                pyxbmct.ACTION_MOVE_LEFT,
-                pyxbmct.ACTION_MOVE_RIGHT
-            ],
-            self.slider_update
-        )
-
-        button_label = pyxbmct.Label('Button')
-        self.placeControl(button_label, 8, 2)
-
-        self.button = pyxbmct.Button('Close')
-        self.placeControl(self.button, 8, 3)
-        self.connect(self.button, self.close)
+        self.button_fanart = pyxbmct.Button('Choose Fanart', focusTexture='', noFocusTexture='', focusedColor='0xFFE50000')
+        self.placeControl(self.button_fanart, 11, 1)
 
     def set_navigation(self):
-        self.button.controlUp(self.slider)
-        self.button.controlDown(self.radiobutton)
-        self.radiobutton.controlUp(self.button)
-        self.radiobutton.controlDown(self.edit)
-        self.edit.controlUp(self.radiobutton)
-        self.edit.controlDown(self.list)
-        self.list.controlUp(self.edit)
-        self.list.controlDown(self.slider)
-        self.slider.controlUp(self.list)
-        self.slider.controlDown(self.button)
+        self.button_play.controlRight(self.button_fanart)
+        self.button_play.controlLeft(self.button_fanart)
+        self.button_fanart.controlRight(self.button_play)
+        self.button_fanart.controlLeft(self.button_play)
 
-        self.setFocus(self.radiobutton)
-
-    def slider_update(self):
-        try:
-            if self.getFocus() == self.slider:
-                self.slider_value.setLabel('{:.1F}'.format(
-                    self.slider.getPercent()
-                ))
-        except (RuntimeError, SystemError):
-            pass
-
-    def radio_update(self):
-        if self.radiobutton.isSelected():
-            self.radiobutton.setLabel('On')
-        else:
-            self.radiobutton.setLabel('Off')
-
-    def list_update(self):
-        try:
-            if self.getFocus() == self.list:
-                self.list_item_label.setLabel(self.list.getListItem(self.list.getSelectedPosition()).getLabel())
-            else:
-                self.list_item_label.setLabel('')
-        except (RuntimeError, SystemError):
-            pass
+        self.setFocus(self.button_play)
 
     def setAnimation(self, control):
         control.setAnimations(

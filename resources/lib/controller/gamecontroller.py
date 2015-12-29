@@ -35,9 +35,9 @@ class GameController:
                         storage[game_name] = self.scraper_chain.query_game_information(game_name)
                     except KeyError:
                         self.logger.info(
-                            'Key Error thrown while getting information for game {0}: {1}'
-                            .format(game_name,
-                                    KeyError.message))
+                                'Key Error thrown while getting information for game {0}: {1}'
+                                    .format(game_name,
+                                            KeyError.message))
                         storage[game_name] = Game(game_name, None)
 
         storage.sync()
@@ -47,20 +47,29 @@ class GameController:
         Parses contents of local game storage into a list that can be interpreted by Kodi
         :rtype: list
         """
-        context_menu = [
-            (
-                self.core.string('addon_settings'),
-                'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
-                        endpoint='open_settings'
+
+        def context_menu(game_name):
+            return [
+                (
+                    self.core.string('addon_settings'),
+                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                            endpoint='open_settings'
+                    )
+                ),
+                (
+                    self.core.string('full_refresh'),
+                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                            endpoint='do_full_refresh'
+                    )
+                ),
+                (
+                    'Game Information',
+                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                            endpoint='test_modal',
+                            game_id=game_name
+                    )
                 )
-            ),
-            (
-                self.core.string('full_refresh'),
-                'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
-                        endpoint='do_full_refresh'
-                )
-            )
-        ]
+            ]
 
         storage = self.core.get_storage()
 
@@ -81,7 +90,7 @@ class GameController:
                     'originaltitle': game.name,
                 },
                 'replace_context_menu': True,
-                'context_menu': context_menu,
+                'context_menu': context_menu(game_name),
                 'path': self.container.get_plugin().url_for(
                         endpoint='launch_game',
                         game_id=game.name

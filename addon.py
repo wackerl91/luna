@@ -34,23 +34,10 @@ def index():
             'path': plugin.url_for(
                     endpoint='open_settings'
             )
-        }, {
-            'label': 'Test Modal',
-            'thumbnail': '',
-            'path': plugin.url_for(
-                endpoint='test_modal'
-            )
         }
     ]
 
     return plugin.finish(items)
-
-
-@plugin.route('/modal')
-def test_modal():
-    window = GameInfo('Info Test')
-    window.doModal()
-    del window
 
 
 @plugin.route('/settings')
@@ -91,6 +78,14 @@ def show_games():
 @plugin.route('/games/refresh')
 def do_full_refresh():
     game_controller.get_games()
+
+
+@plugin.route('/games/info/<game_id>')
+def test_modal(game_id):
+    game = core.get_storage().get(game_id)
+    window = GameInfo(container, game, game.name)
+    window.doModal()
+    del window
 
 
 @plugin.route('/games/launch/<game_id>')

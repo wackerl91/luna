@@ -1,8 +1,7 @@
-from resources.lib.util.moonlighthelper import MoonlightHelper
-
 from resources.lib.core.corefunctions import Core
 from resources.lib.scraper.scraperchain import ScraperChain
 from resources.lib.util.confighelper import ConfigHelper
+from resources.lib.util.moonlighthelper import MoonlightHelper
 
 
 class PluginContainer:

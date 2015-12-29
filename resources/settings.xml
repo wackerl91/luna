@@ -26,8 +26,8 @@
     </category>
     <category label="30021">
         <setting label="30024" type="bool" id="disable_scraper" default="false"/>
-        <setting label="30025" enable="eq(-1,true)" visible="eq(-1,true)" type="boolean" id="enable_omdb" default="true"/>
-        <setting label="30026" enable="eq(-2,true)" visible="eq(-2,true)" type="boolean" id="enable_tgdb" default="true"/>
+        <setting label="30025" enable="eq(-1,false)" type="bool" id="enable_omdb" default="true"/>
+        <setting label="30026" enable="eq(-2,false)" type="bool" id="enable_tgdb" default="true"/>
         <setting label="30022" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/reset-cache)"/>
     </category>
 </settings>

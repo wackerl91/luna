@@ -1,15 +1,13 @@
 import ConfigParser
 import os
 
-from xbmcswift2 import Plugin
-
 conf = 'luna.conf'
 
 
 class ConfigHelper:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, plugin):
         self._reset()
-        self.plugin = Plugin('script.luna')
+        self.plugin = plugin
 
     def _reset(self):
         self.file_path = None

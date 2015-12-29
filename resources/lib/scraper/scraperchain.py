@@ -1,21 +1,17 @@
 import os
 import shutil
 
-import core.corefunctions as core
-
-from xbmcswift2 import Plugin
-
-from model.game import Game
-
-from scraper.abcscraper import AbstractScraper
-from scraper.omdbscraper import OmdbScraper
-from scraper.tgdbscraper import TgdbScraper
+from resources.lib.model.game import Game
+from resources.lib.scraper.abcscraper import AbstractScraper
+from resources.lib.scraper.omdbscraper import OmdbScraper
+from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 
 class ScraperChain:
-    def __init__(self):
+    def __init__(self, plugin):
+        self.plugin = plugin
         self.scraper_chain = []
-        self.plugin = Plugin(name='script.luna')
+        self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
         self._configure()
 
     def query_game_information(self, game_name):
@@ -24,8 +20,11 @@ class ScraperChain:
         :rtype game: Game
         """
         game_info = []
-        for scraper in self.scraper_chain:
-            game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
+        if game_name not in self.game_blacklist:
+            for scraper in self.scraper_chain:
+                game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
+        else:
+            game_info.append(Game(game_name, None))
 
         game = game_info[0]
         while len(game_info) > 1:
@@ -35,14 +34,17 @@ class ScraperChain:
         return game
 
     def reset_cache(self):
-        unique_paths = []
+        self.plugin.get_storage('game_storage').clear()
+
+        paths = []
         for scraper in self.scraper_chain:
-            unique_paths.append(scraper.return_paths())
-        for path in set(unique_paths):
-            self.plugin.get_storage('game_storage').clear()
+            for path in scraper.return_paths():
+                paths.append(path)
+        unique_paths = set(paths)
+
+        for path in unique_paths:
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
-                core.Logger.info('Deleted folder %s on user request' % path)
 
     def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):

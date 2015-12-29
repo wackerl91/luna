@@ -1,11 +1,9 @@
 import os
 import stat
 
-from xbmcswift2 import Plugin, xbmcaddon
+from xbmcswift2 import xbmcaddon
 
-from resources.lib.moonlighthelper import MoonlightHelper
-
-from resources.lib.confighelper import ConfigHelper
+internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 STRINGS = {
     'name':                30000,
@@ -22,61 +20,48 @@ STRINGS = {
     'reset_cache_warning': 30208
 }
 
-plugin = Plugin('script.luna')
-internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
-Config = ConfigHelper()
-MLHelper = MoonlightHelper(Config)
+class Core:
 
+    def __init__(self, plugin):
+        self.plugin = plugin
+        self.logger = Logger(self.plugin)
 
-def string(string_id):
-    if string_id in STRINGS:
-        return plugin.get_string(STRINGS[string_id]).encode('utf-8')
-    else:
-        return string_id
+    def string(self, string_id):
+        if string_id in STRINGS:
+            return self.plugin.get_string(STRINGS[string_id]).encode('utf-8')
+        else:
+            return string_id
 
+    def check_script_permissions(self):
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch.sh')
+        if not bool(st.st_mode & stat.S_IXUSR):
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch.sh', st.st_mode | 0111)
+            self.logger.info('Changed file permissions for launch')
 
-def check_script_permissions():
-    st = os.stat(internal_path + '/resources/lib/launch.sh')
-    if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(internal_path + '/resources/lib/launch.sh', st.st_mode | 0111)
-        Logger.info('Changed file permissions for launch')
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh')
+        if not bool(st.st_mode & stat.S_IXUSR):
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh', st.st_mode | 0111)
+            self.logger.info('Changed file permissions for launch-helper-osmc')
 
-    st = os.stat(internal_path + '/resources/lib/launch-helper-osmc.sh')
-    if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(internal_path + '/resources/lib/launch-helper-osmc.sh', st.st_mode | 0111)
-        Logger.info('Changed file permissions for launch-helper-osmc')
+        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh')
+        if not bool(st.st_mode & stat.S_IXUSR):
+            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh', st.st_mode | 0111)
+            self.logger.info('Changed file permissions for moonlight-heartbeat')
 
-    st = os.stat(internal_path + '/resources/lib/moonlight-heartbeat.sh')
-    if not bool(st.st_mode & stat.S_IXUSR):
-        os.chmod(internal_path + '/resources/lib/moonlight-heartbeat.sh', st.st_mode | 0111)
-        Logger.info('Changed file permissions for moonlight-heartbeat')
-
-
-def get_storage():
-    return plugin.get_storage('game_storage')
-
-
-def get_moonlight():
-    return MLHelper
-
-
-def get_plugin():
-    return plugin
+    def get_storage(self):
+        return self.plugin.get_storage('game_storage')
 
 
 class Logger:
-    def __init__(self):
-        pass
+    def __init__(self, plugin):
+        self.plugin = plugin
 
-    @staticmethod
-    def info(text):
-        plugin.log.info(text)
+    def info(self, text):
+        self.plugin.log.info(text)
 
-    @staticmethod
-    def debug(text):
-        plugin.log.debug(text)
+    def debug(self, text):
+        self.plugin.log.debug(text)
 
-    @staticmethod
-    def error(text):
-        plugin.log.error(text)
+    def error(self, text):
+        self.plugin.log.error(text)

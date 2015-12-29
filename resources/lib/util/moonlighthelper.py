@@ -2,12 +2,7 @@ import os
 import subprocess
 import threading
 
-import core.corefunctions as Core
-
 from xbmcswift2 import Plugin, xbmc, xbmcaddon
-from xbmcgui import DialogProgress
-
-from resources.lib.confighelper import ConfigHelper
 
 
 def loop_lines(dialog, iterator):
@@ -21,9 +16,6 @@ def loop_lines(dialog, iterator):
 
 class MoonlightHelper:
     def __init__(self, helper):
-        """
-        :type helper: ConfigHelper
-        """
         self.config_helper = helper
         self.plugin = Plugin('script.luna')
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -119,9 +111,9 @@ class MoonlightHelper:
         """
         self.config_helper.configure()
         subprocess.call([
-            self.internal_path + '/resources/lib/launch-helper-osmc.sh',
-            self.internal_path + '/resources/lib/launch.sh',
-            self.internal_path + '/resources/lib/moonlight-heartbeat.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh',
+            self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh',
             game_id,
             self.config_helper.get_config_path()
         ])
@@ -135,7 +127,6 @@ class MoonlightHelper:
         while True:
             line = list_proc.stdout.readline()
             if line[3:] != '':
-                Core.Logger.info(line[3:])
                 game_list.append(line[3:].strip())
             if not line:
                 break

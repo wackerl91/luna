@@ -6,6 +6,8 @@ from resources.lib.controller.configcontroller import ConfigController
 from resources.lib.controller.gamecontroller import GameController
 from resources.lib.plugincontainer import PluginContainer
 
+from resources.lib.views.gameinfo import GameInfo
+
 plugin = Plugin()
 container = PluginContainer(plugin)
 core = container.get_core()
@@ -19,21 +21,36 @@ addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 @plugin.route('/')
 def index():
-    items = [{
-        'label': 'Games',
-        'thumbnail': addon_internal_path + '/resources/icons/controller.png',
-        'path': plugin.url_for(
-                endpoint='show_games'
-        )
-    }, {
-        'label': 'Settings',
-        'thumbnail': addon_internal_path + '/resources/icons/cog.png',
-        'path': plugin.url_for(
-                endpoint='open_settings'
-        )
-    }]
+    items = [
+        {
+            'label': 'Games',
+            'thumbnail': addon_internal_path + '/resources/icons/controller.png',
+            'path': plugin.url_for(
+                    endpoint='show_games'
+            )
+        }, {
+            'label': 'Settings',
+            'thumbnail': addon_internal_path + '/resources/icons/cog.png',
+            'path': plugin.url_for(
+                    endpoint='open_settings'
+            )
+        }, {
+            'label': 'Test Modal',
+            'thumbnail': '',
+            'path': plugin.url_for(
+                endpoint='test_modal'
+            )
+        }
+    ]
 
     return plugin.finish(items)
+
+
+@plugin.route('/modal')
+def test_modal():
+    window = GameInfo('Info Test')
+    window.doModal()
+    del window
 
 
 @plugin.route('/settings')

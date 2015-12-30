@@ -44,6 +44,7 @@ def index():
 @plugin.route('/settings')
 def open_settings():
     plugin.open_settings()
+    container.get_core_monitor().onSettingsChanged()
 
 
 @plugin.route('/actions/create-mapping')
@@ -83,10 +84,13 @@ def do_full_refresh():
 @plugin.route('/games/info/<game_id>')
 def show_game_info(game_id):
     game = core.get_storage().get(game_id)
+    cache_fanart = game.get_selected_fanart()
+    cache_poster = game.get_selected_poster()
     window = GameInfo(container, game, game.name)
     window.doModal()
     del window
-    xbmc.executebuiltin('Container.Refresh')
+    if cache_fanart != game.get_selected_fanart() or cache_poster != game.get_selected_poster():
+        xbmc.executebuiltin('Container.Refresh')
 
 
 @plugin.route('/games/launch/<game_id>')

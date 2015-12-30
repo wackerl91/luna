@@ -48,13 +48,13 @@ class GameController:
         :rtype: list
         """
 
-        def context_menu(game_name):
+        def context_menu(game_id):
             return [
                 (
                     'Game Information',
                     'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
                             endpoint='show_game_info',
-                            game_id=game_name
+                            game_id=game_id
                     )
                 ),
                 (

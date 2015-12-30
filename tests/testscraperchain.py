@@ -23,7 +23,8 @@ class TestScraperChain(unittest.TestCase):
         game = self.chain.query_game_information(game_name)
         for img_path in game.fanarts:
             self.assertEqual(os.path.isfile(img_path), True)
-        self.assertEqual(os.path.isfile(game.poster), True)
+        for img_path in game.posters:
+            self.assertEqual(os.path.isfile(img_path), True)
 
     def tearDown(self):
         self.chain.reset_cache()

@@ -36,8 +36,8 @@ class GameController:
                     except KeyError:
                         self.logger.info(
                                 'Key Error thrown while getting information for game {0}: {1}'
-                                    .format(game_name,
-                                            KeyError.message))
+                                .format(game_name,
+                                        KeyError.message))
                         storage[game_name] = Game(game_name, None)
 
         storage.sync()
@@ -81,8 +81,8 @@ class GameController:
             game = storage.get(game_name)
             items.append({
                 'label': game.name,
-                'icon': game.poster,
-                'thumbnail': game.poster,
+                'icon': game.get_selected_poster(),
+                'thumbnail': game.get_selected_poster(),
                 'info': {
                     'year': game.year,
                     'plot': game.plot,

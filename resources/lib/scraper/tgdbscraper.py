@@ -37,7 +37,10 @@ class TgdbScraper(AbstractScraper):
         dict_response = self._parse_xml_to_dict(xml_root)
 
         if dict_response:
-            dict_response['poster'] = self._dump_image(game_cover_path, dict_response.get('poster'))
+            posters = dict_response['posters']
+            dict_response['posters'] = []
+            for poster in posters:
+                dict_response['posters'].append(self._dump_image(game_cover_path, poster))
 
             local_arts = []
             for art in dict_response.get('fanarts'):
@@ -63,7 +66,7 @@ class TgdbScraper(AbstractScraper):
         :rtype: dict
         :type root: Element
         """
-        data = {'year': 'N/A', 'plot': 'N/A', 'poster': 'N/A', 'genre': [], 'fanarts': []}
+        data = {'year': 'N/A', 'plot': 'N/A', 'posters': [], 'genre': [], 'fanarts': []}
         base_img_url = root.find('baseImgUrl').text
         for game in root.findall('Game'):
             if game.find('Platform').text == 'PC':
@@ -73,7 +76,7 @@ class TgdbScraper(AbstractScraper):
                     data['plot'] = game.find('Overview').text
                 for img in game.find('Images'):
                     if img.get('side') == 'front':
-                        data['poster'] = os.path.join(base_img_url, img.text)
+                        data['posters'].append(os.path.join(base_img_url, img.text))
                     if img.tag == 'fanart':
                         data['fanarts'].append(os.path.join(base_img_url, img.find('original').text))
                 if game.find('Genres') is not None:

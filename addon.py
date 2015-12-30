@@ -92,8 +92,7 @@ def show_game_info(game_id):
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     core.logger.info('Launching game %s' % game_id)
-    # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by game controller
-    container.get_moonlight_helper().launch_game(game_id)
+    game_controller.launch_game(game_id)
 
 
 if __name__ == '__main__':

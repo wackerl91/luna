@@ -101,3 +101,10 @@ class GameController:
             })
 
         return items
+
+    def launch_game(self, game_name):
+        """
+        Launches game with specified name
+        :type game_name: str
+        """
+        self.moonlight_helper.launch_game(game_name)

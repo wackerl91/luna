@@ -1,6 +1,6 @@
 import os
 
-import addonwindow as pyxbmct
+import pyxbmct.addonwindow as pyxbmct
 
 from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
 

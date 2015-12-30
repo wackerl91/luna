@@ -1,3 +1,4 @@
+import xbmc
 import xbmcgui
 
 from xbmcswift2 import Plugin, xbmcaddon
@@ -5,6 +6,8 @@ from xbmcswift2 import Plugin, xbmcaddon
 from resources.lib.controller.configcontroller import ConfigController
 from resources.lib.controller.gamecontroller import GameController
 from resources.lib.plugincontainer import PluginContainer
+
+from resources.lib.views.gameinfo import GameInfo
 
 plugin = Plugin()
 container = PluginContainer(plugin)
@@ -19,19 +22,21 @@ addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 @plugin.route('/')
 def index():
-    items = [{
-        'label': 'Games',
-        'thumbnail': addon_internal_path + '/resources/icons/controller.png',
-        'path': plugin.url_for(
-                endpoint='show_games'
-        )
-    }, {
-        'label': 'Settings',
-        'thumbnail': addon_internal_path + '/resources/icons/cog.png',
-        'path': plugin.url_for(
-                endpoint='open_settings'
-        )
-    }]
+    items = [
+        {
+            'label': 'Games',
+            'thumbnail': addon_internal_path + '/resources/icons/controller.png',
+            'path': plugin.url_for(
+                    endpoint='show_games'
+            )
+        }, {
+            'label': 'Settings',
+            'thumbnail': addon_internal_path + '/resources/icons/cog.png',
+            'path': plugin.url_for(
+                    endpoint='open_settings'
+            )
+        }
+    ]
 
     return plugin.finish(items)
 
@@ -74,6 +79,15 @@ def show_games():
 @plugin.route('/games/refresh')
 def do_full_refresh():
     game_controller.get_games()
+
+
+@plugin.route('/games/info/<game_id>')
+def show_game_info(game_id):
+    game = core.get_storage().get(game_id)
+    window = GameInfo(container, game, game.name)
+    window.doModal()
+    del window
+    xbmc.executebuiltin('Container.Refresh')
 
 
 @plugin.route('/games/launch/<game_id>')

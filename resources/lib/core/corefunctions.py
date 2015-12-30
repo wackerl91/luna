@@ -1,6 +1,8 @@
 import os
 import stat
 
+from xml.etree.ElementTree import ElementTree
+
 from xbmcswift2 import xbmcaddon
 
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -51,6 +53,13 @@ class Core:
 
     def get_storage(self):
         return self.plugin.get_storage('game_storage')
+
+    def get_active_skin(self):
+        userdata_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(self.plugin.storage_path))))
+        guisettings_file = os.path.join(userdata_folder, 'guisettings.xml')
+        xml_root = ElementTree(file=guisettings_file).getroot()
+        active_skin = xml_root.find('lookandfeel').find('skin').text
+        return active_skin
 
 
 class Logger:

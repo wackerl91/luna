@@ -51,6 +51,13 @@ class GameController:
         def context_menu(game_name):
             return [
                 (
+                    'Game Information',
+                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                            endpoint='show_game_info',
+                            game_id=game_name
+                    )
+                ),
+                (
                     self.core.string('addon_settings'),
                     'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
                             endpoint='open_settings'
@@ -60,13 +67,6 @@ class GameController:
                     self.core.string('full_refresh'),
                     'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
                             endpoint='do_full_refresh'
-                    )
-                ),
-                (
-                    'Game Information',
-                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
-                            endpoint='test_modal',
-                            game_id=game_name
                     )
                 )
             ]

@@ -1,3 +1,4 @@
+import xbmc
 import xbmcgui
 
 from xbmcswift2 import Plugin, xbmcaddon
@@ -81,11 +82,12 @@ def do_full_refresh():
 
 
 @plugin.route('/games/info/<game_id>')
-def test_modal(game_id):
+def show_game_info(game_id):
     game = core.get_storage().get(game_id)
     window = GameInfo(container, game, game.name)
     window.doModal()
     del window
+    xbmc.executebuiltin('Container.Refresh')
 
 
 @plugin.route('/games/launch/<game_id>')

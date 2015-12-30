@@ -76,9 +76,8 @@ class GameInfo(pyxbmct.AddonDialogWindow):
 
     def select_fanart(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Fanart', 'files', '.jpg|.png', False, False,
-                                          self.game.fanart[0])
+                                          self.game.fanarts[0])
         self.game.selected_fanart = browser
-        self.container.get_core().get_storage().update(self.game)
         self.container.get_core().get_storage().sync()
 
     def setAnimation(self, control):

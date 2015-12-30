@@ -39,6 +39,9 @@ class Game:
         elif other.fanarts is not None:
             self.fanarts = list(set(self.fanarts) | set(other.fanarts))
 
+        if self.selected_fanart is None or self.selected_fanart == '':
+            self.selected_fanart = other.selected_fanart
+
     def get_fanart(self, index, alt):
         if self.fanarts is None:
             return alt
@@ -52,6 +55,9 @@ class Game:
 
     def get_selected_fanart(self):
         if hasattr(self, 'selected_fanart'):
+            if self.selected_fanart == '':
+                self.selected_fanart = self.get_fanart(0, '')
+
             return self.selected_fanart
         else:
             self.selected_fanart = self.get_fanart(0, '')

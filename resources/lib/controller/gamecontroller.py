@@ -96,7 +96,7 @@ class GameController:
                         game_id=game.name
                 ),
                 'properties': {
-                    'fanart_image': game.get_fanart(0, '')
+                    'fanart_image': game.get_selected_fanart()
                 }
             })
 

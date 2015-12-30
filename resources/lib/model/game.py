@@ -1,15 +1,16 @@
 class Game:
-    def __init__(self, name, year=None, genre=None, plot=None, poster=None, fanart=None):
+    def __init__(self, name, year=None, genre=None, plot=None, poster=None, fanarts=None):
         self.name = name
         self.year = year
         self.genre = genre
         self.plot = plot
         self.poster = poster
-        self.fanart = fanart
+        self.fanarts = fanarts
+        self.selected_fanart = self.get_fanart(0, '')
 
     @classmethod
-    def from_dict(cls, name=None, year=None, genre=None, plot=None, poster=None, fanart=None, **kwargs):
-        game = cls(name, year, genre, plot, poster, fanart)
+    def from_dict(cls, name=None, year=None, genre=None, plot=None, poster=None, fanarts=None, **kwargs):
+        game = cls(name, year, genre, plot, poster, fanarts)
 
         return game
 
@@ -33,21 +34,28 @@ class Game:
         if self.poster is None:
             self.poster = other.poster
 
-        if self.fanart is None:
-            self.fanart = other.fanart
-        elif other.fanart is not None:
-            self.fanart = list(set(self.fanart) | set(other.fanart))
+        if self.fanarts is None:
+            self.fanarts = other.fanarts
+        elif other.fanarts is not None:
+            self.fanarts = list(set(self.fanarts) | set(other.fanarts))
 
     def get_fanart(self, index, alt):
-        if self.fanart is None:
+        if self.fanarts is None:
             return alt
         else:
             try:
-                response = self.fanart[index]
+                response = self.fanarts[index]
             except:
                 response = alt
 
             return response
+
+    def get_selected_fanart(self):
+        if hasattr(self, 'selected_fanart'):
+            return self.selected_fanart
+        else:
+            self.selected_fanart = self.get_fanart(0, '')
+            return self.selected_fanart
 
     def get_genre_as_string(self):
         if self.genre is not None:

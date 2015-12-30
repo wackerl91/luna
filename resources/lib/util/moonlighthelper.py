@@ -60,7 +60,7 @@ class MoonlightHelper:
         """
         :type dialog: DialogProgress
         """
-        pairing_proc = subprocess.Popen([self.config_helper.get_binary(), 'pair', self.config_helper.get_host()],
+        pairing_proc = subprocess.Popen([self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host')],
                                         stdout=subprocess.PIPE, bufsize=1)
         lines_iterator = iter(pairing_proc.stdout.readline, b"")
 

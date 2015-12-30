@@ -43,7 +43,6 @@ def index():
 
 @plugin.route('/settings')
 def open_settings():
-    # TODO: Check if there's a listener for closed settings. Use a file watcher if there's none?
     plugin.open_settings()
 
 

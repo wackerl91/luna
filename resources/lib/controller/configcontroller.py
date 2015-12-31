@@ -27,7 +27,7 @@ class ConfigController:
                 self.core.string('starting_mapping')
         )
 
-        self.core.Logger.info('Trying to call subprocess')
+        self.core.logger.info('Trying to call subprocess')
         map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
         success = self.moonlight_helper.create_ctrl_map(progress_dialog, map_file)
@@ -39,7 +39,7 @@ class ConfigController:
                     self.core.string('set_mapping_active')
             )
 
-            self.core.Logger.info('Dialog Yes No Value: %s' % confirmed)
+            self.core.logger.info('Dialog Yes No Value: %s' % confirmed)
 
             if confirmed:
                 self.container.get_plugin().set_setting('input_map', map_file)

@@ -36,8 +36,8 @@ class GameController:
                     except KeyError:
                         self.logger.info(
                                 'Key Error thrown while getting information for game {0}: {1}'
-                                    .format(game_name,
-                                            KeyError.message))
+                                .format(game_name,
+                                        KeyError.message))
                         storage[game_name] = Game(game_name, None)
 
         storage.sync()
@@ -48,13 +48,13 @@ class GameController:
         :rtype: list
         """
 
-        def context_menu(game_name):
+        def context_menu(game_id):
             return [
                 (
                     'Game Information',
                     'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
                             endpoint='show_game_info',
-                            game_id=game_name
+                            game_id=game_id
                     )
                 ),
                 (
@@ -81,8 +81,8 @@ class GameController:
             game = storage.get(game_name)
             items.append({
                 'label': game.name,
-                'icon': game.poster,
-                'thumbnail': game.poster,
+                'icon': game.get_selected_poster(),
+                'thumbnail': game.get_selected_poster(),
                 'info': {
                     'year': game.year,
                     'plot': game.plot,
@@ -101,3 +101,10 @@ class GameController:
             })
 
         return items
+
+    def launch_game(self, game_name):
+        """
+        Launches game with specified name
+        :type game_name: str
+        """
+        self.moonlight_helper.launch_game(game_name)

@@ -43,8 +43,8 @@ def index():
 
 @plugin.route('/settings')
 def open_settings():
-    # TODO: Check if there's a listener for closed settings. Use a file watcher if there's none?
     plugin.open_settings()
+    container.get_core_monitor().onSettingsChanged()
 
 
 @plugin.route('/actions/create-mapping')
@@ -84,17 +84,19 @@ def do_full_refresh():
 @plugin.route('/games/info/<game_id>')
 def show_game_info(game_id):
     game = core.get_storage().get(game_id)
+    cache_fanart = game.get_selected_fanart()
+    cache_poster = game.get_selected_poster()
     window = GameInfo(container, game, game.name)
     window.doModal()
     del window
-    xbmc.executebuiltin('Container.Refresh')
+    if cache_fanart != game.get_selected_fanart() or cache_poster != game.get_selected_poster():
+        xbmc.executebuiltin('Container.Refresh')
 
 
 @plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     core.logger.info('Launching game %s' % game_id)
-    # TODO: Routing shouldn't know about the existence of the moonlight helper; should be handled by game controller
-    container.get_moonlight_helper().launch_game(game_id)
+    game_controller.launch_game(game_id)
 
 
 if __name__ == '__main__':

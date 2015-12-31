@@ -13,10 +13,10 @@ Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it'
 ## Features
 - GameStream Host Pairing can be done from within Luna
 - Controller Mapping can be done there too (that's somewhat buggy though, at times I need to restart xboxdrv on my Pi before it works. Not sure if this is Luna or Moonlight ...)
-- Dynamic Game Library (gets pulled from Moonlight every time you enter the 'Games' Section; so there's no persistence involved right now)
+- Dynamic Game Library
 - the above allows for starting of specific games
 - extensive configuration which supports nearly all of moonlight-embedded's launch options
-- Game covers inside game view (kind of work in progress, can be enabled/disabled in 'cache control')
+- Game View similar to Kodi's movie view (cover art / fanart support)
 
 ## Issues
 - Controller Mapping sometimes not working

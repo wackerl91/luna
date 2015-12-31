@@ -1,0 +1,2 @@
+v0.3.0-alpha:
+-- during alpha changelog won't be updated, except version number

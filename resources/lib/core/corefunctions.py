@@ -3,7 +3,10 @@ import stat
 
 from xml.etree.ElementTree import ElementTree
 
-from xbmcswift2 import xbmcaddon
+from xbmcswift2 import xbmcaddon, Plugin
+
+from resources.lib.di.component import Component
+from resources.lib.di.requiredfeature import RequiredFeature
 
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
@@ -23,11 +26,11 @@ STRINGS = {
 }
 
 
-class Core:
+class Core(Component):
 
-    def __init__(self, plugin):
-        self.plugin = plugin
-        self.logger = Logger(self.plugin)
+    def __init__(self, ):
+        self.plugin = Plugin('script.luna')
+        self.logger = RequiredFeature('logger')
 
     def string(self, string_id):
         if string_id in STRINGS:
@@ -62,9 +65,9 @@ class Core:
         return active_skin
 
 
-class Logger:
-    def __init__(self, plugin):
-        self.plugin = plugin
+class Logger(Component):
+    def __init__(self):
+        self.plugin = Plugin('script.luna')
 
     def info(self, text):
         self.plugin.log.info(text)

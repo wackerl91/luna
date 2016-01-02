@@ -1,8 +1,6 @@
 import os
 import unittest
 
-from xbmcswift2 import Plugin
-
 from resources.lib.model.game import Game
 from resources.lib.scraper.scraperchain import ScraperChain
 
@@ -10,7 +8,7 @@ from resources.lib.scraper.scraperchain import ScraperChain
 class TestScraperChain(unittest.TestCase):
 
     def setUp(self):
-        chain = ScraperChain(Plugin())
+        chain = ScraperChain()
         self.chain = chain
 
     def testReturnType(self):

@@ -2,12 +2,13 @@ import os
 import shutil
 import unittest
 
-from xbmcswift2 import Plugin
-
+from resources.lib.core.corefunctions import Logger
+from resources.lib.di.featurebroker import features
 from resources.lib.util.confighelper import ConfigHelper
 
 
 class TestConfigHelper(unittest.TestCase):
+    features.provide('logger', Logger)
 
     def setUp(self):
         path = os.path.join(os.path.expanduser('~'), 'LunaTestTemp/')
@@ -37,16 +38,14 @@ class TestConfigHelper(unittest.TestCase):
         }
 
     def testConfigurationDump(self):
-        plugin = Plugin()
-        config = ConfigHelper(plugin)
+        config = ConfigHelper()
         config._configure(**self.fake_settings)
         config._dump_conf()
 
         self.assertEqual(os.path.isfile(config.full_path), True)
 
     def testConfigurationCorrectness(self):
-        plugin = Plugin()
-        config = ConfigHelper(plugin)
+        config = ConfigHelper()
         config._configure(**self.fake_settings)
         config._dump_conf()
 

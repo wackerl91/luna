@@ -3,18 +3,19 @@ import xbmcgui
 
 from xbmcswift2 import Plugin, xbmcaddon
 
+from resources.lib.core.corefunctions import Core, Logger
 from resources.lib.controller.configcontroller import ConfigController
 from resources.lib.controller.gamecontroller import GameController
-from resources.lib.plugincontainer import PluginContainer
+from resources.lib.core.coremonitor import CoreMonitor
+from resources.lib.di.featurebroker import features
+from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.scraper.scraperchain import ScraperChain
+from resources.lib.util.confighelper import ConfigHelper
+from resources.lib.util.moonlighthelper import MoonlightHelper
 
 from resources.lib.views.gameinfo import GameInfo
 
 plugin = Plugin()
-container = PluginContainer(plugin)
-core = container.get_core()
-
-game_controller = GameController(container)
-config_controller = ConfigController(container)
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -44,7 +45,7 @@ def index():
 @plugin.route('/settings')
 def open_settings():
     plugin.open_settings()
-    container.get_core_monitor().onSettingsChanged()
+    core_monitor.onSettingsChanged()
 
 
 @plugin.route('/actions/create-mapping')
@@ -65,7 +66,7 @@ def reset_cache():
     )
 
     if confirmed:
-        container.get_scraper_chain().reset_cache()
+        scraper_chain.reset_cache()
     else:
         return
 
@@ -86,7 +87,7 @@ def show_game_info(game_id):
     game = core.get_storage().get(game_id)
     cache_fanart = game.get_selected_fanart()
     cache_poster = game.get_selected_poster()
-    window = GameInfo(container, game, game.name)
+    window = GameInfo(game, game.name)
     window.doModal()
     del window
     if cache_fanart != game.get_selected_fanart() or cache_poster != game.get_selected_poster():
@@ -100,10 +101,25 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
-    core.logger.info('Launching Luna')
-    core.check_script_permissions()
+    features.provide('plugin', Plugin('script.luna'))
+    features.provide('logger', Logger)
+    features.provide('core', Core)
+    features.provide('moonlight-helper', MoonlightHelper)
+    features.provide('scraper-chain', ScraperChain)
+    features.provide('config-helper', ConfigHelper)
+    features.provide('config-controller', ConfigController)
+    features.provide('game-controller', GameController)
+    features.provide('core-monitor', CoreMonitor)
+
+    core = RequiredFeature('core')
+    config_helper = RequiredFeature('config_helper')
+    scraper_chain = RequiredFeature('scraper-chain')
+    core_monitor = RequiredFeature('core-monitor')
+    game_controller = RequiredFeature('game-controller')
+    config_controller = RequiredFeature('config-controller')
+
     if plugin.get_setting('host', unicode):
-        container.get_config_helper().configure()
+        config_helper.configure()
         plugin.run()
     else:
         xbmcgui.Dialog().ok(

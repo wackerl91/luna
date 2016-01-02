@@ -1,13 +1,20 @@
 import ConfigParser
 import os
 
+from xbmcswift2 import Plugin
+
+from resources.lib.di.requiredfeature import RequiredFeature
+import resources.lib.di.featurebroker as broker
+
 conf = 'luna.conf'
 
 
 class ConfigHelper:
-    def __init__(self, plugin):
+    plugin = Plugin('script.luna')
+    logger = RequiredFeature('logger', broker.has_methods('info'))
+
+    def __init__(self):
         self._reset()
-        self.plugin = plugin
 
     def _reset(self):
         self.file_path = None

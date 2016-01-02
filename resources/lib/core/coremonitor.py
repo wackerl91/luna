@@ -1,11 +1,11 @@
-import xbmc
+from resources.lib.di.component import Component
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
-class CoreMonitor(xbmc.Monitor):
-    def __init__(self, core, config_helper):
-        super(CoreMonitor, self).__init__()
-        self.core = core
-        self.config_helper = config_helper
+class CoreMonitor(Component):
+    def __init__(self):
+        self.core = RequiredFeature('core')
+        self.config_helper = RequiredFeature('config-helper')
 
     def onSettingsChanged(self):
         self.core.logger.info('Settings change called')

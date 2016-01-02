@@ -1,15 +1,20 @@
 import os
 import shutil
 
+from xbmcswift2 import Plugin
+
+from resources.lib.di.component import Component
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
 from resources.lib.scraper.omdbscraper import OmdbScraper
 from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 
-class ScraperChain:
-    def __init__(self, plugin):
-        self.plugin = plugin
+class ScraperChain(Component):
+    plugin = Plugin('script.luna')
+
+    def __init__(self):
+        print 'ScraperChain init'
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
         self._configure()

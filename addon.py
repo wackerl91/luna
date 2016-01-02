@@ -8,7 +8,6 @@ from resources.lib.controller.configcontroller import ConfigController
 from resources.lib.controller.gamecontroller import GameController
 from resources.lib.core.coremonitor import CoreMonitor
 from resources.lib.di.featurebroker import features
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.scraper.scraperchain import ScraperChain
 from resources.lib.util.confighelper import ConfigHelper
 from resources.lib.util.moonlighthelper import MoonlightHelper
@@ -101,7 +100,7 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
-    features.provide('plugin', Plugin('script.luna'))
+    features.provide('plugin', plugin)
     features.provide('logger', Logger)
     features.provide('core', Core)
     features.provide('moonlight-helper', MoonlightHelper)
@@ -111,12 +110,12 @@ if __name__ == '__main__':
     features.provide('game-controller', GameController)
     features.provide('core-monitor', CoreMonitor)
 
-    core = RequiredFeature('core')
-    config_helper = RequiredFeature('config_helper')
-    scraper_chain = RequiredFeature('scraper-chain')
-    core_monitor = RequiredFeature('core-monitor')
-    game_controller = RequiredFeature('game-controller')
-    config_controller = RequiredFeature('config-controller')
+    core = Core()
+    config_helper = ConfigHelper()
+    scraper_chain = ScraperChain()
+    core_monitor = CoreMonitor()
+    game_controller = GameController()
+    config_controller = ConfigController()
 
     if plugin.get_setting('host', unicode):
         config_helper.configure()

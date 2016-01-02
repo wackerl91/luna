@@ -1,11 +1,9 @@
-from xbmcswift2 import Plugin
-
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
 
 class GameController:
-    plugin = Plugin('script.luna')
+    plugin = RequiredFeature('plugin')
     core = RequiredFeature('core')
     moonlight_helper = RequiredFeature('moonlight-helper')
     scraper_chain = RequiredFeature('scraper-chain')

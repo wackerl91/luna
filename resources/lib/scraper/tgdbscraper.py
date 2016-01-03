@@ -72,7 +72,9 @@ class TgdbScraper(AbstractScraper):
         :type root: Element
         """
         data = {'year': 'N/A', 'plot': 'N/A', 'posters': [], 'genre': [], 'fanarts': []}
+        similar_id = []
         base_img_url = root.find('baseImgUrl').text
+
         for game in root.findall('Game'):
             if game.find('Platform').text == 'PC':
                 if game.find('ReleaseDate') is not None:
@@ -87,6 +89,14 @@ class TgdbScraper(AbstractScraper):
                 if game.find('Genres') is not None:
                     for genre in game.find('Genres'):
                         data['genre'].append(str(genre.text))
-                return data
+                if game.find('Similar') is not None:
+                    for similar in game.find('Similar'):
+                        if similar.tag == 'Game':
+                            similar_id.append(similar.find('id').text)
 
-        return None
+            if game.find('id').text in similar_id:
+                for img in game.find('Images'):
+                    if img.tag == 'fanart':
+                        data['fanarts'].append(os.path.join(base_img_url, img.find('original').text))
+
+        return data

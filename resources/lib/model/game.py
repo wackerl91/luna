@@ -29,7 +29,7 @@ class Game:
 
         if self.plot is None:
             self.plot = other.plot
-        elif len(other.plot) > len(self.plot):
+        elif other.plot is not None and len(other.plot) > len(self.plot):
             self.plot = other.plot
 
         if self.posters is None:

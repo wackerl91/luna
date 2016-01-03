@@ -99,6 +99,8 @@ if __name__ == '__main__':
     game_controller = RequiredFeature('game-controller').request()
     config_controller = RequiredFeature('config-controller').request()
 
+    core.check_script_permissions()
+
     if plugin.get_setting('host', unicode):
         config_helper.configure()
         plugin.run()

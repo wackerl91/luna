@@ -1,18 +1,19 @@
 import os
 import shutil
 
+from resources.lib.di.component import Component
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
-from resources.lib.scraper.omdbscraper import OmdbScraper
-from resources.lib.scraper.tgdbscraper import TgdbScraper
 
 
-class ScraperChain:
-    def __init__(self, plugin):
-        self.plugin = plugin
+class ScraperChain(Component):
+    plugin = RequiredFeature('plugin')
+    logger = RequiredFeature('logger')
+
+    def __init__(self):
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
-        self._configure()
 
     def query_game_information(self, game_name):
         """
@@ -20,9 +21,12 @@ class ScraperChain:
         :rtype game: Game
         """
         game_info = []
+        self.logger.info("Trying to get information for game: %s" % game_name)
         if game_name not in self.game_blacklist:
             for scraper in self.scraper_chain:
-                game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
+                if scraper.is_enabled():
+                    game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
+
         else:
             game_info.append(Game(game_name, None))
 
@@ -46,14 +50,13 @@ class ScraperChain:
             if os.path.exists(path):
                 shutil.rmtree(path, ignore_errors=True)
 
+    def append(self, scrapers):
+        for scraper in scrapers:
+            obj = RequiredFeature(scraper).request()
+            self._append_scraper(obj)
+
     def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):
             self.scraper_chain.append(scraper)
         else:
             raise AssertionError('Expected to receive an instance of AbstractScraper, got %s instead' % type(scraper))
-
-    def _configure(self):
-        if self.plugin.get_setting('enable_omdb', bool):
-            self._append_scraper(OmdbScraper(self.plugin.storage_path))
-        if self.plugin.get_setting('enable_tgdb', bool):
-            self._append_scraper(TgdbScraper(self.plugin.storage_path))

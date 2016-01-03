@@ -1,17 +1,16 @@
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
 
 class GameController:
-    def __init__(self, container):
-        """
+    plugin = RequiredFeature('plugin')
+    core = RequiredFeature('core')
+    moonlight_helper = RequiredFeature('moonlight-helper')
+    scraper_chain = RequiredFeature('scraper-chain')
+    logger = RequiredFeature('logger')
 
-        :type container: PluginContainer
-        """
-        self.container = container
-        self.core = container.get_core()
-        self.moonlight_helper = container.get_moonlight_helper()
-        self.scraper_chain = container.get_scraper_chain()
-        self.logger = self.core.logger
+    def __init__(self):
+        pass
 
     def get_games(self):
         """
@@ -23,7 +22,7 @@ class GameController:
         storage.clear()
 
         for game_name in game_list:
-            if self.container.get_plugin().get_setting('disable_scraper', bool):
+            if self.plugin.get_setting('disable_scraper', bool):
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
                 storage[game_name] = Game(game_name, None)
             else:
@@ -52,20 +51,20 @@ class GameController:
             return [
                 (
                     'Game Information',
-                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
                             endpoint='show_game_info',
                             game_id=game_id
                     )
                 ),
                 (
                     self.core.string('addon_settings'),
-                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
                             endpoint='open_settings'
                     )
                 ),
                 (
                     self.core.string('full_refresh'),
-                    'XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
                             endpoint='do_full_refresh'
                     )
                 )
@@ -91,7 +90,7 @@ class GameController:
                 },
                 'replace_context_menu': True,
                 'context_menu': context_menu(game_name),
-                'path': self.container.get_plugin().url_for(
+                'path': self.plugin.url_for(
                         endpoint='launch_game',
                         game_id=game.name
                 ),

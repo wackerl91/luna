@@ -1,13 +1,13 @@
 import os
 import shutil
 import unittest
+import resources.lib.config.bootstrap as bootstrapper
 
-from xbmcswift2 import Plugin
-
-from resources.lib.util.confighelper import ConfigHelper
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class TestConfigHelper(unittest.TestCase):
+    bootstrapper.bootstrap()
 
     def setUp(self):
         path = os.path.join(os.path.expanduser('~'), 'LunaTestTemp/')
@@ -37,16 +37,14 @@ class TestConfigHelper(unittest.TestCase):
         }
 
     def testConfigurationDump(self):
-        plugin = Plugin()
-        config = ConfigHelper(plugin)
+        config = RequiredFeature('config-helper').request()
         config._configure(**self.fake_settings)
         config._dump_conf()
 
         self.assertEqual(os.path.isfile(config.full_path), True)
 
     def testConfigurationCorrectness(self):
-        plugin = Plugin()
-        config = ConfigHelper(plugin)
+        config = RequiredFeature('config-helper').request()
         config._configure(**self.fake_settings)
         config._dump_conf()
 

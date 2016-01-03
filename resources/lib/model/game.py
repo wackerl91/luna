@@ -79,9 +79,13 @@ class Game:
 
     def set_selected_fanart(self, uri):
         art = self.fanarts.get(os.path.basename(uri))
-        if not os.path.isfile(art.get_original()):
-            art.set_original(self._replace_thumb(art.get_thumb(), art.get_original()))
-        self.selected_fanart = art
+        if isinstance(art, Fanart):
+            if not os.path.isfile(art.get_original()):
+                art.set_original(self._replace_thumb(art.get_thumb(), art.get_original()))
+            self.selected_fanart = art
+        else:
+            if os.path.isfile(uri):
+                self.selected_fanart = Fanart(uri, uri)
 
     def get_genre_as_string(self):
         if self.genre is not None:

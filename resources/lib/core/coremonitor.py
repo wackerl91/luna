@@ -3,10 +3,12 @@ from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class CoreMonitor(Component):
+    logger = RequiredFeature('logger')
+    config_helper = RequiredFeature('config-helper')
+
     def __init__(self):
-        self.core = RequiredFeature('core')
-        self.config_helper = RequiredFeature('config-helper')
+        pass
 
     def onSettingsChanged(self):
-        self.core.logger.info('Settings change called')
+        self.logger.info('Settings change called')
         self.config_helper.configure()

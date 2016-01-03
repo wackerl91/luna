@@ -16,8 +16,8 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class GameInfo(pyxbmct.AddonDialogWindow):
-    plugin = Plugin('script.luna')
-    core = RequiredFeature('core')
+    plugin = RequiredFeature('plugin').request()
+    core = RequiredFeature('core').request()
 
     def __init__(self, game, title=''):
         super(GameInfo, self).__init__(title)

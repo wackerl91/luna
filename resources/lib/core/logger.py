@@ -3,8 +3,10 @@ from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class Logger(Component):
+    plugin = RequiredFeature('plugin')
+
     def __init__(self):
-        self.plugin = RequiredFeature('plugin')
+        pass
 
     def info(self, text):
         self.plugin.log.info(text)

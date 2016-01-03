@@ -27,10 +27,11 @@ STRINGS = {
 
 
 class Core(Component):
+    plugin = RequiredFeature('plugin')
+    logger = RequiredFeature('logger')
 
     def __init__(self, ):
-        self.plugin = RequiredFeature('plugin')
-        self.logger = RequiredFeature('logger')
+        pass
 
     def string(self, string_id):
         if string_id in STRINGS:

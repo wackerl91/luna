@@ -3,7 +3,7 @@ import stat
 
 from xml.etree.ElementTree import ElementTree
 
-from xbmcswift2 import xbmcaddon, Plugin
+from xbmcswift2 import xbmcaddon
 
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
@@ -29,7 +29,7 @@ STRINGS = {
 class Core(Component):
 
     def __init__(self, ):
-        self.plugin = Plugin('script.luna')
+        self.plugin = RequiredFeature('plugin')
         self.logger = RequiredFeature('logger')
 
     def string(self, string_id):
@@ -64,16 +64,3 @@ class Core(Component):
         active_skin = xml_root.find('lookandfeel').find('skin').text
         return active_skin
 
-
-class Logger(Component):
-    def __init__(self):
-        self.plugin = Plugin('script.luna')
-
-    def info(self, text):
-        self.plugin.log.info(text)
-
-    def debug(self, text):
-        self.plugin.log.debug(text)
-
-    def error(self, text):
-        self.plugin.log.error(text)

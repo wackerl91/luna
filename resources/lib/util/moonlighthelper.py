@@ -2,7 +2,7 @@ import os
 import subprocess
 import threading
 
-from xbmcswift2 import Plugin, xbmc, xbmcaddon
+from xbmcswift2 import xbmc, xbmcaddon
 
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
@@ -18,8 +18,8 @@ def loop_lines(dialog, iterator):
 
 
 class MoonlightHelper(Component):
+    plugin = RequiredFeature('plugin')
     config_helper = RequiredFeature('config-helper')
-    plugin = Plugin('script.luna')
 
     def __init__(self):
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')

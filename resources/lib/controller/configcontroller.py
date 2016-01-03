@@ -1,14 +1,12 @@
 import os
 
-from xbmcswift2 import Plugin
-
-import xbmcgui
+from xbmcswift2 import xbmcgui
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class ConfigController(Component):
-    plugin = Plugin('script.luna')
+    plugin = RequiredFeature('plugin')
     core = RequiredFeature('core')
     moonlight_helper = RequiredFeature('moonlight-helper')
     logger = RequiredFeature('logger')

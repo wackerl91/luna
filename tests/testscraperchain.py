@@ -1,15 +1,17 @@
 import os
 import unittest
+import resources.lib.config.bootstrap as bootstrapper
+
+from resources.lib.di.requiredfeature import RequiredFeature
 
 from resources.lib.model.game import Game
-from resources.lib.scraper.scraperchain import ScraperChain
 
 
 class TestScraperChain(unittest.TestCase):
+    bootstrapper.bootstrap()
 
     def setUp(self):
-        chain = ScraperChain()
-        self.chain = chain
+        self.chain = RequiredFeature('scraper-chain').request()
 
     def testReturnType(self):
         game_name = 'Half-Life 2'

@@ -3,12 +3,14 @@ import subprocess
 
 from abc import ABCMeta, abstractmethod
 
+from resources.lib.di.requiredfeature import RequiredFeature
+
 
 class AbstractScraper:
     __metaclass__ = ABCMeta
 
-    def __init__(self, addon_path):
-        self.base_path = addon_path
+    def __init__(self):
+        self.base_path = RequiredFeature('plugin').request().storage_path
 
     @abstractmethod
     def get_game_information(self, game_name):
@@ -25,6 +27,10 @@ class AbstractScraper:
         Returns a list of used cache paths by this scraper
         :rtype: list
         """
+        pass
+
+    @abstractmethod
+    def is_enabled(self):
         pass
 
     @staticmethod

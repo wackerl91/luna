@@ -19,4 +19,12 @@ class RequiredFeature(object):
         assert self.assertion(obj), \
             "The value %s of %r does not match the specified criteria" \
             % (obj, self.feature)
+
+        try:
+            tagged_features = featurebroker.features.get_tagged_features(self.feature)
+            if featurebroker.has_methods('append')(obj):
+                obj.append(tagged_features)
+        except KeyError:
+            pass
+
         return obj

@@ -1,20 +1,12 @@
-import xbmc
-import xbmcgui
+import resources.lib.config.bootstrap as bootstrapper
 
-from xbmcswift2 import Plugin, xbmcaddon
+from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
 
-from resources.lib.core.corefunctions import Core, Logger
-from resources.lib.controller.configcontroller import ConfigController
-from resources.lib.controller.gamecontroller import GameController
-from resources.lib.core.coremonitor import CoreMonitor
-from resources.lib.di.featurebroker import features
-from resources.lib.scraper.scraperchain import ScraperChain
-from resources.lib.util.confighelper import ConfigHelper
-from resources.lib.util.moonlighthelper import MoonlightHelper
+from resources.lib.di.requiredfeature import RequiredFeature
 
 from resources.lib.views.gameinfo import GameInfo
 
-plugin = Plugin()
+plugin = bootstrapper.bootstrap()
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -100,22 +92,12 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
-    features.provide('plugin', plugin)
-    features.provide('logger', Logger)
-    features.provide('core', Core)
-    features.provide('moonlight-helper', MoonlightHelper)
-    features.provide('scraper-chain', ScraperChain)
-    features.provide('config-helper', ConfigHelper)
-    features.provide('config-controller', ConfigController)
-    features.provide('game-controller', GameController)
-    features.provide('core-monitor', CoreMonitor)
-
-    core = Core()
-    config_helper = ConfigHelper()
-    scraper_chain = ScraperChain()
-    core_monitor = CoreMonitor()
-    game_controller = GameController()
-    config_controller = ConfigController()
+    core = RequiredFeature('core').request()
+    config_helper = RequiredFeature('config-helper').request()
+    scraper_chain = RequiredFeature('scraper-chain').request()
+    core_monitor = RequiredFeature('core-monitor').request()
+    game_controller = RequiredFeature('game-controller').request()
+    config_controller = RequiredFeature('config-controller').request()
 
     if plugin.get_setting('host', unicode):
         config_helper.configure()

@@ -1,14 +1,13 @@
 import os
 import shutil
 import unittest
+import resources.lib.config.bootstrap as bootstrapper
 
-from resources.lib.core.corefunctions import Logger
-from resources.lib.di.featurebroker import features
-from resources.lib.util.confighelper import ConfigHelper
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class TestConfigHelper(unittest.TestCase):
-    features.provide('logger', Logger)
+    bootstrapper.bootstrap()
 
     def setUp(self):
         path = os.path.join(os.path.expanduser('~'), 'LunaTestTemp/')
@@ -38,14 +37,14 @@ class TestConfigHelper(unittest.TestCase):
         }
 
     def testConfigurationDump(self):
-        config = ConfigHelper()
+        config = RequiredFeature('config-helper').request()
         config._configure(**self.fake_settings)
         config._dump_conf()
 
         self.assertEqual(os.path.isfile(config.full_path), True)
 
     def testConfigurationCorrectness(self):
-        config = ConfigHelper()
+        config = RequiredFeature('config-helper').request()
         config._configure(**self.fake_settings)
         config._dump_conf()
 

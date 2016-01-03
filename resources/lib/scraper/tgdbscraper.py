@@ -5,11 +5,13 @@ from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element
 
 from abcscraper import AbstractScraper
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class TgdbScraper(AbstractScraper):
-    def __init__(self, addon_path):
-        AbstractScraper.__init__(self, addon_path)
+    def __init__(self):
+        AbstractScraper.__init__(self)
+        self.plugin = RequiredFeature('plugin').request()
         self.api_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.fanart_cache = self._set_up_path(os.path.join(self.base_path, 'art/fanart/'))
@@ -26,6 +28,9 @@ class TgdbScraper(AbstractScraper):
 
     def return_paths(self):
         return [self.cover_cache, self.fanart_cache, self.api_cache]
+
+    def is_enabled(self):
+        return self.plugin.get_setting('enable_tgdb', bool)
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))

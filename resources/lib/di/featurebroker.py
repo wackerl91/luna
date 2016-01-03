@@ -1,6 +1,7 @@
 class FeatureBroker:
     def __init__(self, allow_replace=False):
         self.providers = {}
+        self.tags = {}
         self.allow_replace = allow_replace
 
     def provide(self, feature, provider, *args, **kwargs):
@@ -12,18 +13,31 @@ class FeatureBroker:
         else:
             def call():
                 return provider
-        print 'Added provider: %s' % feature
         self.providers[feature] = call
+
+    def tag(self, base, feature):
+        if base not in self.tags:
+            self.tags[base] = []
+        self.tags[base].append(feature)
+
+    def get_tagged_features(self, base):
+        try:
+            tagged_features = self.tags[base]
+        except KeyError:
+            raise KeyError("Unknown tag named: %s" % base)
+
+        return tagged_features
 
     def __getitem__(self, feature):
         try:
             provider = self.providers[feature]
         except KeyError:
-            raise KeyError("Unknown feature named %r" % feature)
+            raise KeyError("Unknown feature named %s" % feature)
+
         return provider()
 
 
-features = FeatureBroker(True)
+features = FeatureBroker()
 
 
 def no_assertion(obj): return True

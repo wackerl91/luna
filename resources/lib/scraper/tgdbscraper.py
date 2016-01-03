@@ -79,7 +79,6 @@ class TgdbScraper(AbstractScraper):
 
         for game in root.findall('Game'):
             if game.find('Platform').text == 'PC':
-                print 'Found game with platform PC, should not see this twice'
                 if game.find('ReleaseDate') is not None:
                     data['year'] = os.path.basename(game.find('ReleaseDate').text)
                 if game.find('Overview') is not None:

@@ -109,9 +109,9 @@ class GameInfo(pyxbmct.AddonDialogWindow):
 
     def select_fanart(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Fanart', 'files', '.jpg|.png', False, False,
-                                          self.game.get_fanart(0, ''))
+                                          self.game.get_fanart(0, '').get_thumb())
         if browser:
-            self.game.selected_fanart = browser
+            self.game.set_selected_fanart(browser)
             self.core.get_storage().sync()
 
     def select_cover_art(self):

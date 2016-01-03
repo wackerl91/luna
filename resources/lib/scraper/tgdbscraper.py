@@ -6,6 +6,7 @@ from xml.etree.ElementTree import Element
 
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.fanart import Fanart
 
 
 class TgdbScraper(AbstractScraper):
@@ -47,9 +48,10 @@ class TgdbScraper(AbstractScraper):
             for poster in posters:
                 dict_response['posters'].append(self._dump_image(game_cover_path, poster))
 
-            local_arts = []
+            local_arts = {}
             for art in dict_response.get('fanarts'):
-                local_arts.append(self._dump_image(game_fanart_path, art))
+                art.set_thumb(self._dump_image(game_fanart_path, art.get_thumb()))
+                local_arts[os.path.basename(art.get_thumb())] = art
             dict_response['fanarts'] = local_arts
 
             return dict_response
@@ -77,6 +79,7 @@ class TgdbScraper(AbstractScraper):
 
         for game in root.findall('Game'):
             if game.find('Platform').text == 'PC':
+                print 'Found game with platform PC, should not see this twice'
                 if game.find('ReleaseDate') is not None:
                     data['year'] = os.path.basename(game.find('ReleaseDate').text)
                 if game.find('Overview') is not None:
@@ -85,7 +88,11 @@ class TgdbScraper(AbstractScraper):
                     if img.get('side') == 'front':
                         data['posters'].append(os.path.join(base_img_url, img.text))
                     if img.tag == 'fanart':
-                        data['fanarts'].append(os.path.join(base_img_url, img.find('original').text))
+                        image = Fanart()
+                        image.set_original(os.path.join(base_img_url, img.find('original').text))
+                        image.set_thumb(os.path.join(base_img_url, img.find('thumb').text))
+                        data['fanarts'].append(image)
+                        del image
                 if game.find('Genres') is not None:
                     for genre in game.find('Genres'):
                         data['genre'].append(str(genre.text))
@@ -93,10 +100,16 @@ class TgdbScraper(AbstractScraper):
                     for similar in game.find('Similar'):
                         if similar.tag == 'Game':
                             similar_id.append(similar.find('id').text)
+                break
 
+        for game in root.findall('Game'):
             if game.find('id').text in similar_id:
                 for img in game.find('Images'):
                     if img.tag == 'fanart':
-                        data['fanarts'].append(os.path.join(base_img_url, img.find('original').text))
+                        image = Fanart()
+                        image.set_original(os.path.join(base_img_url, img.find('original').text))
+                        image.set_thumb(os.path.join(base_img_url, img.find('thumb').text))
+                        data['fanarts'].append(image)
+                        del image
 
         return data

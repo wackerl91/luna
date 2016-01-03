@@ -47,7 +47,9 @@ class Game:
         if self.fanarts is None:
             self.fanarts = other.fanarts
         elif other.fanarts is not None:
-            self.fanarts = list(set(self.fanarts) | set(other.fanarts))
+            new_dict = self.fanarts.copy()
+            new_dict.update(other.fanarts)
+            self.fanarts = new_dict
 
         if self.selected_fanart is None or self.selected_fanart == '':
             self.selected_fanart = other.selected_fanart
@@ -79,6 +81,7 @@ class Game:
         art = self.fanarts.get(os.path.basename(uri))
         if not os.path.isfile(art.get_original()):
             art.set_original(self._replace_thumb(art.get_thumb(), art.get_original()))
+        self.selected_fanart = art
 
     def get_genre_as_string(self):
         if self.genre is not None:
@@ -92,7 +95,7 @@ class Game:
         else:
             try:
                 response = self.posters[0]
-            except KeyError:
+            except IndexError:
                 response = alt
 
             return response

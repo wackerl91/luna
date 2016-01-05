@@ -98,8 +98,10 @@ if __name__ == '__main__':
     core_monitor = RequiredFeature('core-monitor').request()
     game_controller = RequiredFeature('game-controller').request()
     config_controller = RequiredFeature('config-controller').request()
+    updater = RequiredFeature('update-service').request()
 
     core.check_script_permissions()
+    updater.check_for_update()
 
     if plugin.get_setting('host', unicode):
         config_helper.configure()

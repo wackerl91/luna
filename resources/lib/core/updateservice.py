@@ -45,9 +45,9 @@ class UpdateService(Component):
             )
 
             if confirmed:
-                self.initiate_update()
+                self._initiate_update()
 
-    def initiate_update(self):
+    def _initiate_update(self):
         file_path = os.path.join(self.plugin.storage_path, self.asset_name)
         with open(file_path, 'wb') as asset:
             asset.write(urllib2.urlopen(self.asset_url).read())

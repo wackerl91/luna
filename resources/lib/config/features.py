@@ -3,6 +3,7 @@ from resources.lib.controller.gamecontroller import GameController
 from resources.lib.core.corefunctions import Core
 from resources.lib.core.coremonitor import CoreMonitor
 from resources.lib.core.logger import Logger
+from resources.lib.core.updateservice import UpdateService
 from resources.lib.di.featurebroker import features
 from resources.lib.scraper.omdbscraper import OmdbScraper
 from resources.lib.scraper.scraperchain import ScraperChain
@@ -20,6 +21,7 @@ def init_di():
     features.provide('scraper-chain', ScraperChain())
     features.provide('config-controller', ConfigController())
     features.provide('game-controller', GameController())
+    features.provide('update-service', UpdateService())
 
     features.provide('omdb-scraper', OmdbScraper())
     features.tag('scraper-chain', 'omdb-scraper')

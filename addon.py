@@ -1,4 +1,9 @@
+import os
+import sys
+
 import resources.lib.config.bootstrap as bootstrapper
+
+from resources.lib.daemon import Daemon
 
 from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
 
@@ -10,6 +15,15 @@ plugin = bootstrapper.bootstrap()
 
 addon_path = plugin.storage_path
 addon_internal_path = xbmcaddon.Addon().getAddonInfo('path')
+pidfile = os.path.join(addon_path, 'luna.pid')
+
+
+class Luna(Daemon):
+    def run(self):
+        pass
+
+    def settings(self):
+        print 'Reached settings!'
 
 
 @plugin.route('/')
@@ -99,13 +113,20 @@ if __name__ == '__main__':
     game_controller = RequiredFeature('game-controller').request()
     config_controller = RequiredFeature('config-controller').request()
     updater = RequiredFeature('update-service').request()
-
     core.check_script_permissions()
     updater.check_for_update()
+    print '------ Sys Argv Content ---------'
+    print sys.argv
+    print '------ Sys Argv Content End---------'
 
     if plugin.get_setting('host', unicode):
+        daemon = Luna(pidfile)
+        if sys.argv[0] == 'plugin://script.luna/settings':
+            daemon.settings()
         config_helper.configure()
         plugin.run()
+        daemon.start()
+        print 'Do we see this every time???'
     else:
         xbmcgui.Dialog().ok(
                 core.string('name'),

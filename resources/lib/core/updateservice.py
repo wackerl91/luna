@@ -20,28 +20,30 @@ class UpdateService(Component):
     def __init__(self):
         self.logger.info('Update Service init')
         self.api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
-        self.current_version = '0.2.9' # re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
+        self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
         self.update_version = None
         self.asset_url = None
         self.asset_name = None
         self.change_log = None
-        self.already_checked = None
 
-    def check_for_update(self):
-        response = json.load(urllib2.urlopen(self.api_url))
-        for release in response:
-            if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
-                self.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
-                self.asset_url = release['assets'][0]['browser_download_url']
-                self.asset_name = release['assets'][0]['name']
-                self.change_log = release['body']
+    def check_for_update(self, ignore_checked=False):
+        update_storage = self.plugin.get_storage('update', TTL=60)
+        if not update_storage.get('checked') or ignore_checked:
+            response = json.load(urllib2.urlopen(self.api_url))
+            for release in response:
+                if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
+                    self.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
+                    self.asset_url = release['assets'][0]['browser_download_url']
+                    self.asset_name = release['assets'][0]['name']
+                    self.change_log = release['body']
 
-        if self.asset_name is not None:
-            self.already_checked = True
-            xbmcgui.Dialog().notification(
-                self.core.string('name'),
-                'Update to version %s available' % self.update_version
-            )
+            if self.asset_name is not None:
+                update_storage['checked'] = True
+                xbmcgui.Dialog().notification(
+                    self.core.string('name'),
+                    'Update to version %s available' % self.update_version
+                )
+                return True
 
     def initiate_update(self):
         if self.asset_name is not None:
@@ -80,6 +82,3 @@ class UpdateService(Component):
             if len(name) > offset:
                 zipinfo.filename = name[offset:]
                 yield zipinfo
-
-    def get_checked_state(self):
-        return self.already_checked

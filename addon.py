@@ -1,88 +1,72 @@
-import os
-import sys
 import resources.lib.config.bootstrap as bootstrapper
 
-from xbmcswift2 import xbmc, xbmcaddon, xbmcgui, Plugin
+from xbmcswift2 import xbmc, xbmcgui
 
-import xbmcplugin
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.views.gameinfo import GameInfo
 
-# plugin = bootstrapper.bootstrap()
+plugin = bootstrapper.bootstrap()
 
-addon = xbmcaddon.Addon()
-addon_path = xbmc.translatePath(
-            'special://profile/addon_data/%s/.storage/' % addon.getAddonInfo('id'))
-addon_internal_path = addon.getAddonInfo('path')
+addon_path = plugin.storage_path
+addon_internal_path = plugin.addon.getAddonInfo('path')
 
 
-def handle_request(path):
-    if os.path.basename(path) == '':
-        index()
-    elif os.path.basename(path) == 'open_settings':
-        open_settings()
-
-
-def as_tuple(path, item):
-    return path, item
-
-
+@plugin.route('/')
 def index():
     items = [
         {
             'label': 'Games',
             'thumbnail': addon_internal_path + '/resources/icons/controller.png',
-            'path': 'plugin://script.luna/show_games'
+            'path': plugin.url_for(
+                        endpoint='show_games'
+                    )
         }, {
             'label': 'Settings',
             'thumbnail': addon_internal_path + '/resources/icons/cog.png',
-            'path': 'plugin://script.luna/open_settings'
+            'path': plugin.url_for(
+                        endpoint='open_settings'
+                    )
+        }, {
+            'label': 'Check For Update',
+            'path': plugin.url_for(
+                        endpoint='check_update'
+                    )
         }
     ]
 
-    list_items = [
-        ('plugin://script.luna/show_games',
-         xbmcgui.ListItem(
-                 label='Games',
-                 thumbnailImage=addon_internal_path + '/resources/icons/controller.png',
-                 path='plugin://script.luna/show_games'
-         )
-         ),
-        ('plugin://script.luna/open_settings',
-         xbmcgui.ListItem(
-                 label='Settings',
-                 thumbnailImage=addon_internal_path + '/resources/icons/cog.png',
-                 path='plugin://script.luna/open_settings'
-         )
-         )
-    ]
-
-    print int(sys.argv[1])
-    xbmcplugin.addDirectoryItems(int(sys.argv[1]), list_items)
-
-    xbmcplugin.endOfDirectory(int(sys.argv[1]))
-    # return plugin.finish(items)
+    return plugin.finish(items)
 
 
+@plugin.route('/settings')
 def open_settings():
-    addon.openSettings()
+    plugin.open_settings()
     core_monitor = RequiredFeature('core-monitor').request()
     core_monitor.onSettingsChanged()
     del core_monitor
 
 
+@plugin.route('/update')
+def check_update():
+    updater = RequiredFeature('update-service').request()
+    if updater.check_for_update(True):
+        updater.initiate_update()
+
+
+@plugin.route('/actions/create-mapping')
 def create_mapping():
     config_controller = RequiredFeature('config-controller').request()
     config_controller.create_controller_mapping()
     del config_controller
 
 
+@plugin.route('/actions/pair-host')
 def pair_host():
     config_controller = RequiredFeature('config-controller').request()
     config_controller.pair_host()
     del config_controller
 
 
+@plugin.route('/actions/reset-cache')
 def reset_cache():
     core = RequiredFeature('core').request()
     confirmed = xbmcgui.Dialog().yesno(
@@ -98,18 +82,21 @@ def reset_cache():
     del core
 
 
+@plugin.route('/games')
 def show_games():
     game_controller = RequiredFeature('game-controller').request()
     plugin.set_content('movies')
     return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
 
 
+@plugin.route('/games/refresh')
 def do_full_refresh():
     game_controller = RequiredFeature('game-controller').request()
     game_controller.get_games()
     del game_controller
 
 
+@plugin.route('/games/info/<game_id>')
 def show_game_info(game_id):
     core = RequiredFeature('core').request()
     game = core.get_storage().get(game_id)
@@ -124,6 +111,7 @@ def show_game_info(game_id):
     del game
 
 
+@plugin.route('/games/launch/<game_id>')
 def launch_game(game_id):
     core = RequiredFeature('core').request()
     game_controller = RequiredFeature('game-controller').request()
@@ -134,23 +122,18 @@ def launch_game(game_id):
 
 
 if __name__ == '__main__':
-    # core = RequiredFeature('core').request()
-    # game_controller = RequiredFeature('game-controller').request()
-    # config_controller = RequiredFeature('config-controller').request()
-    # updater = RequiredFeature('update-service').request()
-    # core.check_script_permissions()
-    # updater.check_for_update()
-    print '------ Sys Argv Content ---------'
-    print sys.argv
-    print '------ Sys Argv Content End---------'
+    core = RequiredFeature('core').request()
+    updater = RequiredFeature('update-service').request()
+    core.check_script_permissions()
+    updater.check_for_update()
+    del updater
 
-    plugin = bootstrapper.bootstrap()
-    if addon.getSetting('host'):
-        # config_helper = RequiredFeature('config-helper').request()
-        # config_helper.configure()
-        handle_request(sys.argv[0])
+    if plugin.get_setting('host', str):
+        config_helper = RequiredFeature('config-helper').request()
+        config_helper.configure()
+        plugin.run()
         del plugin
-        # plugin.run()
+        del core
     else:
         core = RequiredFeature('core').request()
         xbmcgui.Dialog().ok(

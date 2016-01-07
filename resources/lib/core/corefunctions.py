@@ -31,6 +31,7 @@ class Core(Component):
     logger = RequiredFeature('logger')
 
     def __init__(self, ):
+        print 'Core Init'
         pass
 
     def string(self, string_id):

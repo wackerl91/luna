@@ -28,6 +28,7 @@ def index():
                     )
         }, {
             'label': 'Check For Update',
+            'thumbnail': addon_internal_path + '/resources/icons/update.png',
             'path': plugin.url_for(
                         endpoint='check_update'
                     )

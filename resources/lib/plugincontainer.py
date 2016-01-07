@@ -8,11 +8,11 @@ from resources.lib.util.moonlighthelper import MoonlightHelper
 class PluginContainer:
     def __init__(self, plugin):
         self.plugin = plugin
-        self.core = Core(self.plugin)
-        self.config_helper = ConfigHelper(self.plugin)
-        self.scraper_chain = ScraperChain(self.plugin)
-        self.moonlight_helper = MoonlightHelper(self.config_helper)
-        self.core_monitor = CoreMonitor(self.core, self.config_helper)
+        self.core = Core()
+        self.config_helper = ConfigHelper()
+        self.scraper_chain = ScraperChain()
+        self.moonlight_helper = MoonlightHelper()
+        self.core_monitor = CoreMonitor()
 
     def get_plugin(self):
         return self.plugin

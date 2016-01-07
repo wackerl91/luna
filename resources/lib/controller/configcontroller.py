@@ -1,18 +1,18 @@
 import os
 
-import xbmcgui
+from xbmcswift2 import xbmcgui
+from resources.lib.di.component import Component
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
-class ConfigController:
-    def __init__(self, container):
-        """
+class ConfigController(Component):
+    plugin = RequiredFeature('plugin')
+    core = RequiredFeature('core')
+    moonlight_helper = RequiredFeature('moonlight-helper')
+    logger = RequiredFeature('logger')
 
-        :type container: PluginContainer
-        """
-        self.container = container
-        self.core = container.get_core()
-        self.moonlight_helper = container.get_moonlight_helper()
-        self.logger = container.get_core().logger
+    def __init__(self):
+        pass
 
     def create_controller_mapping(self):
         self.logger.info('Starting mapping')
@@ -42,7 +42,7 @@ class ConfigController:
             self.core.logger.info('Dialog Yes No Value: %s' % confirmed)
 
             if confirmed:
-                self.container.get_plugin().set_setting('input_map', map_file)
+                self.plugin.set_setting('input_map', map_file)
 
         else:
             xbmcgui.Dialog().ok(

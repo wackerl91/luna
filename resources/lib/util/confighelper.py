@@ -1,13 +1,17 @@
 import ConfigParser
 import os
 
+from resources.lib.di.requiredfeature import RequiredFeature
+
 conf = 'luna.conf'
 
 
 class ConfigHelper:
-    def __init__(self, plugin):
+    plugin = RequiredFeature('plugin')
+    logger = RequiredFeature('logger')
+
+    def __init__(self):
         self._reset()
-        self.plugin = plugin
 
     def _reset(self):
         self.file_path = None
@@ -125,30 +129,22 @@ class ConfigHelper:
 
         if self.enable_custom_input:
             if self.input_map != '':
-                if config.has_option('General', '#mapping'):
-                    config.remove_option('General', '#mapping')
                 config.set('General', 'mapping', self.input_map)
             else:
                 if config.has_option('General', 'mapping'):
                     config.remove_option('General', 'mapping')
-                config.set('General', '#mapping')
 
             if self.input_device != '':
-                if config.has_option('General', '#input'):
-                    config.remove_option('General', '#input')
                 config.set('General', 'input', self.input_device)
             else:
                 if config.has_option('General', 'input'):
                     config.remove_option('General', 'input')
-                config.set('General', '#input')
         else:
             if config.has_option('General', 'mapping'):
                 config.remove_option('General', 'mapping')
-            config.set('General', '#mapping')
 
             if config.has_option('General', 'input'):
                 config.remove_option('General', 'input')
-            config.set('General', '#input')
 
         config.set('General', 'sops', self.graphics_optimizations)
         config.set('General', 'remote', self.remote_optimizations)

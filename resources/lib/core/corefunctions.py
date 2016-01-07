@@ -5,6 +5,9 @@ from xml.etree.ElementTree import ElementTree
 
 from xbmcswift2 import xbmcaddon
 
+from resources.lib.di.component import Component
+from resources.lib.di.requiredfeature import RequiredFeature
+
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 STRINGS = {
@@ -23,11 +26,13 @@ STRINGS = {
 }
 
 
-class Core:
+class Core(Component):
+    plugin = RequiredFeature('plugin')
+    logger = RequiredFeature('logger')
 
-    def __init__(self, plugin):
-        self.plugin = plugin
-        self.logger = Logger(self.plugin)
+    def __init__(self, ):
+        print 'Core Init'
+        pass
 
     def string(self, string_id):
         if string_id in STRINGS:
@@ -61,16 +66,3 @@ class Core:
         active_skin = xml_root.find('lookandfeel').find('skin').text
         return active_skin
 
-
-class Logger:
-    def __init__(self, plugin):
-        self.plugin = plugin
-
-    def info(self, text):
-        self.plugin.log.info(text)
-
-    def debug(self, text):
-        self.plugin.log.debug(text)
-
-    def error(self, text):
-        self.plugin.log.error(text)

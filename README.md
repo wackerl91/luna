@@ -23,7 +23,7 @@ Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it'
 - Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
 
 ## Credits
-- Icons made by [Freepik](www.flaticon.com/authors/freepik) from www.flaticon.com
+- Icons made by [Freepik](http://www.flaticon.com/authors/freepik) from www.flaticon.com
 - Game information and posters are provided by [OMDB](http://www.omdbapi.com) under CC-BY4.0
 - Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)
 

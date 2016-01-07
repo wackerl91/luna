@@ -2,7 +2,9 @@ import os
 
 import pyxbmct.addonwindow as pyxbmct
 
-from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
+from xbmcswift2 import xbmc, xbmcaddon, xbmcgui, Plugin
+
+from resources.lib.di.requiredfeature import RequiredFeature
 
 _addon_path = xbmcaddon.Addon().getAddonInfo('path')
 
@@ -14,12 +16,14 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class GameInfo(pyxbmct.AddonDialogWindow):
-    def __init__(self, container, game, title=''):
+    plugin = RequiredFeature('plugin')
+    core = RequiredFeature('core')
+
+    def __init__(self, game, title=''):
         super(GameInfo, self).__init__(title)
-        self.container = container
         self.game = game
         background = None
-        if container.get_core().get_active_skin() == 'skin.osmc':
+        if self.core.get_active_skin() == 'skin.osmc':
             media_path = '/usr/share/kodi/addons/skin.osmc/media'
             if os.path.exists(media_path):
                 background = os.path.join(media_path, 'dialogs/DialogBackground_old.png')
@@ -99,23 +103,23 @@ class GameInfo(pyxbmct.AddonDialogWindow):
         self.setFocus(self.button_play)
 
     def launch_game(self):
-        xbmc.executebuiltin('XBMC.RunPlugin(%s)' % self.container.get_plugin().url_for(
+        xbmc.executebuiltin('XBMC.RunPlugin(%s)' % self.plugin.url_for(
                 endpoint='launch_game',
                 game_id=self.game.name))
 
     def select_fanart(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Fanart', 'files', '.jpg|.png', False, False,
-                                          self.game.get_fanart(0, ''))
+                                          self.game.get_selected_fanart().get_thumb())
         if browser:
-            self.game.selected_fanart = browser
-            self.container.get_core().get_storage().sync()
+            self.game.set_selected_fanart(browser)
+            self.core.get_storage().sync()
 
     def select_cover_art(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Cover Art', 'files', '.jpg|.png', False, False,
                                           self.game.get_poster(0, ''))
         if browser:
             self.game.selected_poster = browser
-            self.container.get_core().get_storage().sync()
+            self.core.get_storage().sync()
             self.image = pyxbmct.Image(browser)
             self.placeControl(self.image, 2, 0, 6, 1)
 

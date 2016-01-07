@@ -13,15 +13,17 @@ from resources.lib.util.moonlighthelper import MoonlightHelper
 
 
 def init_di():
-    features.provide('logger', Logger())
-    features.provide('core', Core())
-    features.provide('config-helper', ConfigHelper())
-    features.provide('core-monitor', CoreMonitor())
-    features.provide('moonlight-helper', MoonlightHelper())
+    features.provide('logger', Logger)
+    features.provide('core', Core)
+    features.provide('config-helper', ConfigHelper)
+    features.provide('core-monitor', CoreMonitor)
+    features.provide('moonlight-helper', MoonlightHelper)
+    features.provide('config-controller', ConfigController)
+    features.provide('game-controller', GameController)
+    features.provide('update-service', UpdateService)
+
+    # Singleton initialization
     features.provide('scraper-chain', ScraperChain())
-    features.provide('config-controller', ConfigController())
-    features.provide('game-controller', GameController())
-    features.provide('update-service', UpdateService())
 
     features.provide('omdb-scraper', OmdbScraper())
     features.tag('scraper-chain', 'omdb-scraper')

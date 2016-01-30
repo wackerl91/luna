@@ -157,6 +157,9 @@ class ConfigHelper:
 
         with open(self.full_path, 'wb') as configfile:
             config.write(configfile)
+        configfile.close()
+
+        self.logger.info('[ConfigHelper] - Dumped config to disk.')
 
     def get_binary(self):
         cp = ConfigParser.ConfigParser()

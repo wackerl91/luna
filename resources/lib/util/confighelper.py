@@ -12,6 +12,7 @@ class ConfigHelper:
 
     def __init__(self):
         self._reset()
+        self.full_path = ''.join([self.plugin.storage_path, conf])
 
     def _reset(self):
         self.file_path = None

@@ -20,6 +20,7 @@ def loop_lines(dialog, iterator):
 class MoonlightHelper(Component):
     plugin = RequiredFeature('plugin')
     config_helper = RequiredFeature('config-helper')
+    logger = RequiredFeature('logger')
 
     def __init__(self):
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -30,8 +31,8 @@ class MoonlightHelper(Component):
         :type map_file: str
         """
         mapping_proc = subprocess.Popen(
-                [self.config_helper.get_binary(), 'map', map_file, '-input',
-                 self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE, bufsize=1)
+                ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
+                 self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
         lines_iterator = iter(mapping_proc.stdout.readline, b"")
 
@@ -64,9 +65,11 @@ class MoonlightHelper(Component):
         """
         :type dialog: DialogProgress
         """
+        self.logger.info('[MoonlightHelper] - Attempting to pair host: ' + self.plugin.get_setting('host', unicode))
         pairing_proc = subprocess.Popen(
-                [self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host', unicode)],
-                stdout=subprocess.PIPE, bufsize=1)
+                ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host', unicode)],
+                stdout=subprocess.PIPE)
+
         lines_iterator = iter(pairing_proc.stdout.readline, b"")
 
         pairing_thread = threading.Thread(target=loop_lines, args=(dialog, lines_iterator))

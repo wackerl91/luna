@@ -64,8 +64,9 @@ class MoonlightHelper(Component):
         """
         :type dialog: DialogProgress
         """
-        pairing_proc = subprocess.Popen([self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host')],
-                                        stdout=subprocess.PIPE, bufsize=1)
+        pairing_proc = subprocess.Popen(
+                [self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host', unicode)],
+                stdout=subprocess.PIPE, bufsize=1)
         lines_iterator = iter(pairing_proc.stdout.readline, b"")
 
         pairing_thread = threading.Thread(target=loop_lines, args=(dialog, lines_iterator))
@@ -85,7 +86,7 @@ class MoonlightHelper(Component):
                 break
 
         if success:
-            dialog.update(0, 'Checking if pairing has benn successful.')
+            dialog.update(0, 'Checking if pairing has been successful.')
             xbmc.sleep(1000)
             pairing_check = subprocess.Popen([self.config_helper.get_binary(), 'list', self.config_helper.get_host()],
                                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)

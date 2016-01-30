@@ -61,9 +61,14 @@ class ConfigHelper:
         self.full_path = ''.join([self.addon_path, conf])
 
     def configure(self):
+        binary_path = self._find_binary()
+
+        if binary_path is None:
+            raise ValueError('Moonlight binary could not be found.')
+
         settings = {
             'addon_path':                   self.plugin.storage_path,
-            'binary_path':                  self._find_binary(),
+            'binary_path':                  binary_path,
             'host_ip':                      self.plugin.get_setting('host', unicode),
             'enable_custom_res':            self.plugin.get_setting('enable_custom_res', bool),
             'resolution_width':             self.plugin.get_setting('resolution_width', str),
@@ -155,8 +160,24 @@ class ConfigHelper:
 
     def get_binary(self):
         cp = ConfigParser.ConfigParser()
-        cp.read(self.full_path)
-        return self._config_map('General', cp)['binpath']
+
+        try:
+            cp.read(self.full_path)
+
+            self.logger.info(
+                    '[ConfigHelper] - Successfully loaded config file > trying to access binary path now')
+
+            return self._config_map('General', cp)['binpath']
+
+        except:
+            self.logger.info(
+                    '[ConfigHelper] - Exception occurred while attempting to read config from disk >' +
+                    ' looking for binary file and dumping config file again.')
+
+            binary_path = self._find_binary()
+            self.configure()
+
+            return binary_path
 
     def get_host(self):
         cp = ConfigParser.ConfigParser()

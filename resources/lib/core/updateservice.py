@@ -18,7 +18,7 @@ class UpdateService(Component):
     regexp = '(\d+\.)?(\d+\.)?(\*|\d+)'
 
     def __init__(self):
-        self.logger.info('Update Service init')
+        self.logger.info('[UpdateService] - initialized')
         self.api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
         self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
         self.update_version = None

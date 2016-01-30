@@ -2,7 +2,7 @@
 <settings>
     <category label="30001">
         <setting label="30002" type="ipaddress" id="host"/>
-        <setting label="30008" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/pair-host)"/>
+        <setting label="30008" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/pair-host)" option="close"/>
         <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
         <setting label="30023" type="bool" id="override_default_resolution" default="false"/>
         <setting label="30004" enable="eq(1,false) + eq(-1,true)" visible="eq(-1,true)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>

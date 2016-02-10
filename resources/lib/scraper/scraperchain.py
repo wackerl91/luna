@@ -25,7 +25,7 @@ class ScraperChain(Component):
         if game_name not in self.game_blacklist:
             for scraper in self.scraper_chain:
                 if scraper.is_enabled():
-                    game_info.append(Game.from_dict(**scraper.get_game_information(game_name)))
+                    game_info.append(Game.from_api_response(scraper.get_game_information(game_name)))
 
         else:
             game_info.append(Game(game_name, None))

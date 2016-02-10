@@ -6,6 +6,7 @@ from xml.etree.ElementTree import Element
 
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.apiresponse import ApiResponse
 from resources.lib.model.fanart import Fanart
 
 
@@ -21,10 +22,7 @@ class TgdbScraper(AbstractScraper):
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
         response = self._gather_information(request_name)
-        if response is None:
-            response = {}
-        response['name'] = game_name
-        # TODO: This should return an instance of a specific response object
+        response.name = game_name
         return response
 
     def return_paths(self):
@@ -54,10 +52,10 @@ class TgdbScraper(AbstractScraper):
                 local_arts[os.path.basename(art.get_thumb())] = art
             dict_response['fanarts'] = local_arts
 
-            return dict_response
+            return ApiResponse.from_dict(**dict_response)
 
     def _get_xml_data(self, game):
-        file_path = os.path.join(self.api_cache, game, game+'.xml')
+        file_path = os.path.join(self.api_cache, game, game+'_tgdb.xml')
 
         if not os.path.isfile(file_path):
             curl = subprocess.Popen(['curl', '-XGET', self.api_url % game], stdout=subprocess.PIPE)

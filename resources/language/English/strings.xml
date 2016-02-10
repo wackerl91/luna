@@ -29,6 +29,8 @@
     <string id="30024">Disable Experimental Scraper Feature</string>
     <string id="30025">Enable OMDB as Game Information Provider</string>
     <string id="30026">Enable TheGamesDB as Game Information Provider</string>
+    <string id="30027">Enable IGDB as Game Information Provider</string>
+    <string id="30028">Select API Key File</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

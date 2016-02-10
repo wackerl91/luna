@@ -4,6 +4,7 @@ import urllib2
 
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.apiresponse import ApiResponse
 
 
 class OmdbScraper(AbstractScraper):
@@ -17,10 +18,7 @@ class OmdbScraper(AbstractScraper):
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
         response = self._gather_information(request_name)
-        if response is None:
-            response = {}
-        response['name'] = game_name
-        # TODO: This should return an instance of a specific response object
+        response.name = game_name
         return response
 
     def return_paths(self):
@@ -46,13 +44,13 @@ class OmdbScraper(AbstractScraper):
                 response['genre'] = response.get('genre').split(',')
                 response['genre'] = [str(v).strip() for v in response.get('genre')]
 
-            return response
+            return ApiResponse.from_dict(**response)
         else:
 
-            return None
+            return ApiResponse()
 
     def _get_json_data(self, path, game):
-        file_path = os.path.join(path, game+'.json')
+        file_path = os.path.join(path, game+'_omdb.json')
         if not os.path.exists(file_path):
             json_response = json.load(urllib2.urlopen(self.api_url % game))
             with open(file_path, 'w') as response_file:

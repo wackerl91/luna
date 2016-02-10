@@ -39,7 +39,12 @@ class GameController:
                                         KeyError.message))
                         storage[game_name] = Game(game_name, None)
 
+        game_version_storage = self.plugin.get_storage('game_version')
+        game_version_storage.clear()
+        game_version_storage['version'] = Game.version
+
         storage.sync()
+        game_version_storage.sync()
 
     def get_games_as_list(self):
         """

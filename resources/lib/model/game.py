@@ -6,6 +6,8 @@ from resources.lib.model.fanart import Fanart
 
 
 class Game:
+    version = 20160210
+
     def __init__(self, name, year=None, genre=None, plot=None, posters=None, fanarts=None):
         self.name = name
         self.year = year

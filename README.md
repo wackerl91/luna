@@ -25,6 +25,7 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 - Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
 
 ## Credits
+- Logo and Fanart by [Ben Biedrawa](http://sooulart.com)
 - Icons made by [Freepik](http://www.flaticon.com/authors/freepik) from www.flaticon.com
 - Game information and posters are provided by [OMDB](http://www.omdbapi.com) under CC-BY4.0
 - Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)

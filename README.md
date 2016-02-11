@@ -1,6 +1,8 @@
 # Luna
 Luna aims to be a one-size-fits-all Moonlight launcher for Kodi. Even though it's tailored for OSMC right now, it can be easily extended to support pretty much any platform where both Kodi and Moonlight (embedded or PC) are available. Probably OSX will be next, but let me know which platforms you'd like to see supported! If you feel like a specific feature is missing don't hesitate to tell me and I'll see what I can do ;) 
 
+Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
+
 ## Prerequisites
 [Moonlight-Embedded](https://github.com/irtimmer/moonlight-embedded) needs to be installed. For setup instructions please follow irtimmer's wiki.
 

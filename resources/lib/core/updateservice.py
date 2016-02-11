@@ -24,7 +24,7 @@ class UpdateService(Component):
         self.update_version = None
         self.asset_url = None
         self.asset_name = None
-        self.change_log = None
+        self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
         update_storage = self.plugin.get_storage('update', TTL=60)
@@ -35,7 +35,7 @@ class UpdateService(Component):
                     self.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
                     self.asset_url = release['assets'][0]['browser_download_url']
                     self.asset_name = release['assets'][0]['name']
-                    self.change_log = release['body']
+                    self.changelog = release['body']
 
             if self.asset_name is not None:
                 update_storage['checked'] = True

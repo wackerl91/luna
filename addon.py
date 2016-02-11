@@ -3,6 +3,7 @@ import resources.lib.config.bootstrap as bootstrapper
 from xbmcswift2 import xbmc, xbmcgui
 
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.game import Game
 from resources.lib.views.gameinfo import GameInfo
 
 plugin = bootstrapper.bootstrap()
@@ -13,28 +14,40 @@ addon_internal_path = plugin.addon.getAddonInfo('path')
 
 @plugin.route('/')
 def index():
+    default_fanart_path = addon_internal_path + '/fanart.jpg'
+
     items = [
         {
             'label': 'Games',
             'thumbnail': addon_internal_path + '/resources/icons/controller.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='show_games'
                     )
         }, {
             'label': 'Settings',
             'thumbnail': addon_internal_path + '/resources/icons/cog.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='open_settings'
                     )
         }, {
             'label': 'Check For Update',
             'thumbnail': addon_internal_path + '/resources/icons/update.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='check_update'
                     )
         }
     ]
 
+    print addon_internal_path
     return plugin.finish(items)
 
 
@@ -49,8 +62,9 @@ def open_settings():
 @plugin.route('/update')
 def check_update():
     updater = RequiredFeature('update-service').request()
-    if updater.check_for_update(True):
-        updater.initiate_update()
+    update = updater.check_for_update(True)
+    if update is not None:
+        updater.initiate_update(update)
 
 
 @plugin.route('/actions/create-mapping')
@@ -132,6 +146,19 @@ if __name__ == '__main__':
     if plugin.get_setting('host', str):
         config_helper = RequiredFeature('config-helper').request()
         config_helper.configure()
+
+        game_refresh_required = False
+
+        try:
+            if plugin.get_storage('game_version')['version'] != Game.version:
+                game_refresh_required = True
+        except KeyError:
+            game_refresh_required = True
+
+        if game_refresh_required:
+            game_controller = RequiredFeature('game-controller').request()
+            game_controller.get_games()
+
         plugin.run()
         del plugin
         del core

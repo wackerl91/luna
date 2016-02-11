@@ -1,3 +1,4 @@
+import xbmcgui
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
@@ -17,20 +18,34 @@ class GameController:
         Fills local game storage with scraper results (if enabled) or game names (if scrapers are disabled)
         """
         game_list = self.moonlight_helper.list_games()
+
+        progress_dialog = xbmcgui.DialogProgress()
+        progress_dialog.create(
+            self.core.string('name'),
+            'Refreshing Game List'
+        )
+
+        bar_movement = int(1.0 / len(game_list) * 100)
+
         storage = self.core.get_storage()
-        cache = storage.raw_dict()
+        cache = storage.raw_dict().copy()
         storage.clear()
 
+        i = 1
         for game_name in game_list:
+            progress_dialog.update(bar_movement * i, 'Processing: %s' % game_name, '')
             if self.plugin.get_setting('disable_scraper', bool):
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
+                progress_dialog.update(bar_movement * i, line2='Scrapers have been disabled, just adding game names to list.')
                 storage[game_name] = Game(game_name, None)
             else:
                 if game_name in cache:
                     if not storage.get(game_name):
-                        storage[game_name] = cache.get(game_name)
+                        progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
+                        storage[game_name] = cache.get(game_name)[0]
                 else:
                     try:
+                        progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
                         storage[game_name] = self.scraper_chain.query_game_information(game_name)
                     except KeyError:
                         self.logger.info(
@@ -38,8 +53,14 @@ class GameController:
                                 .format(game_name,
                                         KeyError.message))
                         storage[game_name] = Game(game_name, None)
+            i += 1
+
+        game_version_storage = self.plugin.get_storage('game_version')
+        game_version_storage.clear()
+        game_version_storage['version'] = Game.version
 
         storage.sync()
+        game_version_storage.sync()
 
     def get_games_as_list(self):
         """

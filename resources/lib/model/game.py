@@ -6,6 +6,8 @@ from resources.lib.model.fanart import Fanart
 
 
 class Game:
+    version = 20160210
+
     def __init__(self, name, year=None, genre=None, plot=None, posters=None, fanarts=None):
         self.name = name
         self.year = year
@@ -17,8 +19,19 @@ class Game:
         self.selected_poster = self.get_poster(0, '')
 
     @classmethod
-    def from_dict(cls, name=None, year=None, genre=None, plot=None, posters=None, fanarts=None, **kwargs):
-        game = cls(name, year, genre, plot, posters, fanarts)
+    def from_api_response(cls, api_response):
+        """
+        :param ApiResponse api_response:
+        :rtype: Game
+        """
+        game = cls(
+            api_response.name,
+            api_response.year,
+            api_response.genre,
+            api_response.plot,
+            api_response.posters,
+            api_response.fanarts
+        )
 
         return game
 
@@ -93,6 +106,7 @@ class Game:
         else:
             return ''
 
+    # TODO: Index param is not used anywhere
     def get_poster(self, index, alt):
         if self.posters is None:
             return alt

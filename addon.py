@@ -3,6 +3,7 @@ import resources.lib.config.bootstrap as bootstrapper
 from xbmcswift2 import xbmc, xbmcgui
 
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.game import Game
 from resources.lib.views.gameinfo import GameInfo
 
 plugin = bootstrapper.bootstrap()
@@ -144,6 +145,19 @@ if __name__ == '__main__':
     if plugin.get_setting('host', str):
         config_helper = RequiredFeature('config-helper').request()
         config_helper.configure()
+
+        game_refresh_required = False
+
+        try:
+            if plugin.get_storage('game_version')['version'] != Game.version:
+                game_refresh_required = True
+        except KeyError:
+            game_refresh_required = True
+
+        if game_refresh_required:
+            game_controller = RequiredFeature('game-controller').request()
+            game_controller.get_games()
+
         plugin.run()
         del plugin
         del core

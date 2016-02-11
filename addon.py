@@ -13,28 +13,40 @@ addon_internal_path = plugin.addon.getAddonInfo('path')
 
 @plugin.route('/')
 def index():
+    default_fanart_path = addon_internal_path + '/fanart.jpg'
+
     items = [
         {
             'label': 'Games',
             'thumbnail': addon_internal_path + '/resources/icons/controller.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='show_games'
                     )
         }, {
             'label': 'Settings',
             'thumbnail': addon_internal_path + '/resources/icons/cog.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='open_settings'
                     )
         }, {
             'label': 'Check For Update',
             'thumbnail': addon_internal_path + '/resources/icons/update.png',
+            'properties': {
+                    'fanart_image': default_fanart_path
+            },
             'path': plugin.url_for(
                         endpoint='check_update'
                     )
         }
     ]
 
+    print addon_internal_path
     return plugin.finish(items)
 
 

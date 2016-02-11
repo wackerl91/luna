@@ -42,7 +42,7 @@ class GameController:
                 if game_name in cache:
                     if not storage.get(game_name):
                         progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
-                        storage[game_name] = cache.get(game_name)
+                        storage[game_name] = cache.get(game_name)[0]
                 else:
                     try:
                         progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')

@@ -9,6 +9,8 @@ from xbmcswift2 import xbmcaddon, xbmcgui, xbmc
 
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.update import Update
+from resources.lib.views.updateinfo import UpdateInfo
 
 
 class UpdateService(Component):
@@ -24,49 +26,53 @@ class UpdateService(Component):
         self.update_version = None
         self.asset_url = None
         self.asset_name = None
-        self.change_log = None
+        self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
         update_storage = self.plugin.get_storage('update', TTL=60)
+        update = None
         if not update_storage.get('checked') or ignore_checked:
             response = json.load(urllib2.urlopen(self.api_url))
             for release in response:
                 if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
-                    self.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
-                    self.asset_url = release['assets'][0]['browser_download_url']
-                    self.asset_name = release['assets'][0]['name']
-                    self.change_log = release['body']
+                    update = Update()
+                    print self.current_version
+                    update.current_version = self.current_version
+                    update.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
+                    update.asset_url = release['assets'][0]['browser_download_url']
+                    update.asset_name = release['assets'][0]['name']
+                    update.changelog = release['body']
+                    update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
 
-            if self.asset_name is not None:
+            if update is not None:
+                print update.asset_name
                 update_storage['checked'] = True
                 xbmcgui.Dialog().notification(
                     self.core.string('name'),
-                    'Update to version %s available' % self.update_version
+                    'Update to version %s available' % update.update_version
                 )
-                return True
+                return update
 
-    def initiate_update(self):
-        if self.asset_name is not None:
-            confirmed = xbmcgui.Dialog().yesno(
-                self.core.string('name'),
-                'Update to version %s available' % self.update_version,
-                'Do you want to update now?'
-            )
+    def initiate_update(self, update):
+        if update.asset_name is not None:
+            window = UpdateInfo(update, 'Update to Luna %s' % self.update_version)
+            window.doModal()
+            del window
 
-            if confirmed:
-                file_path = os.path.join(self.plugin.storage_path, self.asset_name)
-                with open(file_path, 'wb') as asset:
-                    asset.write(urllib2.urlopen(self.asset_url).read())
-                    asset.close()
-                zip_file = zipfile.ZipFile(file_path)
-                zip_file.extractall(xbmcaddon.Addon().getAddonInfo('path'), self._get_members(zip_file))
+    def do_update(self, update):
+        file_path = update.file_path
+        with open(file_path, 'wb') as asset:
+            asset.write(urllib2.urlopen(update.asset_url).read())
+            asset.close()
+        zip_file = zipfile.ZipFile(file_path)
+        zip_file.extractall(xbmcaddon.Addon().getAddonInfo('path'), self._get_members(zip_file))
 
-                xbmcgui.Dialog().ok(
-                    self.core.string('name'),
-                    'Luna has been updated to version %s and will now relaunch.' % self.update_version
-                )
+        xbmcgui.Dialog().ok(
+            self.core.string('name'),
+            'Luna has been updated to version %s and will now relaunch.' % update.update_version
+        )
 
-                xbmc.executebuiltin('RunPlugin(\'script.luna\')')
+        xbmc.executebuiltin('RunPlugin(\'script.luna\')')
 
     def _get_members(self, zip_file):
         parts = []

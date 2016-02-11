@@ -62,8 +62,9 @@ def open_settings():
 @plugin.route('/update')
 def check_update():
     updater = RequiredFeature('update-service').request()
-    if updater.check_for_update(True):
-        updater.initiate_update()
+    update = updater.check_for_update(True)
+    if update is not None:
+        updater.initiate_update(update)
 
 
 @plugin.route('/actions/create-mapping')

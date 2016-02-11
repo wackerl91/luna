@@ -46,14 +46,15 @@ class UpdateInfo(pyxbmct.AddonDialogWindow):
         self.button_cancel = None
 
     def set_info_controls(self, update):
-        title_label = pyxbmct.Label(update.update_version, alignment=pyxbmct.ALIGN_LEFT, font='XLarge', textColor=COLOR_HEADING)
+        update_headline = 'Luna %s available' % update.update_version
+        title_label = pyxbmct.Label(update_headline, alignment=pyxbmct.ALIGN_LEFT, font='XLarge', textColor=COLOR_HEADING)
         self.placeControl(title_label, 0, 0, 2, 3)
 
         changelog_label = pyxbmct.Label('Changelog', alignment=pyxbmct.ALIGN_LEFT, font='Med', textColor=COLOR_DETAILS)
         self.placeControl(changelog_label, 2, 0)
 
-        self.changelog = pyxbmct.TextBox()
-        self.placeControl(self.changelog, 4, 0, 6, 3)
+        self.changelog = pyxbmct.TextBox(font='Med')
+        self.placeControl(self.changelog, 4, 0, 6, 6)
         self.changelog.setText(update.changelog)
         self.changelog.autoScroll(delay=5000, time=2000, repeat=10000)
 

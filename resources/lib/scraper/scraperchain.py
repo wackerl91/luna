@@ -3,6 +3,7 @@ import shutil
 
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.fanart import Fanart
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
 
@@ -28,7 +29,15 @@ class ScraperChain(Component):
                     game_info.append(Game.from_api_response(scraper.get_game_information(game_name)))
 
         else:
-            game_info.append(Game(game_name, None))
+            game = Game(game_name, None)
+
+            if game_name == 'Steam':
+                game.fanarts = []
+                fanart = Fanart('resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg',
+                                'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
+                game.fanarts.append(fanart)
+
+            game_info.append(game)
 
         game = game_info[0]
         while len(game_info) > 1:

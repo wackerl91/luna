@@ -26,32 +26,38 @@ def indent(elem, level=0):
 
 
 class SkinPatcher:
-
     def __init__(self):
         self.core = RequiredFeature('core').request()
         self.plugin = RequiredFeature('plugin').request()
         self.base_path = '/usr/share/kodi/addons/skin.osmc/16x9/'
+        self.shortcut_path = '/usr/share/kodi/addons/skin.osmc/shortcuts/'
         self.widget = 'Includes_Widgets.xml'
         self.var = 'Variables.xml'
         self.home = 'Home.xml'
+        self.override = 'overrides.xml'
         self.widget_backup = 'Includes_Widgets.backup'
         self.var_backup = 'Variables.backup'
         self.home_backup = 'Home.backup'
+        self.override_backup = 'overrides.backup'
         self.id = None
 
         self.supported = self.core.get_active_skin() == 'skin.osmc' \
             and os.path.isfile(os.path.join(self.base_path, self.widget)) \
             and os.path.isfile(os.path.join(self.base_path, self.var)) \
-            and os.path.isfile(os.path.join(self.base_path, self.home))
+            and os.path.isfile(os.path.join(self.base_path, self.home)) \
+            and os.path.isfile(os.path.join(self.shortcut_path, self.override))
 
         self.rollback_supported = os.path.isfile(os.path.join(self.base_path, self.widget_backup)) \
             and os.path.isfile(os.path.join(self.base_path, self.var_backup)) \
-            and os.path.isfile(os.path.join(self.base_path, self.home_backup))
+            and os.path.isfile(os.path.join(self.base_path, self.home_backup)) \
+            and os.path.isfile(os.path.join(self.shortcut_path, self.override_backup))
 
     def backup(self):
         shutil.copy(os.path.join(self.base_path, self.widget), os.path.join(self.base_path, self.widget_backup))
         shutil.copy(os.path.join(self.base_path, self.var), os.path.join(self.base_path, self.var_backup))
         shutil.copy(os.path.join(self.base_path, self.home), os.path.join(self.base_path, self.home_backup))
+        shutil.copy(os.path.join(self.shortcut_path, self.override),
+                    os.path.join(self.shortcut_path, self.override_backup))
 
     def patch(self):
         if self.supported:
@@ -59,6 +65,7 @@ class SkinPatcher:
             self.patch_widget()
             self.patch_home()
             self.patch_var()
+            self.patch_override()
             self.plugin.set_setting('luna_widget_patched', 'true')
         else:
             print 'Not Supported'
@@ -136,13 +143,19 @@ class SkinPatcher:
         luna_control.find('visible').text = "StringCompare(Container(9000).ListItem.Property(Widget),Luna)"
 
         luna_item_layout = luna_control.find('itemlayout')
+        luna_item_layout.set('width', "384")
         luna_focus_layout = luna_control.find('focusedlayout')
+        luna_focus_layout.set('width', "384")
 
         for control in luna_item_layout:
+            if control.get('type' == 'image'):
+                control.find('width').text = "250"
             if control.find('texture') is not None and control.find('texture').text == 'common/black.png':
                 control.find('texture').text = ""
 
         for control in luna_focus_layout:
+            if control.get('type' == 'image'):
+                control.find('width').text = "250"
             if control.find('texture') is not None and control.find('texture').text == 'common/black.png':
                 control.find('texture').text = ""
 
@@ -183,9 +196,19 @@ class SkinPatcher:
         tree = ElementTree.ElementTree(xml_root)
         tree.write(os.path.join(self.base_path, self.var))
 
+    def patch_override(self):
+        xml_root = ElementTree.ElementTree(file=os.path.join(self.shortcut_path, self.override)).getroot()
+
+        ElementTree.SubElement(xml_root, "widget", label="Luna").text = "Luna"
+        ElementTree.SubElement(xml_root, "widgetdefault", labelID="script.luna").text = "Luna"
+
+        tree = ElementTree.ElementTree(xml_root)
+        tree.write(os.path.join(self.shortcut_path, self.override))
+
     def rollback(self):
         if self.rollback_supported:
             shutil.move(os.path.join(self.base_path, self.widget_backup), os.path.join(self.base_path, self.widget))
             shutil.move(os.path.join(self.base_path, self.var_backup), os.path.join(self.base_path, self.var))
             shutil.move(os.path.join(self.base_path, self.home_backup), os.path.join(self.base_path, self.home))
+            shutil.move(os.path.join(self.shortcut_path, self.override_backup), os.path.join(self.shortcut_path, self.override))
             self.plugin.set_setting('luna_widget_patched', 'false')

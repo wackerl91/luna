@@ -1,3 +1,5 @@
+
+
 def init_di():
     # Import when init is called instead of when this module is imported
     from resources.lib.controller.configcontroller import ConfigController
@@ -13,6 +15,7 @@ def init_di():
     from resources.lib.scraper.igdbscraper import IgdbScraper
     from resources.lib.util.confighelper import ConfigHelper
     from resources.lib.util.moonlighthelper import MoonlightHelper
+    from resources.lib.util.skinpatcher import SkinPatcher
 
     features.provide('logger', Logger)
     features.provide('core', Core)
@@ -22,6 +25,7 @@ def init_di():
     features.provide('config-controller', ConfigController)
     features.provide('game-controller', GameController)
     features.provide('update-service', UpdateService)
+    features.provide('skin-patcher', SkinPatcher)
 
     # Singleton initialization
     features.provide('scraper-chain', ScraperChain())

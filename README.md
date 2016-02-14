@@ -30,6 +30,8 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 - Icons made by [Freepik](http://www.flaticon.com/authors/freepik) from www.flaticon.com
 - Game information and posters are provided by [OMDB](http://www.omdbapi.com) under CC-BY4.0
 - Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)
+- Some more information is being pulled from [IGDB](https://www.igdb.com) (very developer friendly terms, thank you so much!)
+- Steam Background from DiglidiDudeNG over at [deviantart](http://diglididudeng.deviantart.com/art/Steam-Wallpaper-Globe-458081397)
 
 ## Bugs / Feature Requests
 - Please report any bugs or feature requests on the issue tracker - I can only make Luna better if you're willing to report every issue you run into!

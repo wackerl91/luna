@@ -29,7 +29,7 @@ class UpdateService(Component):
         self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
-        update_storage = self.plugin.get_storage('update', TTL=60)
+        update_storage = self.plugin.get_storage('update', TTL=24*60)
         update = None
 
         if not update_storage.get('checked') or ignore_checked:

@@ -143,18 +143,18 @@ class SkinPatcher:
         luna_control.find('visible').text = "StringCompare(Container(9000).ListItem.Property(Widget),Luna)"
 
         luna_item_layout = luna_control.find('itemlayout')
-        luna_item_layout.set('width', "384")
+        luna_item_layout.set('width', "270")
         luna_focus_layout = luna_control.find('focusedlayout')
-        luna_focus_layout.set('width', "384")
+        luna_focus_layout.set('width', "270")
 
         for control in luna_item_layout:
-            if control.get('type' == 'image'):
+            if control.get('type') == 'image':
                 control.find('width').text = "250"
             if control.find('texture') is not None and control.find('texture').text == 'common/black.png':
                 control.find('texture').text = ""
 
         for control in luna_focus_layout:
-            if control.get('type' == 'image'):
+            if control.get('type') == 'image':
                 control.find('width').text = "250"
             if control.find('texture') is not None and control.find('texture').text == 'common/black.png':
                 control.find('texture').text = ""

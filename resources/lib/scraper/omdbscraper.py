@@ -2,6 +2,8 @@ import json
 import os
 import urllib2
 
+import xbmcgui
+
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
@@ -14,6 +16,9 @@ class OmdbScraper(AbstractScraper):
         self.api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.api_cache = self._set_up_path(os.path.join(self.base_path, 'api_cache/'))
+
+    def name(self):
+        return 'OMDB'
 
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
@@ -31,8 +36,20 @@ class OmdbScraper(AbstractScraper):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
         game_cache_path = self._set_up_path(os.path.join(self.api_cache, game))
 
-        raw_json = open(self._get_json_data(game_cache_path, game))
-        json_data = json.load(raw_json)
+        json_file = self._get_json_data(game_cache_path, game)
+        try:
+            json_data = json.load(open(json_file))
+        except:
+            xbmcgui.Dialog().notification(
+                self.core().string('name'),
+                self.core().string('scraper_failed') % (game, self.name())
+            )
+
+            if json_file is not None and os.path.isfile(json_file):
+                os.remove(json_file)
+
+            return ApiResponse()
+
         if json_data['Response'] != 'False':
             json_data['posters'] = []
             cover_path = self._dump_image(game_cover_path, json_data['Poster'])

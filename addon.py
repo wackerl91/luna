@@ -47,7 +47,6 @@ def index():
         }
     ]
 
-    print addon_internal_path
     return plugin.finish(items)
 
 
@@ -97,6 +96,22 @@ def reset_cache():
     del core
 
 
+@plugin.route('/actions/patch-osmc')
+def patch_osmc_skin():
+    skinpatcher = RequiredFeature('skin-patcher').request()
+    skinpatcher.patch()
+    del skinpatcher
+    xbmc.executebuiltin('ReloadSkin')
+
+
+@plugin.route('/actions/rollback-osmc')
+def rollback_osmc_skin():
+    skinpatcher = RequiredFeature('skin-patcher').request()
+    skinpatcher.rollback()
+    del skinpatcher
+    xbmc.executebuiltin('ReloadSkin')
+
+
 @plugin.route('/games')
 def show_games():
     game_controller = RequiredFeature('game-controller').request()
@@ -136,6 +151,19 @@ def launch_game(game_id):
     del game_controller
 
 
+@plugin.route('/games/launch-from-widget/<xml_id>')
+def launch_game_from_widget(xml_id):
+    core = RequiredFeature('core').request()
+    game_id = int(xml_id)
+    internal_game_id = plugin.get_storage('sorted_game_storage').get(game_id)
+
+    game_controller = RequiredFeature('game-controller').request()
+    core.logger.info('Launching game %s' % internal_game_id)
+    game_controller.launch_game(internal_game_id)
+
+    del core
+    del game_controller
+
 if __name__ == '__main__':
     core = RequiredFeature('core').request()
     updater = RequiredFeature('update-service').request()
@@ -158,6 +186,7 @@ if __name__ == '__main__':
         if game_refresh_required:
             game_controller = RequiredFeature('game-controller').request()
             game_controller.get_games()
+            del game_controller
 
         plugin.run()
         del plugin

@@ -29,8 +29,9 @@ class UpdateService(Component):
         self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
-        update_storage = self.plugin.get_storage('update', TTL=60)
+        update_storage = self.plugin.get_storage('update', TTL=24*60)
         update = None
+
         if not update_storage.get('checked') or ignore_checked:
             response = json.load(urllib2.urlopen(self.api_url))
             for release in response:
@@ -44,14 +45,21 @@ class UpdateService(Component):
                     update.changelog = release['body']
                     update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
 
+            update_storage['checked'] = True
+            update_storage.sync()
+
             if update is not None:
-                print update.asset_name
-                update_storage['checked'] = True
                 xbmcgui.Dialog().notification(
                     self.core.string('name'),
-                    'Update to version %s available' % update.update_version
+                    self.core.string('update_available') % update.update_version
                 )
                 return update
+            else:
+                xbmcgui.Dialog().notification(
+                    self.core.string('name'),
+                    self.core.string('no_update_available')
+                )
+                return None
 
     def initiate_update(self, update):
         if update.asset_name is not None:

@@ -32,4 +32,11 @@
         <setting label="30028" type="file" id="api_key_file" visible="eq(-1,true)" enable="eq(-1,true)" default=""/>
         <setting label="30022" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/reset-cache)"/>
     </category>
+    <category label="30029">
+        <setting label="30030" type="bool" id="luna_widget_enable" default="false"/>
+        <setting label="30033" type="bool" id="luna_force_fanart" default="false"/>
+        <setting label="30031" type="action" enable="eq(2,false)" visible="eq(-2,true)" action="XBMC.RunPlugin(plugin://script.luna/actions/patch-osmc)" option="close"/>
+        <setting label="30032" type="action" visible="eq(-3,true)" action="XBMC.RunPlugin(plugin://script.luna/actions/rollback-osmc)" option="close"/>
+        <setting label="30030" type="bool" visible="false" id="luna_widget_patched" default="false"/>
+    </category>
 </settings>

@@ -4,6 +4,7 @@ import os
 import urllib2
 import dateutil.parser as date_parser
 
+import xbmcgui
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
@@ -17,6 +18,9 @@ class IgdbScraper(AbstractScraper):
         self.api_img_url = 'https://res.cloudinary.com/igdb/image/upload/t_%s/%s.jpg'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.api_cache = self._set_up_path(os.path.join(self.base_path, 'api_cache/'))
+
+    def name(self):
+        return 'IGDB'
 
     def get_game_information(self, game_name):
         if self.plugin.get_setting('api_key_file', str) == "":
@@ -44,8 +48,11 @@ class IgdbScraper(AbstractScraper):
             cp = ConfigParser.ConfigParser()
             cp.read(self.plugin.get_setting('api_key_file', str))
             igdb_api_key = cp.get('API', 'igdb')
-            print igdb_api_key
         except:
+            xbmcgui.Dialog().notification(
+                self.core().string('name'),
+                self.core().string('scraper_failed') % (game, self.name())
+            )
             return ApiResponse()
 
         url_opener = urllib2.build_opener()

@@ -33,8 +33,9 @@ class ScraperChain(Component):
 
             if game_name == 'Steam':
                 game.fanarts = []
-                fanart = Fanart('resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg',
-                                'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
+                fanart_path = os.path.join(self.plugin.addon.getAddonInfo('path'),
+                                           'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
+                fanart = Fanart(fanart_path, fanart_path)
                 game.fanarts.append(fanart)
 
             game_info.append(game)

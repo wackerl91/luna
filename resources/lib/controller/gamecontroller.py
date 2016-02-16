@@ -25,10 +25,22 @@ class GameController:
             'Refreshing Game List'
         )
 
+        if game_list is None or len(game_list) == 0:
+            xbmcgui.Dialog().notification(
+                self.core.string('name'),
+                self.core.string('empty_game_list')
+            )
+            return
+
         bar_movement = int(1.0 / len(game_list) * 100)
 
         storage = self.core.get_storage()
-        cache = storage.raw_dict().copy()
+        game_version_storage = self.plugin.get_storage('game_version')
+
+        cache = {}
+        if game_version_storage['version'] == Game.version:
+            cache = storage.raw_dict().copy()
+
         storage.clear()
 
         i = 1
@@ -55,7 +67,6 @@ class GameController:
                         storage[game_name] = Game(game_name, None)
             i += 1
 
-        game_version_storage = self.plugin.get_storage('game_version')
         game_version_storage.clear()
         game_version_storage['version'] = Game.version
 

@@ -49,4 +49,8 @@
     <string id="30206">Failed to pair to server: Already paired</string>
     <string id="30207">Please configure the addon first.</string>
     <string id="30208">This will remove all cached game information and clear the game storage. Next time you're going to visit the game view it will take some time until all information is available again. Are you sure you want to do this?</string>
+    <string id="30209">Couldn't get a game list from moonlight. Make sure your host PC is turned on and paired.</string>
+    <string id="30210">Update to version %s available</string>
+    <string id="30211">You're already using the newest version</string>
+    <string id="30212">An error occurred while loading information for game %s from %s</string>
 </strings>

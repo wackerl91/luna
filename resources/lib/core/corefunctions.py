@@ -22,7 +22,11 @@ STRINGS = {
     'mapping_failure':     30205,
     'pair_failure_paired': 30206,
     'configure_first':     30207,
-    'reset_cache_warning': 30208
+    'reset_cache_warning': 30208,
+    'empty_game_list':     30209,
+    'update_available':    30210,
+    'no_update_available': 30211,
+    'scraper_failed':      30212,
 }
 
 

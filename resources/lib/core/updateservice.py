@@ -49,9 +49,15 @@ class UpdateService(Component):
                 update_storage['checked'] = True
                 xbmcgui.Dialog().notification(
                     self.core.string('name'),
-                    'Update to version %s available' % update.update_version
+                    self.core.string('update_available') % update.update_version
                 )
                 return update
+            else:
+                xbmcgui.Dialog().notification(
+                    self.core.string('name'),
+                    self.core.string('no_update_available')
+                )
+                return None
 
     def initiate_update(self, update):
         if update.asset_name is not None:

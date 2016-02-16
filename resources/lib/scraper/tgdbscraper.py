@@ -4,6 +4,8 @@ import subprocess
 from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element
 
+import xbmcgui
+
 from abcscraper import AbstractScraper
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
@@ -14,10 +16,14 @@ class TgdbScraper(AbstractScraper):
     def __init__(self):
         AbstractScraper.__init__(self)
         self.plugin = RequiredFeature('plugin').request()
+        self.core = RequiredFeature('core').request()
         self.api_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.fanart_cache = self._set_up_path(os.path.join(self.base_path, 'art/fanart/'))
         self.api_cache = os.path.join(self.base_path, 'api_cache/')
+
+    def name(self):
+        return 'TGDB'
 
     def get_game_information(self, game_name):
         request_name = game_name.replace(" ", "+").replace(":", "")
@@ -36,7 +42,19 @@ class TgdbScraper(AbstractScraper):
         game_fanart_path = self._set_up_path(os.path.join(self.fanart_cache, game))
 
         xml_response_file = self._get_xml_data(game)
-        xml_root = ElementTree(file=xml_response_file).getroot()
+
+        try:
+            xml_root = ElementTree(file=xml_response_file).getroot()
+        except:
+            xbmcgui.Dialog().notification(
+                self.core.string('name'),
+                self.core.string('scraper_failed') % (game, self.name())
+            )
+
+            if xml_response_file is not None and os.path.isfile(xml_response_file):
+                os.remove(xml_response_file)
+
+            return ApiResponse()
 
         dict_response = self._parse_xml_to_dict(xml_root)
 

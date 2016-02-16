@@ -31,7 +31,7 @@ class UpdateService(Component):
     def check_for_update(self, ignore_checked=False):
         update_storage = self.plugin.get_storage('update', TTL=60)
         update = None
-        if not update_storage.get('checked') or ignore_checked:
+        if not update_storage['checked'] or ignore_checked:
             response = json.load(urllib2.urlopen(self.api_url))
             for release in response:
                 if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
@@ -45,7 +45,6 @@ class UpdateService(Component):
                     update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
 
             if update is not None:
-                print update.asset_name
                 update_storage['checked'] = True
                 xbmcgui.Dialog().notification(
                     self.core.string('name'),

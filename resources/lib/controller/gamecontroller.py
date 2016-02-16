@@ -38,7 +38,7 @@ class GameController:
         game_version_storage = self.plugin.get_storage('game_version')
 
         cache = {}
-        if game_version_storage['version'] == Game.version:
+        if game_version_storage.get('version') == Game.version:
             cache = storage.raw_dict().copy()
 
         storage.clear()

@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 
+import re
 from xbmcswift2 import xbmc, xbmcaddon
 
 from resources.lib.di.component import Component
@@ -21,6 +22,9 @@ class MoonlightHelper(Component):
     plugin = RequiredFeature('plugin')
     config_helper = RequiredFeature('config-helper')
     logger = RequiredFeature('logger')
+
+    regex_connect = '(Connect to)'
+    regex_moonlight = '(Moonlight Embedded)'
 
     def __init__(self):
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -134,8 +138,9 @@ class MoonlightHelper(Component):
 
         while True:
             line = list_proc.stdout.readline()
-            if line[3:] != '':
-                game_list.append(line[3:].strip())
+            if not re.match(self.regex_moonlight, line) and not re.match(self.regex_connect, line):
+                if line[3:] != '':
+                    game_list.append(line[3:].strip())
             if not line:
                 break
 

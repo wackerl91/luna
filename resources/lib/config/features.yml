@@ -84,10 +84,10 @@
 --- !component
   name: scraper-chain
   module: resources.lib.scraper.scraperchain
+  class_name: ScraperChain
   arguments:
     - '@plugin'
     - '@logger'
-  class_name: ScraperChain
 
 --- !component
   name: omdb-scraper

@@ -4,16 +4,18 @@ import os
 import urllib2
 import dateutil.parser as date_parser
 
-import xbmcgui
+try:
+    import xbmcgui
+except ImportError:
+    from xbmcswift2 import xbmcgui
+
 from abcscraper import AbstractScraper
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
 
 
 class IgdbScraper(AbstractScraper):
-    def __init__(self):
-        AbstractScraper.__init__(self)
-        self.plugin = RequiredFeature('plugin').request()
+    def __init__(self, plugin, core):
+        AbstractScraper.__init__(self, plugin, core)
         self.api_url = 'https://www.igdb.com/api/v1/games/%s'
         self.api_img_url = 'https://res.cloudinary.com/igdb/image/upload/t_%s/%s.jpg'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
@@ -50,8 +52,8 @@ class IgdbScraper(AbstractScraper):
             igdb_api_key = cp.get('API', 'igdb')
         except:
             xbmcgui.Dialog().notification(
-                self.core().string('name'),
-                self.core().string('scraper_failed') % (game, self.name())
+                self.core.string('name'),
+                self.core.string('scraper_failed') % (game, self.name())
             )
             return ApiResponse()
 

@@ -1,17 +1,14 @@
 import xbmcgui
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
 
 class GameController:
-    plugin = RequiredFeature('plugin')
-    core = RequiredFeature('core')
-    moonlight_helper = RequiredFeature('moonlight-helper')
-    scraper_chain = RequiredFeature('scraper-chain')
-    logger = RequiredFeature('logger')
-
-    def __init__(self):
-        pass
+    def __init__(self, plugin, core, moonlight_helper, scraper_chain, logger):
+        self.plugin = plugin
+        self.core = core
+        self.moonlight_helper = moonlight_helper
+        self.scraper_chain = scraper_chain
+        self.logger = logger
 
     def get_games(self):
         """

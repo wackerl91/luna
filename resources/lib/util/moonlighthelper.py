@@ -5,9 +5,6 @@ import threading
 import re
 from xbmcswift2 import xbmc, xbmcaddon
 
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
-
 
 def loop_lines(dialog, iterator):
     """
@@ -18,15 +15,14 @@ def loop_lines(dialog, iterator):
         dialog.update(0, line)
 
 
-class MoonlightHelper(Component):
-    plugin = RequiredFeature('plugin')
-    config_helper = RequiredFeature('config-helper')
-    logger = RequiredFeature('logger')
-
+class MoonlightHelper:
     regex_connect = '(Connect to)'
     regex_moonlight = '(Moonlight Embedded)'
 
-    def __init__(self):
+    def __init__(self, plugin, config_helper, logger):
+        self.plugin = plugin
+        self.config_helper = config_helper
+        self.logger = logger
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
     def create_ctrl_map(self, dialog, map_file):

@@ -1,18 +1,15 @@
 import ConfigParser
 import os
 
-from resources.lib.di.requiredfeature import RequiredFeature
-
-conf = 'luna.conf'
-
 
 class ConfigHelper:
-    plugin = RequiredFeature('plugin')
-    logger = RequiredFeature('logger')
+    conf = 'luna.conf'
 
-    def __init__(self):
+    def __init__(self, plugin, logger):
+        self.plugin = plugin
+        self.logger = logger
         self._reset()
-        self.full_path = ''.join([self.plugin.storage_path, conf])
+        self.full_path = ''.join([self.plugin.storage_path, self.conf])
 
     def _reset(self):
         self.file_path = None
@@ -59,7 +56,7 @@ class ConfigHelper:
         self.input_device = input_device
         self.override_default_resolution = override_default_resolution
 
-        self.full_path = ''.join([self.addon_path, conf])
+        self.full_path = ''.join([self.addon_path, self.conf])
 
     def configure(self):
         binary_path = self._find_binary()

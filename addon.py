@@ -1,12 +1,10 @@
-import resources.lib.config.bootstrap as bootstrapper
-
 from xbmcswift2 import xbmc, xbmcgui
 
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 from resources.lib.views.gameinfo import GameInfo
 
-plugin = bootstrapper.bootstrap()
+plugin = RequiredFeature('plugin').request()
 
 addon_path = plugin.storage_path
 addon_internal_path = plugin.addon.getAddonInfo('path')

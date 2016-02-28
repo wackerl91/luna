@@ -3,8 +3,6 @@ import shutil
 import copy
 import xml.etree.ElementTree as ElementTree
 
-from resources.lib.di.requiredfeature import RequiredFeature
-
 
 # This is taken from http://effbot.org/zone/element-lib.htm#prettyprint
 def indent(elem, level=0):
@@ -26,9 +24,9 @@ def indent(elem, level=0):
 
 
 class SkinPatcher:
-    def __init__(self):
-        self.core = RequiredFeature('core').request()
-        self.plugin = RequiredFeature('plugin').request()
+    def __init__(self, core, plugin):
+        self.core = core
+        self.plugin = plugin
         self.base_path = '/usr/share/kodi/addons/skin.osmc/16x9/'
         self.shortcut_path = '/usr/share/kodi/addons/skin.osmc/shortcuts/'
         self.widget = 'Includes_Widgets.xml'

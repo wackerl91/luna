@@ -1,0 +1,120 @@
+--- !component
+  name: plugin
+  module: xbmcswift2
+  class_name: Plugin
+
+--- !component
+  name: logger
+  module: resources.lib.core.logger
+  class_name: Logger
+  arguments:
+    - '@plugin'
+
+--- !component
+  name: core
+  module: resources.lib.core.corefunctions
+  class_name: Core
+  arguments:
+    - '@plugin'
+    - '@logger'
+
+--- !component
+  name: config-helper
+  module: resources.lib.util.confighelper
+  class_name: ConfigHelper
+  arguments:
+    - '@plugin'
+    - '@logger'
+
+--- !component
+  name: core-monitor
+  module: resources.lib.core.coremonitor
+  class_name: CoreMonitor
+  arguments:
+    - '@config-helper'
+    - '@logger'
+
+--- !component
+  name: moonlight-helper
+  module: resources.lib.util.moonlighthelper
+  class_name: MoonlightHelper
+  arguments:
+    - '@plugin'
+    - '@config-helper'
+    - '@logger'
+
+--- !component
+  name: config-controller
+  module: resources.lib.controller.configcontroller
+  class_name: ConfigController
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@moonlight-helper'
+    - '@logger'
+
+--- !component
+  name: game-controller
+  module: resources.lib.controller.gamecontroller
+  class_name: GameController
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@moonlight-helper'
+    - '@scraper-chain'
+    - '@logger'
+
+--- !component
+  name: update-service
+  module: resources.lib.core.updateservice
+  class_name: UpdateService
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@logger'
+
+--- !component
+  name: skin-patcher
+  module: resources.lib.util.skinpatcher
+  class_name: SkinPatcher
+  arguments:
+    - '@core'
+    - '@plugin'
+
+--- !component
+  name: scraper-chain
+  module: resources.lib.scraper.scraperchain
+  arguments:
+    - '@plugin'
+    - '@logger'
+  class_name: ScraperChain
+
+--- !component
+  name: omdb-scraper
+  module: resources.lib.scraper.omdbscraper
+  class_name: OmdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: tgdb-scraper
+  module: resources.lib.scraper.tgdbscraper
+  class_name: TgdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: igdb-scraper
+  module: resources.lib.scraper.igdbscraper
+  class_name: IgdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }

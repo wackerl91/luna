@@ -4,19 +4,19 @@ import subprocess
 from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element
 
-import xbmcgui
+try:
+    import xbmcgui
+except ImportError:
+    from xbmcswift2 import xbmcgui
 
 from abcscraper import AbstractScraper
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
 from resources.lib.model.fanart import Fanart
 
 
 class TgdbScraper(AbstractScraper):
-    def __init__(self):
-        AbstractScraper.__init__(self)
-        self.plugin = RequiredFeature('plugin').request()
-        self.core = RequiredFeature('core').request()
+    def __init__(self, plugin, core):
+        AbstractScraper.__init__(self, plugin, core)
         self.api_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.fanart_cache = self._set_up_path(os.path.join(self.base_path, 'art/fanart/'))
@@ -47,8 +47,8 @@ class TgdbScraper(AbstractScraper):
             xml_root = ElementTree(file=xml_response_file).getroot()
         except:
             xbmcgui.Dialog().notification(
-                self.core.string('name'),
-                self.core.string('scraper_failed') % (game, self.name())
+                self.core().string('name'),
+                self.core().string('scraper_failed') % (game, self.name())
             )
 
             if xml_response_file is not None and os.path.isfile(xml_response_file):

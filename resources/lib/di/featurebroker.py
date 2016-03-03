@@ -15,7 +15,6 @@ class FeatureBroker:
         self._parse_config()
 
     def _parse_config(self):
-        print os.getcwd()
         with open('resources/lib/config/features.yml') as config:
             features = yaml.load_all(config)
             for feature in features:

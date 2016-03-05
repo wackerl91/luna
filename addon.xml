@@ -5,7 +5,7 @@
     <import addon="script.module.xbmcswift2" version="2.4.0"/>
     <import addon="script.module.pyxbmct" version="1.1.4" />
     <import addon="script.module.dateutil" version="2.4.2"/>
-    <import addon="script.module.pyyaml" version="3.11.0" />
+    <import addon="script.module.yaml" version="3.11.0" />
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>executable</provides>

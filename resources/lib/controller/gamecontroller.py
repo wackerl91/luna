@@ -19,12 +19,15 @@ class GameController:
         """
         game_list = self.moonlight_helper.list_games()
 
-        if game_list[0] == 'error':
+        if game_list is None or game_list[0] == 'error':
             xbmcgui.Dialog().notification(
                 self.core.string('name'),
-                'Getting game list failed due to certificate generation.' +
-                'This usually means your host wasn\'t paired properly.'
+                'Getting game list failed. ' +
+                'This usually means your host wasn\'t paired properly.',
+                '',
+                20000
             )
+            return
 
         progress_dialog = xbmcgui.DialogProgress()
         progress_dialog.create(

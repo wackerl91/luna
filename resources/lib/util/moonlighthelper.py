@@ -25,6 +25,7 @@ class MoonlightHelper(Component):
 
     regex_connect = '(Connect to)'
     regex_moonlight = '(Moonlight Embedded)'
+    regex_certificate_gen = '(Generating certificate...done)'
 
     def __init__(self):
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -138,6 +139,8 @@ class MoonlightHelper(Component):
 
         while True:
             line = list_proc.stdout.readline()
+            if re.match(self.regex_certificate_gen, line):
+                return game_list.append('error')
             if not re.match(self.regex_moonlight, line) and not re.match(self.regex_connect, line):
                 if line[3:] != '':
                     game_list.append(line[3:].strip())

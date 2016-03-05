@@ -1,8 +1,4 @@
-from xbmcswift2 import xbmc, xbmcgui
-
 from resources.lib.di.requiredfeature import RequiredFeature
-from resources.lib.model.game import Game
-from resources.lib.views.gameinfo import GameInfo
 
 plugin = RequiredFeature('plugin').request()
 
@@ -80,6 +76,7 @@ def pair_host():
 
 @plugin.route('/actions/reset-cache')
 def reset_cache():
+    import xbmcgui
     core = RequiredFeature('core').request()
     confirmed = xbmcgui.Dialog().yesno(
             core.string('name'),
@@ -99,11 +96,13 @@ def patch_osmc_skin():
     skinpatcher = RequiredFeature('skin-patcher').request()
     skinpatcher.patch()
     del skinpatcher
+    import xbmc
     xbmc.executebuiltin('ReloadSkin')
 
 
 @plugin.route('/actions/rollback-osmc')
 def rollback_osmc_skin():
+    import xbmc
     skinpatcher = RequiredFeature('skin-patcher').request()
     skinpatcher.rollback()
     del skinpatcher
@@ -126,6 +125,7 @@ def do_full_refresh():
 
 @plugin.route('/games/info/<game_id>')
 def show_game_info(game_id):
+    from resources.lib.views.gameinfo import GameInfo
     core = RequiredFeature('core').request()
     game = core.get_storage().get(game_id)
     cache_fanart = game.get_selected_fanart()
@@ -134,6 +134,7 @@ def show_game_info(game_id):
     window.doModal()
     del window
     if cache_fanart != game.get_selected_fanart() or cache_poster != game.get_selected_poster():
+        import xbmc
         xbmc.executebuiltin('Container.Refresh')
     del core
     del game
@@ -178,6 +179,7 @@ if __name__ == '__main__':
         game_refresh_required = False
 
         try:
+            from resources.lib.model.game import Game
             if plugin.get_storage('game_version')['version'] != Game.version:
                 game_refresh_required = True
         except KeyError:
@@ -192,6 +194,7 @@ if __name__ == '__main__':
         del plugin
         del core
     else:
+        import xbmcgui
         core = RequiredFeature('core').request()
         xbmcgui.Dialog().ok(
                 core.string('name'),

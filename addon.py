@@ -164,10 +164,12 @@ def launch_game_from_widget(xml_id):
 
 if __name__ == '__main__':
     core = RequiredFeature('core').request()
-    updater = RequiredFeature('update-service').request()
+    update_storage = plugin.get_storage('update', TTL=24*60)
+    if not update_storage.get('checked'):
+        updater = RequiredFeature('update-service').request()
+        updater.check_for_update()
+        del updater
     core.check_script_permissions()
-    updater.check_for_update()
-    del updater
 
     if plugin.get_setting('host', str):
         config_helper = RequiredFeature('config-helper').request()

@@ -19,7 +19,6 @@ class UpdateService:
         self.plugin = plugin
         self.core = core
         self.logger = logger
-        self.logger.info('[UpdateService] - initialized')
         self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
         self.update_version = None
         self.asset_url = None

@@ -1,6 +1,12 @@
 import os
 
+import sys
 import yaml
+
+try:
+    import xbmcaddon
+except ImportError:
+    from xbmcswift2 import Plugin
 
 # DO NOT DELETE THE FOLLOWING IMPORT
 import resources.lib.di.component
@@ -15,7 +21,12 @@ class FeatureBroker:
         self._parse_config()
 
     def _parse_config(self):
-        with open('resources/lib/config/features.yml') as config:
+        if 'xbmcaddon' in sys.modules:
+            features_path = os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/lib/config/features.yml')
+        else:
+            features_path = 'resources/lib/config/features.yml'
+
+        with open(features_path) as config:
             features = yaml.load_all(config)
             for feature in features:
                 self._provide(feature)

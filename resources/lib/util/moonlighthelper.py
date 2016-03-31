@@ -18,6 +18,8 @@ def loop_lines(dialog, iterator):
 class MoonlightHelper:
     regex_connect = '(Connect to)'
     regex_moonlight = '(Moonlight Embedded)'
+    regex_certificate_gen = '(Generating certificate...done)'
+    regex_connection_failed = '(Can\'t connect to server)'
 
     def __init__(self, plugin, config_helper, logger):
         self.plugin = plugin
@@ -99,15 +101,16 @@ class MoonlightHelper:
             while True:
                 line = pairing_check.stdout.readline()
                 err = pairing_check.stderr.readline()
-                if line != '':
-                    last = line
+                if not re.match(self.regex_moonlight, line) and not re.match(self.regex_connect, line):
+                    if line != '':
+                        last = line
                 if err != '':
                     last = err
                 if not line and not err:
                     break
 
             dialog.close()
-            if last.lower().strip() != 'You must pair with the PC first'.lower().strip():
+            if last.lower().strip() != 'You must pair with the PC first'.lower().strip() and not re.match(self.regex_connection_failed, last):
                 return True
         else:
 
@@ -134,6 +137,9 @@ class MoonlightHelper:
 
         while True:
             line = list_proc.stdout.readline()
+            if re.match(self.regex_certificate_gen, line):
+                game_list.append('error')
+                return game_list
             if not re.match(self.regex_moonlight, line) and not re.match(self.regex_connect, line):
                 if line[3:] != '':
                     game_list.append(line[3:].strip())

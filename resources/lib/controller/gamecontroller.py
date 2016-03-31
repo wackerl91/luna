@@ -16,6 +16,16 @@ class GameController:
         """
         game_list = self.moonlight_helper.list_games()
 
+        if game_list is None or game_list[0] == 'error':
+            xbmcgui.Dialog().notification(
+                self.core.string('name'),
+                'Getting game list failed. ' +
+                'This usually means your host wasn\'t paired properly.',
+                '',
+                20000
+            )
+            return
+
         progress_dialog = xbmcgui.DialogProgress()
         progress_dialog.create(
             self.core.string('name'),
@@ -45,7 +55,8 @@ class GameController:
             progress_dialog.update(bar_movement * i, 'Processing: %s' % game_name, '')
             if self.plugin.get_setting('disable_scraper', bool):
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
-                progress_dialog.update(bar_movement * i, line2='Scrapers have been disabled, just adding game names to list.')
+                progress_dialog.update(bar_movement * i,
+                                       line2='Scrapers have been disabled, just adding game names to list.')
                 storage[game_name] = Game(game_name, None)
             else:
                 if game_name in cache:
@@ -58,7 +69,7 @@ class GameController:
                         storage[game_name] = self.scraper_chain.query_game_information(game_name)
                     except KeyError:
                         self.logger.info(
-                                'Key Error thrown while getting information for game {0}: {1}'
+                            'Key Error thrown while getting information for game {0}: {1}'
                                 .format(game_name,
                                         KeyError.message))
                         storage[game_name] = Game(game_name, None)
@@ -81,20 +92,20 @@ class GameController:
                 (
                     'Game Information',
                     'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='show_game_info',
-                            game_id=game_id
+                        endpoint='show_game_info',
+                        game_id=game_id
                     )
                 ),
                 (
                     self.core.string('addon_settings'),
                     'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='open_settings'
+                        endpoint='open_settings'
                     )
                 ),
                 (
                     self.core.string('full_refresh'),
                     'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='do_full_refresh'
+                        endpoint='do_full_refresh'
                     )
                 )
             ]
@@ -120,8 +131,8 @@ class GameController:
                 'replace_context_menu': True,
                 'context_menu': context_menu(game_name),
                 'path': self.plugin.url_for(
-                        endpoint='launch_game',
-                        game_id=game.name
+                    endpoint='launch_game',
+                    game_id=game.name
                 ),
                 'properties': {
                     'fanart_image': game.get_selected_fanart().get_original()

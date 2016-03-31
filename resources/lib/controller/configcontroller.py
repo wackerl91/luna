@@ -1,18 +1,14 @@
 import os
 
 from xbmcswift2 import xbmcgui
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
 
 
-class ConfigController(Component):
-    plugin = RequiredFeature('plugin')
-    core = RequiredFeature('core')
-    moonlight_helper = RequiredFeature('moonlight-helper')
-    logger = RequiredFeature('logger')
-
-    def __init__(self):
-        pass
+class ConfigController:
+    def __init__(self, plugin, core, moonlight_helper, logger):
+        self.plugin = plugin
+        self.core = core
+        self.moonlight_helper = moonlight_helper
+        self.logger = logger
 
     def create_controller_mapping(self):
         self.logger.info('Starting mapping')

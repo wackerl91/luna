@@ -1,18 +1,16 @@
 import os
 import shutil
 
-from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.fanart import Fanart
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
 
 
-class ScraperChain(Component):
-    plugin = RequiredFeature('plugin')
-    logger = RequiredFeature('logger')
-
-    def __init__(self):
+class ScraperChain:
+    def __init__(self, plugin, logger):
+        self.plugin = plugin
+        self.logger = logger
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
 

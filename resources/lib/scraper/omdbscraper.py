@@ -2,17 +2,18 @@ import json
 import os
 import urllib2
 
-import xbmcgui
+try:
+    import xbmcgui
+except ImportError:
+    from xbmcswift2 import xbmcgui
 
 from abcscraper import AbstractScraper
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.apiresponse import ApiResponse
 
 
 class OmdbScraper(AbstractScraper):
-    def __init__(self):
-        AbstractScraper.__init__(self)
-        self.plugin = RequiredFeature('plugin').request()
+    def __init__(self, plugin, core):
+        AbstractScraper.__init__(self, plugin, core)
         self.api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.api_cache = self._set_up_path(os.path.join(self.base_path, 'api_cache/'))
@@ -41,8 +42,8 @@ class OmdbScraper(AbstractScraper):
             json_data = json.load(open(json_file))
         except:
             xbmcgui.Dialog().notification(
-                self.core().string('name'),
-                self.core().string('scraper_failed') % (game, self.name())
+                self.core.string('name'),
+                self.core.string('scraper_failed') % (game, self.name())
             )
 
             if json_file is not None and os.path.isfile(json_file):

@@ -1,12 +1,10 @@
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
+from xbmcswift2 import Plugin
 
 
-class Logger(Component):
-    plugin = RequiredFeature('plugin')
+class Logger:
 
-    def __init__(self):
-        pass
+    def __init__(self, plugin):
+        self.plugin = plugin  # type: Plugin
 
     def info(self, text):
         self.plugin.log.info(text)

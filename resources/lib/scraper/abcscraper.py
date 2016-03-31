@@ -3,14 +3,14 @@ import subprocess
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
-from resources.lib.di.requiredfeature import RequiredFeature
-
 
 class AbstractScraper:
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        self.base_path = self.plugin().storage_path
+    def __init__(self, plugin, core):
+        self.plugin = plugin
+        self.core = core
+        self.base_path = self.plugin.storage_path
 
     @abstractproperty
     def name(self):
@@ -20,18 +20,6 @@ class AbstractScraper:
         :return: name
         """
         pass
-
-    def core(self):
-        """
-        :rtype: resources.lib.core.corefunctions.Core
-        """
-        return RequiredFeature('core').request()
-
-    def plugin(self):
-        """
-        :rtype: xbmcswift2.Plugin
-        """
-        return RequiredFeature('plugin').request()
 
     @abstractmethod
     def get_game_information(self, game_name):

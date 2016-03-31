@@ -7,21 +7,18 @@ import zipfile
 
 from xbmcswift2 import xbmcaddon, xbmcgui, xbmc
 
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.update import Update
 from resources.lib.views.updateinfo import UpdateInfo
 
 
-class UpdateService(Component):
-    logger = RequiredFeature('logger')
-    core = RequiredFeature('core')
-    plugin = RequiredFeature('plugin')
+class UpdateService:
     regexp = '(\d+\.)?(\d+\.)?(\*|\d+)'
+    api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
 
-    def __init__(self):
-        self.logger.info('[UpdateService] - initialized')
-        self.api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
+    def __init__(self, plugin, core, logger):
+        self.plugin = plugin
+        self.core = core
+        self.logger = logger
         self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
         self.update_version = None
         self.asset_url = None

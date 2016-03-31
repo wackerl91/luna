@@ -1,6 +1,5 @@
 import os
 import unittest
-import resources.lib.config.bootstrap as bootstrapper
 
 from resources.lib.di.requiredfeature import RequiredFeature
 
@@ -8,8 +7,6 @@ from resources.lib.model.game import Game
 
 
 class TestScraperChain(unittest.TestCase):
-    bootstrapper.bootstrap()
-
     def setUp(self):
         self.chain = RequiredFeature('scraper-chain').request()
 

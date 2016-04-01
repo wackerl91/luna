@@ -1,9 +1,15 @@
+import Queue
 import os
 import subprocess
 import threading
 
 import re
 from xbmcswift2 import xbmc, xbmcaddon
+
+from resources.lib.model.inputmap import InputMap
+from resources.lib.util.inputwrapper import InputWrapper
+from resources.lib.util.stoppableinputhandler import StoppableInputHandler
+from resources.lib.util.stoppablejshandler import StoppableJSHandler
 
 
 def loop_lines(dialog, iterator):
@@ -54,6 +60,51 @@ class MoonlightHelper:
                 mapping_proc.kill()
                 dialog.close()
                 success = False
+                break
+
+        if os.path.isfile(map_file) and success:
+
+            return True
+        else:
+
+            return False
+
+    def create_ctrl_map_new(self, dialog, map_file):
+        # TODO: Implementation detail which should be hidden?
+        input_queue = Queue.Queue()
+        input_map = InputMap(map_file)
+        input_device = self.plugin.get_setting('input_device')
+        devices = InputWrapper.list_all_devices()
+        device_name = devices[os.path.basename(input_device)]
+        input_wrapper = InputWrapper(input_device, device_name, input_queue, input_map)
+        input_wrapper.build_controller_map()
+
+        print 'num buttons: %s' % input_wrapper.num_buttons
+        print 'num_axes: %s' % input_wrapper.num_axes
+        expected_input_number = input_wrapper.num_buttons + (input_wrapper.num_axes *2)
+
+        js = StoppableJSHandler(input_wrapper, input_map)
+        it = StoppableInputHandler(input_queue, input_map, dialog, expected_input_number)
+
+        success = False
+
+        while True:
+            xbmc.sleep(1000)
+            if not it.isAlive():
+                js.stop()
+                dialog.close()
+                js.join(timeout=2)
+                if input_map.status == InputMap.STATUS_DONE:
+                    success = True
+                if input_map.status == InputMap.STATUS_PENDING or input_map.status == InputMap.STATUS_ERROR:
+                    success = False
+                break
+            if dialog.iscanceled():
+                it.stop()
+                js.stop()
+                success = False
+                it.join()
+                js.join(timeout=2)
                 break
 
         if os.path.isfile(map_file) and success:

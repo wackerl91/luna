@@ -23,10 +23,13 @@ class ConfigController:
                 self.core.string('starting_mapping')
         )
 
-        self.core.logger.info('Trying to call subprocess')
         map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
-        success = self.moonlight_helper.create_ctrl_map(progress_dialog, map_file)
+        if controllers[ctrl_type] == 'XBOX':
+            success = self.moonlight_helper.create_ctrl_map_new(progress_dialog, map_file)
+        else:
+            self.core.logger.info('Trying to call subprocess')
+            success = self.moonlight_helper.create_ctrl_map(progress_dialog, map_file)
 
         if success:
             confirmed = xbmcgui.Dialog().yesno(

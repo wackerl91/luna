@@ -1,4 +1,5 @@
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.views.selectinput import SelectInput
 
 plugin = RequiredFeature('plugin').request()
 
@@ -50,6 +51,13 @@ def open_settings():
     core_monitor = RequiredFeature('core-monitor').request()
     core_monitor.onSettingsChanged()
     del core_monitor
+
+
+@plugin.route('/settings/select-input')
+def select_input_devices():
+    window = SelectInput('Select Input Devices')
+    window.doModal()
+    del window
 
 
 @plugin.route('/update')

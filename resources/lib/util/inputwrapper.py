@@ -103,11 +103,8 @@ class InputWrapper:
                 js_dev = open(os.path.join('/dev/input', _dev), 'rb')
                 buf = array.array('c', ['\0'] * 64)
                 ioctl(js_dev,  0x80006a13 + (0x10000 * len(buf)), buf)
-                js_name = buf.tostring()
+                js_name = buf.tostring().rstrip('\0')
                 devices[_dev] = js_name
-                print _dev
-                print type(js_name)
-                # print 'Added device %s / %s to list' % (_dev, js_name)
         return devices
 
     def build_controller_map(self):

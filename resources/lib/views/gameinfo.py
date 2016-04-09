@@ -34,11 +34,6 @@ class GameInfo(pyxbmct.AddonDialogWindow):
             self.removeControl(self.window_close_button)
             self.removeControl(self.title_bar)
 
-        self.setGeometry(1280, 720, 12, 6, padding=60)
-        self.set_info_controls(game)
-        self.set_active_controls(game)
-        self.set_navigation()
-        self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
         # init controls
         self.image = None
         self.genre = None
@@ -47,6 +42,12 @@ class GameInfo(pyxbmct.AddonDialogWindow):
         self.button_play = None
         self.button_cover_art = None
         self.button_fanart = None
+
+        self.setGeometry(1280, 720, 12, 6, padding=60)
+        self.set_info_controls(game)
+        self.set_active_controls(game)
+        self.set_navigation()
+        self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
 
     def set_info_controls(self, game):
         title_label = pyxbmct.Label(game.name, alignment=pyxbmct.ALIGN_LEFT, font='XLarge', textColor=COLOR_HEADING)

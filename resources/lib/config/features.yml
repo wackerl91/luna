@@ -82,6 +82,11 @@
     - '@plugin'
 
 --- !component
+  name: device-wrapper
+  module: resources.lib.util.devicewrapper
+  class_name: DeviceWrapper
+
+--- !component
   name: scraper-chain
   module: resources.lib.scraper.scraperchain
   class_name: ScraperChain

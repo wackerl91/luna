@@ -52,6 +52,14 @@ def open_settings():
     del core_monitor
 
 
+@plugin.route('/settings/select-input')
+def select_input_devices():
+    from resources.lib.views.selectinput import SelectInput
+    window = SelectInput('Select Input Devices')
+    window.doModal()
+    del window
+
+
 @plugin.route('/update')
 def check_update():
     updater = RequiredFeature('update-service').request()
@@ -173,9 +181,6 @@ if __name__ == '__main__':
     core.check_script_permissions()
 
     if plugin.get_setting('host', str):
-        config_helper = RequiredFeature('config-helper').request()
-        config_helper.configure()
-
         game_refresh_required = False
 
         try:

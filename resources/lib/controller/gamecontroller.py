@@ -70,8 +70,8 @@ class GameController:
                     except KeyError:
                         self.logger.info(
                             'Key Error thrown while getting information for game {0}: {1}'
-                                .format(game_name,
-                                        KeyError.message))
+                            .format(game_name,
+                                    KeyError.message))
                         storage[game_name] = Game(game_name, None)
             i += 1
 

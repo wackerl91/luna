@@ -69,14 +69,20 @@ class MoonlightHelper:
 
             return False
 
-    def create_ctrl_map_new(self, dialog, map_file):
+    def create_ctrl_map_new(self, dialog, map_file, device):
         # TODO: Implementation detail which should be hidden?
         input_queue = Queue.Queue()
         input_map = InputMap(map_file)
-        input_device = self.plugin.get_setting('input_device')
-        devices = InputWrapper.list_all_devices()
-        device_name = devices[os.path.basename(input_device)]
-        input_wrapper = InputWrapper(input_device, device_name, input_queue, input_map)
+        input_device = None
+
+        for handler in device.handlers:
+            if handler[:-1] == 'js':
+                input_device = os.path.join('/dev/input', handler)
+
+        if not input_device:
+            return False
+
+        input_wrapper = InputWrapper(input_device, device.name, input_queue, input_map)
         input_wrapper.build_controller_map()
 
         print 'num buttons: %s' % input_wrapper.num_buttons
@@ -103,8 +109,9 @@ class MoonlightHelper:
                 it.stop()
                 js.stop()
                 success = False
-                it.join()
+                it.join(timeout=2)
                 js.join(timeout=2)
+                dialog.close()
                 break
 
         if os.path.isfile(map_file) and success:

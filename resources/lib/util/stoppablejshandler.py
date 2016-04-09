@@ -17,14 +17,16 @@ class StoppableJSHandler(StoppableThread):
         return self._stop.isSet()
 
     def run(self):
+        print 'Opened input device %s' % self.input.device
         self.js_dev = open(self.input.device, 'rb')
         while True:
             if self.stopped():
                 self.cleanup()
-                break
+                return
             self.input.capture_input_events(self.js_dev)
 
     def cleanup(self):
         self.js_dev.close()
         if self.map.status == InputMap.STATUS_DONE:
             self.map.write()
+        return

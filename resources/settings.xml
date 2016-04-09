@@ -12,13 +12,7 @@
     </category>
     <category label="30016">
         <setting label="30017" type="bool" id="enable_custom_input" default="false"/>
-        <setting label="30018" type="file" id="input_map" enable="eq(-1,true)" default=""/>
-        <setting label="30019" type="file" id="input_device_1" visible="false" enable="eq(-2,true)" default=""/>
-        <setting label="30019" type="file" id="input_device_2" visible="false" enable="eq(-3,true)" default=""/>
-        <setting label="30019" type="file" id="input_device_3" visible="false" enable="eq(-4,true)" default=""/>
-        <setting label="30019" type="file" id="input_device_4" visible="false" enable="eq(-5,true)" default=""/>
-        <setting label="30034" type="action" enable="eq(-6,true)" action="XBMC.RunPlugin(plugin://script.luna/settings/select-input)"/>
-        <setting label="30020" type="action" enable="eq(-7,true)" action="XBMC.RunPlugin(plugin://script.luna/actions/create-mapping)"/>
+        <setting label="30034" type="action" enable="eq(-1,true)" action="XBMC.RunPlugin(plugin://script.luna/settings/select-input)"/>
     </category>
     <category label="30009">
         <setting label="30010" type="bool" id="enable_custom_bitrate" default="false"/>

@@ -177,7 +177,7 @@ class MoonlightHelper:
 
     def pair_host_new(self, dialog):
         connection_manager = RequiredFeature('connection-manager').request()
-        message = connection_manager.pair()
+        message = connection_manager.pair(dialog)
         print message
         if message == 'Success':
             return True

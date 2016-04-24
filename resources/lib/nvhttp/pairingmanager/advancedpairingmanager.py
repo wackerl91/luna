@@ -125,7 +125,8 @@ class AdvancedPairingManager(AbstractPairingManager):
     def pair(self, nvhttp, server_info, pin):
         server_major_version = nvhttp.get_server_version(server_info)
 
-        if int(server_major_version) >= 7:
+        # if int(server_major_version) >= 7:
+        if False:
             hash_algo = Sha256PairingHash()
         else:
             hash_algo = Sha1PairingHash()

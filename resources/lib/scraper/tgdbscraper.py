@@ -47,8 +47,8 @@ class TgdbScraper(AbstractScraper):
             xml_root = ElementTree(file=xml_response_file).getroot()
         except:
             xbmcgui.Dialog().notification(
-                self.core().string('name'),
-                self.core().string('scraper_failed') % (game, self.name())
+                self.core.string('name'),
+                self.core.string('scraper_failed') % (game, self.name())
             )
 
             if xml_response_file is not None and os.path.isfile(xml_response_file):

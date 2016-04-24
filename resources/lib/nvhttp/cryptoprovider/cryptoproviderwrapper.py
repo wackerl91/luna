@@ -39,6 +39,11 @@ class CryptoProviderWrapper(AbstractCryptoProvider):
             self._load_crypto_provider()
         return self._crypto_provider.get_client_private_key()
 
+    def extract_cert_signature(self, cert):
+        if self._crypto_provider is None:
+            self._load_crypto_provider()
+        return self._crypto_provider.extract_cert_signature(cert)
+
     def _load_crypto_provider(self):
         try:
             module = importlib.import_module('resources.lib.nvhttp.cryptoprovider.advancedcryptoprovider')

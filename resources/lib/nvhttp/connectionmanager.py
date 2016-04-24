@@ -7,6 +7,7 @@ class ConnectionManager(object):
         message = ''
         nvhttp = RequiredFeature('nvhttp').request()
         server_info = nvhttp.get_server_info()
+        print 'ConnectionManager Server Info: %s' % server_info
         if nvhttp.get_pair_state(server_info) == AbstractPairingManager.STATE_PAIRED:
             message = 'Already paired'
         else:

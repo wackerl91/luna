@@ -29,4 +29,4 @@ class PairingManagerWrapper(AbstractPairingManager):
             class_name = 'SimplePairingManager'
 
         class_ = getattr(module, class_name)
-        self._pairing_manager = class_(RequiredFeature('crypto-provider'))
+        self._pairing_manager = class_(RequiredFeature('crypto-provider').request())

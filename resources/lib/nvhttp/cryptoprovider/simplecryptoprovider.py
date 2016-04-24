@@ -25,3 +25,7 @@ class SimpleCryptoProvider(AbstractCryptoProvider):
 
     def get_client_private_key(self):
         raise NotImplementedError
+
+    def extract_cert_signature(self, cert):
+        raise NotImplementedError
+

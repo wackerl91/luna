@@ -27,3 +27,7 @@ class AbstractCryptoProvider(object):
     @abstractmethod
     def get_pem_encoded_client_cert(self):
         pass
+
+    @abstractmethod
+    def extract_cert_signature(self, cert):
+        pass

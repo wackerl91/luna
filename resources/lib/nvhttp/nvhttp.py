@@ -50,7 +50,7 @@ class NvHTTP(object):
         response = ''
         try:
             response = self.open_http_connection(
-                self.base_url_http + '/serverinfo?' + self.build_uid_uuid_string(), True)
+                self.base_url_https + '/serverinfo?' + self.build_uid_uuid_string(), True)
             self.get_server_version(response)
             self.verify_response_status(response)
         except AssertionError, e:
@@ -181,6 +181,6 @@ class NvHTTP(object):
 
         else:
             with open(uid_file, 'rb') as f:
-                uid = f.readall()
+                uid = f.read()
 
         return str(uid)

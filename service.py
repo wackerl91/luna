@@ -22,6 +22,6 @@ if __name__ == '__main__':
             WINDOW.setProperty('Luna.%s.icon' % i, game.get_selected_poster())
             WINDOW.setProperty('Luna.%s.thumb' % i, game.get_selected_poster())
             WINDOW.setProperty('Luna.%s.fanart' % i, game.get_selected_fanart().get_original())
-            sorted_storage[i] = game_name
+            sorted_storage[i] = game.name
 
         sorted_storage.sync()

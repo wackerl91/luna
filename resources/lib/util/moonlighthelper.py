@@ -6,6 +6,7 @@ import threading
 import re
 from xbmcswift2 import xbmc, xbmcaddon
 
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.inputmap import InputMap
 from resources.lib.util.inputwrapper import InputWrapper
 from resources.lib.util.stoppableinputhandler import StoppableInputHandler
@@ -172,6 +173,15 @@ class MoonlightHelper:
                 return True
         else:
 
+            return False
+
+    def pair_host_new(self, dialog):
+        connection_manager = RequiredFeature('connection-manager').request()
+        message = connection_manager.pair()
+        print message
+        if message == 'Success':
+            return True
+        else:
             return False
 
     def launch_game(self, game_id):

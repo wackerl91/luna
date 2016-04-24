@@ -56,7 +56,8 @@ class ConfigController:
                 'Starting Pairing'
         )
 
-        success = self.moonlight_helper.pair_host(pair_dialog)
+        # success = self.moonlight_helper.pair_host(pair_dialog)
+        success = self.moonlight_helper.pair_host_new(pair_dialog)
 
         if success:
             xbmcgui.Dialog().ok(

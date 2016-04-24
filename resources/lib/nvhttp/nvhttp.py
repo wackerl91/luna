@@ -14,8 +14,6 @@ class NvHTTP(object):
     HTTP_PORT = 47989
 
     def __init__(self, pairing_manager, crypto_provider, config_helper):
-        # TODO: Catch import error when trying to append PairingManager and wrap moonlight as pairingmanager instead
-        # TODO: PairingManager only needs the crypto provider -> get any available pairing manager from DI
         self.pairing_manager = pairing_manager
         self.crypto_provider = crypto_provider
         self.config_helper = config_helper
@@ -78,9 +76,6 @@ class NvHTTP(object):
         return host
 
     def open_http_connection(self, url, enable_read_timeout):
-        # TODO: These need to be loaded from cryptoprovider to prevent mismatched requests (will result in PAIR_STATE_FAILED on last request)
-        # cert = os.path.join(self.key_dir, 'client-new.pem')
-        # key = os.path.join(self.key_dir, 'key-new.pem')
         cert = self.crypto_provider.get_cert_path()
         key = self.crypto_provider.get_key_path()
         if enable_read_timeout:

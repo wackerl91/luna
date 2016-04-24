@@ -15,3 +15,15 @@ class AbstractCryptoProvider(object):
     @abstractmethod
     def get_key_dir(self):
         pass
+
+    @abstractmethod
+    def get_client_cert(self):
+        pass
+
+    @abstractmethod
+    def get_client_private_key(self):
+        pass
+
+    @abstractmethod
+    def get_pem_encoded_client_cert(self):
+        pass

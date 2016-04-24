@@ -1,13 +1,8 @@
 from resources.lib.di.requiredfeature import RequiredFeature
-from resources.lib.nvhttp.abstractpairingmanager import AbstractPairingManager
+from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
 
 
 class ConnectionManager(object):
-    def __init__(self):
-        self.confighelper = RequiredFeature('config-helper').request()
-        self.confighelper.configure(dump=False)
-        pass
-
     def pair(self, dialog):
         message = ''
         nvhttp = RequiredFeature('nvhttp').request()

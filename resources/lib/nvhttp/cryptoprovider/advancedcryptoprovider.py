@@ -2,20 +2,17 @@ import os
 import time
 
 from Crypto.Util import asn1
-
-from M2Crypto import X509, EVP, ASN1
 from M2Crypto import RSA as M2RSA
+from M2Crypto import X509, EVP, ASN1
 
-from resources.lib.nvhttp.abstractcryptoprovider import AbstractCryptoProvider
+from resources.lib.nvhttp.cryptoprovider.abstractcryptoprovider import AbstractCryptoProvider
 
 
 class AdvancedCryptoProvider(AbstractCryptoProvider):
     def __init__(self, config_helper):
-        # self.cert_file = os.path.join(os.path.expanduser('~'), '.cache/moonlight/client-new.pem')
-        # self.key_file = os.path.join(os.path.expanduser('~'), '.cache/moonlight/key-new.pem')
         self.config_helper = config_helper
-        self.cert_file = 'client.pem'
-        self.key_file = 'key.pem'
+        self.cert_file = self.get_cert_path()
+        self.key_file = self.get_key_path()
         self.cert = None
         self.private_key = None
         self.pem_cert_bytes = None
@@ -28,9 +25,7 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
         if not os.path.isfile(self.cert_file) or not os.path.isfile(self.key_file):
             return False
 
-        cert = open(self.cert_file, 'rb').read()
         self.cert = X509.load_cert(self.cert_file)
-        pk = open(self.key_file, 'rb').read()
         self.private_key = M2RSA.load_key(self.key_file)
         self.load_file_to_bytes(self.cert_file)
 
@@ -128,10 +123,10 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
         return self.pem_cert_bytes
 
     def get_cert_path(self):
-        super(AdvancedCryptoProvider, self).get_cert_path()
+        return os.path.join(os.path.expanduser('~'), '.cache/moonlight/client.pem')
 
     def get_key_path(self):
-        super(AdvancedCryptoProvider, self).get_key_path()
+        return os.path.join(os.path.expanduser('~'), '.cache/moonlight/key.pem')
 
     def get_key_dir(self):
-        super(AdvancedCryptoProvider, self).get_key_dir()
+        return os.path.join(os.path.expanduser('~'), '.cache/moonlight')

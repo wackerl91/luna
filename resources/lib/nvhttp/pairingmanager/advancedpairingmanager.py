@@ -4,10 +4,9 @@ import random
 
 from Crypto.Cipher import AES
 from Crypto.Util import asn1
-
 from M2Crypto import X509
 
-from resources.lib.nvhttp.abstractpairingmanager import AbstractPairingManager
+from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
 from resources.lib.nvhttp.sha1pairinghash import Sha1PairingHash
 from resources.lib.nvhttp.sha256pairinghash import Sha256PairingHash
 

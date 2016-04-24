@@ -126,9 +126,11 @@ def show_games():
 
 @plugin.route('/games/refresh')
 def do_full_refresh():
+    import xbmc
     game_controller = RequiredFeature('game-controller').request()
     game_controller.get_games()
     del game_controller
+    xbmc.executebuiltin('Container.Refresh')
 
 
 @plugin.route('/games/info/<game_id>')

@@ -66,8 +66,7 @@ class GameController:
             if nvapp.id in cache:
                 if not storage.get(nvapp.id):
                     progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
-                    # storage[nvapp.id] = cache.get(nvapp.id)[0]
-                    storage[nvapp.id] = cache.get(nvapp.id)
+                    storage[nvapp.id] = cache.get(nvapp.id)[0]
             else:
                 try:
                     progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
@@ -123,6 +122,7 @@ class GameController:
         items = []
         for i, game_name in enumerate(storage):
             game = storage.get(game_name)
+            print game
             items.append({
                 'label': game.name,
                 'icon': game.get_selected_poster(),

@@ -129,7 +129,6 @@ class AdvancedPairingManager(AbstractPairingManager):
 
         aes_key = self._generate_aes_key(hash_algo, salt_and_pin)
 
-        print 'Sending get_cert request'
         get_cert = nvhttp.open_http_connection(
             nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&phrase=getservercert&salt=' +
@@ -148,7 +147,6 @@ class AdvancedPairingManager(AbstractPairingManager):
         rnd_challenge = self._get_random_bytes(16)
         encrypted_challenge = self._encrypt_aes(rnd_challenge, aes_key)
 
-        print 'Sending challenge request'
         challenge_response = nvhttp.open_http_connection(
             nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&clientchallenge=' + self.bytes_to_hex(encrypted_challenge),
@@ -176,7 +174,6 @@ class AdvancedPairingManager(AbstractPairingManager):
         )
         enc_challenge_response = self._encrypt_aes(challenge_response_hash, aes_key)
 
-        print 'Sending secret request'
         secret_response = nvhttp.open_http_connection(
             nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&serverchallengeresp=' + self.bytes_to_hex(enc_challenge_response),
@@ -214,7 +211,6 @@ class AdvancedPairingManager(AbstractPairingManager):
             return self.STATE_PIN_WRONG
 
         client_pairing_secret = self._concat_bytes(client_secret, self._sign_data(client_secret, self.private_key))
-        print 'Sending client secret request'
         client_secret_response = nvhttp.open_http_connection(
             nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&clientpairingsecret=' + self.bytes_to_hex(client_pairing_secret),

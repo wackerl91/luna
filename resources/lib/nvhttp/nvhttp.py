@@ -41,25 +41,32 @@ class NvHTTP(object):
 
     @staticmethod
     def verify_response_status(response):
-        server_info = ET.ElementTree(ET.fromstring(response.encode('utf-16'))).getroot()
-        status_code = server_info.get('status_code')
+        try:
+            server_info = ET.ElementTree(ET.fromstring(response.content.encode('utf-16'))).getroot()
+            status_code = server_info.get('status_code')
+            status_message = server_info.get('status_message')
+        except ET.ParseError, e:
+            status_code = str(response.status_code)
+            status_message = response.content
         if int(status_code) != 200:
-            raise AssertionError(status_code + ' ' + server_info.get('status_message'))
+            raise AssertionError(status_code + ' ' + status_message)
 
     def get_server_info(self):
-        response = ''
+        response = None
         try:
             response = self.open_http_connection(
-                self.base_url_https + '/serverinfo?' + self.build_uid_uuid_string(), True)
-            self.get_server_version(response)
+                self.base_url_https + '/serverinfo?' + self.build_uid_uuid_string(), True, False)
+
             self.verify_response_status(response)
-        except AssertionError, e:
-            if response.status_code == 401:
-                response = self.open_http_connection(self.base_url_http + '/serverinfo', True)
+        except (AssertionError, IOError) as e:
+            # Looks like GEN7 Servers are sending 404 instead of 401 if client is not authorized
+            if response.status_code in [401, 404]:
+                response = self.open_http_connection(
+                    self.base_url_http + '/serverinfo?' + self.build_uid_uuid_string(), True, False)
             else:
                 raise ValueError(e.message)
 
-        return response
+        return response.content
 
     def get_computer_details(self):
         server_info = ET.ElementTree(ET.fromstring(self.get_server_info())).getroot()
@@ -75,18 +82,28 @@ class NvHTTP(object):
 
         return host
 
-    def open_http_connection(self, url, enable_read_timeout):
-        cert = self.crypto_provider.get_cert_path()
-        key = self.crypto_provider.get_key_path()
-        if enable_read_timeout:
-            # TODO: Only disable host name checking via custom transport: http://stackoverflow.com/questions/22758031/how-to-disable-hostname-checking-in-requests-python
-            response = requests.get(url, timeout=(3, 5), cert=(cert, key),
-                                    verify=False)
-        else:
-            response = requests.get(url, timeout=(3, None), cert=(cert, key),
-                                    verify=False)
+    def open_http_connection(self, url, enable_read_timeout, content_only=True):
+        try:
+            cert = self.crypto_provider.get_cert_path()
+            key = self.crypto_provider.get_key_path()
 
-        return response.content
+            if not os.path.isfile(cert) or not os.path.isfile(key):
+                raise IOError
+
+            if enable_read_timeout:
+                # TODO: Only disable host name checking via custom transport: http://stackoverflow.com/questions/22758031/how-to-disable-hostname-checking-in-requests-python
+                response = requests.get(url, timeout=(3, 5), cert=(cert, key),
+                                        verify=False)
+            else:
+                response = requests.get(url, timeout=(3, None), cert=(cert, key),
+                                        verify=False)
+        except IOError, e:
+            response = requests.get(url, timeout=(3, 5), verify=False)
+
+        if content_only:
+            return response.content
+        else:
+            return response
 
     def open_http_connection_to_string(self, url, enable_read_timeout):
         response = self.open_http_connection(url, enable_read_timeout)
@@ -129,7 +146,7 @@ class NvHTTP(object):
         return applist
 
     def get_app_list_from_string(self, xml_string):
-        applist_root = ET.ElementTree(ET.fromstring(xml_string)).getroot()
+        applist_root = ET.ElementTree(ET.fromstring(xml_string.encode('utf-16'))).getroot()
         applist = []
 
         for app in applist_root.findall('App'):
@@ -155,13 +172,14 @@ class NvHTTP(object):
         response = self.open_http_connection(
             '{0:s}/appasset?{1:s}&appid={2:s}&AssetType={3:s}&AssetIdx={4:s}'.format(self.base_url_https,
                                                                                      self.build_uid_uuid_string(),
-                                                                                     app_id, asset_type, asset_idx),
+                                                                                     str(app_id), str(asset_type),
+                                                                                     str(asset_idx)),
             True)
 
-        return response.content
+        return response
 
-    def pair(self, server_info, pin, dialog):
-        return self.pairing_manager.pair(self, server_info, pin, dialog)
+    def pair(self, server_info, pin):
+        return self.pairing_manager.pair(self, server_info, pin)
 
     def unpair(self):
         self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)

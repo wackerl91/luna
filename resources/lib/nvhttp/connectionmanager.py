@@ -21,7 +21,7 @@ class ConnectionManager(object):
                 pin_message = 'Please enter the PIN: %s' % pin_str
                 print pin_message
                 dialog.update(0, pin_message)
-                pair_state = nvhttp.pair(server_info, pin_str, dialog)
+                pair_state = nvhttp.pair(server_info, pin_str)
                 if pair_state == AbstractPairingManager.STATE_PIN_WRONG:
                     message = 'PIN wrong.'
                 if pair_state == AbstractPairingManager.STATE_FAILED:

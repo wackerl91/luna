@@ -41,7 +41,7 @@ class TgdbScraper(AbstractScraper):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, nvapp.id))
         game_fanart_path = self._set_up_path(os.path.join(self.fanart_cache, nvapp.id))
 
-        xml_response_file = self._get_xml_data(game)
+        xml_response_file = self._get_xml_data(nvapp.id, game)
 
         try:
             xml_root = ElementTree(file=xml_response_file).getroot()
@@ -72,8 +72,8 @@ class TgdbScraper(AbstractScraper):
 
             return ApiResponse.from_dict(**dict_response)
 
-    def _get_xml_data(self, game):
-        file_path = os.path.join(self.api_cache, game, game+'_tgdb.xml')
+    def _get_xml_data(self, id, game):
+        file_path = os.path.join(self.api_cache, id, game+'_tgdb.xml')
 
         if not os.path.isfile(file_path):
             curl = subprocess.Popen(['curl', '-XGET', self.api_url % game], stdout=subprocess.PIPE)

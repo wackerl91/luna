@@ -160,8 +160,8 @@ class NvHTTP(object):
 
         return response.content
 
-    def pair(self, server_info, pin):
-        return self.pairing_manager.pair(self, server_info, pin)
+    def pair(self, server_info, pin, dialog):
+        return self.pairing_manager.pair(self, server_info, pin, dialog)
 
     def unpair(self):
         self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)

@@ -41,12 +41,6 @@ class AdvancedPairingManager(AbstractPairingManager):
 
         return cert, sig.encode('hex')
 
-    def get_pair_state(self, nvhttp, server_info):
-        if nvhttp.get_xml_string(server_info, 'PairStatus') != '1':
-            return self.STATE_NOT_PAIRED
-        else:
-            return self.STATE_PAIRED
-
     @staticmethod
     def _get_random_bytes(count):
         return bytearray(random.getrandbits(8) for i in range(count))
@@ -123,10 +117,9 @@ class AdvancedPairingManager(AbstractPairingManager):
         return key.sign(hashlib.sha256(data).digest(), 'sha256')
 
     def pair(self, nvhttp, server_info, pin):
-        server_major_version = nvhttp.get_server_version(server_info)
+        server_major_version = nvhttp.get_server_major_version(server_info)
 
-        # if int(server_major_version) >= 7:
-        if False:
+        if int(server_major_version) >= 7:
             hash_algo = Sha256PairingHash()
         else:
             hash_algo = Sha1PairingHash()

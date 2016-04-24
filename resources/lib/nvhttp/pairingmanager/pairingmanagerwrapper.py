@@ -14,11 +14,6 @@ class PairingManagerWrapper(AbstractPairingManager):
             self._load_pairing_manager()
         return self._pairing_manager.pair(nvhttp, server_info, pin)
 
-    def get_pair_state(self, nvhttp, server_info):
-        if self._pairing_manager is None:
-            self._load_pairing_manager()
-        return self._pairing_manager.get_pair_state(nvhttp, server_info)
-
     def _load_pairing_manager(self):
         try:
             module = importlib.import_module('resources.lib.nvhttp.pairingmanager.advancedpairingmanager')

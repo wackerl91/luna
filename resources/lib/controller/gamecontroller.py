@@ -1,4 +1,5 @@
 import xbmcgui
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
 
@@ -16,7 +17,7 @@ class GameController:
         """
         game_list = self.moonlight_helper.list_games()
 
-        if game_list is None or game_list[0] == 'error':
+        if game_list is None or len(game_list) == 0:
             xbmcgui.Dialog().notification(
                 self.core.string('name'),
                 'Getting game list failed. ' +
@@ -51,28 +52,32 @@ class GameController:
         storage.clear()
 
         i = 1
-        for game_name in game_list:
-            progress_dialog.update(bar_movement * i, 'Processing: %s' % game_name, '')
+        for nvapp in game_list:
+            progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
+            game = Game(nvapp.title)
+            '''
             if self.plugin.get_setting('disable_scraper', bool):
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
                 progress_dialog.update(bar_movement * i,
                                        line2='Scrapers have been disabled, just adding game names to list.')
-                storage[game_name] = Game(game_name, None)
+                storage[nvapp.id] = game
             else:
-                if game_name in cache:
-                    if not storage.get(game_name):
-                        progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
-                        storage[game_name] = cache.get(game_name)[0]
-                else:
-                    try:
-                        progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
-                        storage[game_name] = self.scraper_chain.query_game_information(game_name)
-                    except KeyError:
-                        self.logger.info(
-                            'Key Error thrown while getting information for game {0}: {1}'
-                            .format(game_name,
-                                    KeyError.message))
-                        storage[game_name] = Game(game_name, None)
+            '''
+            if nvapp.id in cache:
+                if not storage.get(nvapp.id):
+                    progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
+                    # storage[nvapp.id] = cache.get(nvapp.id)[0]
+                    storage[nvapp.id] = cache.get(nvapp.id)
+            else:
+                try:
+                    progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
+                    storage[nvapp.id] = self.scraper_chain.query_game_information(nvapp)
+                except KeyError:
+                    self.logger.info(
+                        'Key Error thrown while getting information for game {0}: {1}'
+                        .format(nvapp.title,
+                                KeyError.message))
+                    storage[nvapp.id] = game
             i += 1
 
         game_version_storage.clear()

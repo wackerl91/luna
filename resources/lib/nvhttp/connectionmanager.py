@@ -9,20 +9,24 @@ class ConnectionManager(object):
         server_info = nvhttp.get_server_info()
         print 'ConnectionManager Server Info: %s' % server_info
         if nvhttp.get_pair_state(server_info) == AbstractPairingManager.STATE_PAIRED:
-            message = 'Already paired'
+            message = 'Already paired.'
+            pair_state = AbstractPairingManager.STATE_PAIRED
         else:
             if nvhttp.get_current_game(server_info) != 0:
                 message = 'Host is currently in-game, please exit the game before pairing.'
+                pair_state = AbstractPairingManager.STATE_FAILED
             else:
                 pin_str = AbstractPairingManager.generate_pin_string()
                 # Display pin_str in UI Dialog
-                print 'Please enter the PIN: %s' % pin_str
-                pair_state = nvhttp.pair(server_info, pin_str)
+                pin_message = 'Please enter the PIN: %s' % pin_str
+                print pin_message
+                dialog.update(0, pin_message)
+                pair_state = nvhttp.pair(server_info, pin_str, dialog)
                 if pair_state == AbstractPairingManager.STATE_PIN_WRONG:
-                    message = 'Pin wrong'
+                    message = 'PIN wrong.'
                 if pair_state == AbstractPairingManager.STATE_FAILED:
-                    message = 'Failed'
+                    message = 'Pairing failed.'
                 if pair_state == AbstractPairingManager.STATE_PAIRED:
-                    message = 'Success'
+                    message = 'Pairing successful.'
 
-        return message
+        return message, pair_state

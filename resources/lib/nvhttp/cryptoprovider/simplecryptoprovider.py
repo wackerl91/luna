@@ -5,7 +5,6 @@ from resources.lib.nvhttp.cryptoprovider.abstractcryptoprovider import AbstractC
 
 class SimpleCryptoProvider(AbstractCryptoProvider):
     def __init__(self, config_helper):
-        self.name = 'Simple'
         self.config_helper = config_helper
 
     def get_cert_path(self):

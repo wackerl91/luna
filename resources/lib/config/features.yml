@@ -125,6 +125,17 @@
     - { name: scraper-chain }
 
 --- !component
+  name: nvhttp-scraper
+  module: resources.lib.scraper.nvhttpscraper
+  class_name: NvHTTPScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@nvhttp'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
   name: connection-manager
   module: resources.lib.nvhttp.connectionmanager
   class_name: ConnectionManager

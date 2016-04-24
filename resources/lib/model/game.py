@@ -6,7 +6,7 @@ from resources.lib.model.fanart import Fanart
 
 
 class Game:
-    version = 20160216
+    version = 20160424
 
     def __init__(self, name, year=None, genre=None, plot=None, posters=None, fanarts=None):
         if genre is None:

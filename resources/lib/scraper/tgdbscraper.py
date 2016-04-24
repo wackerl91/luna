@@ -25,10 +25,10 @@ class TgdbScraper(AbstractScraper):
     def name(self):
         return 'TGDB'
 
-    def get_game_information(self, game_name):
-        request_name = game_name.replace(" ", "+").replace(":", "")
-        response = self._gather_information(request_name)
-        response.name = game_name
+    def get_game_information(self, nvapp):
+        request_name = nvapp.title.replace(" ", "+").replace(":", "")
+        response = self._gather_information(nvapp, request_name)
+        response.name = nvapp.title
         return response
 
     def return_paths(self):
@@ -37,9 +37,9 @@ class TgdbScraper(AbstractScraper):
     def is_enabled(self):
         return self.plugin.get_setting('enable_tgdb', bool)
 
-    def _gather_information(self, game):
-        game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
-        game_fanart_path = self._set_up_path(os.path.join(self.fanart_cache, game))
+    def _gather_information(self, nvapp, game):
+        game_cover_path = self._set_up_path(os.path.join(self.cover_cache, nvapp.id))
+        game_fanart_path = self._set_up_path(os.path.join(self.fanart_cache, nvapp.id))
 
         xml_response_file = self._get_xml_data(game)
 

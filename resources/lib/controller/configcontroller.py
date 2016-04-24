@@ -2,6 +2,8 @@ import os
 
 from xbmcswift2 import xbmcgui
 
+from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
+
 
 class ConfigController:
     def __init__(self, plugin, core, moonlight_helper, logger):
@@ -56,18 +58,18 @@ class ConfigController:
                 'Starting Pairing'
         )
 
-        # success = self.moonlight_helper.pair_host(pair_dialog)
-        success = self.moonlight_helper.pair_host_new(pair_dialog)
+        message, state = self.moonlight_helper.pair_host(pair_dialog)
+        pair_dialog.close()
 
-        if success:
+        if state == AbstractPairingManager.STATE_PAIRED:
             xbmcgui.Dialog().ok(
                     self.core.string('name'),
-                    'Successfully paired'
+                    message
             )
         else:
             confirmed = xbmcgui.Dialog().yesno(
                     self.core.string('name'),
-                    'Pairing failed - do you want to try again?'
+                    '%s - Do you want to try again?' % message
             )
             if confirmed:
                 self.pair_host()

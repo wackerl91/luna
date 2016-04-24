@@ -80,7 +80,12 @@ class FeatureBroker:
         try:
             provider = self.providers[feature]
         except KeyError:
-            raise KeyError("Unknown feature named %s" % feature)
+            try:
+                # This might be more than one (plus it's returned as a list anyway)
+                provider = self.tags[feature]
+            except KeyError:
+                print self.tags
+                raise KeyError("Unknown feature named %s" % feature)
 
         return provider
 

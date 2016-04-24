@@ -123,3 +123,46 @@
     - '@core'
   tags:
     - { name: scraper-chain }
+
+--- !component
+  name: nvhttp
+  module: resources.lib.nvhttp.nvhttp
+  class_name: NvHTTP
+  arguments:
+    - '@pairing-manager'
+    - '@crypto-provider'
+    - '@config-helper'
+
+--- !component
+  name: advanced-pairing-manager
+  module: resources.lib.nvhttp.advancedpairingmanager
+  class_name: AdvancedPairingManager
+  arguments:
+    - '@crypto-provider'
+  tags:
+    - { name: pairing-manager }
+
+--- !component
+  name: simple-pairing-manager
+  module: resources.lib.nvhttp.simplepairingmanager
+  class_name: SimplePairingManager
+  tags:
+    - { name: pairing-manager }
+
+--- !component
+  name: advanced-crypto-provider
+  module: resources.lib.nvhttp.advancedcryptoprovider
+  class_name: AdvancedCryptoProvider
+  arguments:
+    - '@config-helper'
+  tags:
+    - { name: crypto-provider }
+
+--- !component
+  name: simple-crypto-provider
+  module: resources.lib.nvhttp.simplecryptoprovider
+  class_name: SimpleCryptoProvider
+  arguments:
+    - '@config-helper'
+  tags:
+    - { name: crypto-provider }

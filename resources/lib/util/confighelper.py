@@ -54,7 +54,7 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.addon_path, self.conf])
 
-    def configure(self):
+    def configure(self, dump=True):
         binary_path = self._find_binary()
 
         if binary_path is None:
@@ -80,7 +80,8 @@ class ConfigHelper:
         }
         self._configure(**settings)
 
-        self._dump_conf()
+        if dump:
+            self._dump_conf()
 
     def _dump_conf(self):
         """

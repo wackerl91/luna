@@ -22,7 +22,27 @@ class RequiredFeature(object):
             instance = featurebroker.features.get_initialized(self.feature)
         else:
             feature = featurebroker.features[self.feature]
-            module = importlib.import_module(feature.module)
+
+            module = None
+
+            if isinstance(feature, list):
+                for possible_match in feature:
+                    try:
+                        loaded_component = featurebroker.features[possible_match]
+                        module = importlib.import_module(loaded_component.module)
+                        feature = loaded_component
+                        break
+                    except ImportError, e:
+                        last_import_error = e
+                        pass
+
+            else:
+                module = importlib.import_module(feature.module)
+
+            if module is None:
+                print 'Could not load features by name or tag %s, reason: %r' % (feature, last_import_error)
+                return
+
             class_ = getattr(module, feature.class_name)
             if hasattr(feature, 'arguments'):
                 for index, arg in enumerate(feature.arguments):

@@ -14,14 +14,13 @@ def loop_lines(logger, iterator):
 class SimplePairingManager(AbstractPairingManager):
     def __init__(self, crypto_provider):
         self.crypto_provider = crypto_provider
-        self.plugin = RequiredFeature('plugin').request()
         self.config_helper = RequiredFeature('config-helper').request()
         self.logger = RequiredFeature('logger').request()
 
     def pair(self, nvhttp, server_info, pin):
-        self.logger.info('[MoonlightHelper] - Attempting to pair host: ' + self.plugin.get_setting('host', unicode))
+        self.logger.info('[MoonlightHelper] - Attempting to pair host: ' + self.config_helper.host_ip)
         pairing_proc = subprocess.Popen(
-                ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.plugin.get_setting('host', unicode)],
+                ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.config_helper.host_ip],
                 stdout=subprocess.PIPE)
 
         lines_iterator = iter(pairing_proc.stdout.readline, b"")
@@ -29,12 +28,9 @@ class SimplePairingManager(AbstractPairingManager):
         pairing_thread = threading.Thread(target=loop_lines, args=(self.logger, lines_iterator))
         pairing_thread.start()
 
-        success = False
-
         while True:
             xbmc.sleep(1000)
             if not pairing_thread.isAlive():
-                success = True
                 break
 
         new_server_info = nvhttp.get_server_info()

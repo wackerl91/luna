@@ -140,8 +140,11 @@ class NvHTTP(object):
         return None
 
     def get_app_list(self):
-        response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), True)
-        applist = self.get_app_list_from_string(response)
+        response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), False)
+        if response.status_code in [401, 404]:
+            return []
+        else:
+            applist = self.get_app_list_from_string(response.content)
 
         return applist
 

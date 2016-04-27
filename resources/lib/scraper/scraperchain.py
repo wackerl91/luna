@@ -15,10 +15,6 @@ class ScraperChain:
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
 
     def query_game_information(self, nvapp):
-        """
-        :type game_name: str
-        :rtype game: Game
-        """
         game_info = []
         self.logger.info("Trying to get information for game: %s" % nvapp.title)
         if nvapp.title not in self.game_blacklist:

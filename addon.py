@@ -60,6 +60,12 @@ def select_input_devices():
     del window
 
 
+@plugin.route('/settings/select-audio')
+def select_audio_device():
+    audio_controller = RequiredFeature('audio-controller').request()
+    audio_controller.select_audio_device()
+
+
 @plugin.route('/update')
 def check_update():
     updater = RequiredFeature('update-service').request()

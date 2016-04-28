@@ -37,6 +37,7 @@
     <string id="30032">Rollback OSMC Skin</string>
     <string id="30033">Force Enable Fanart (Movies and Luna)</string>
     <string id="30034">Select Input Device(s)</string>
+    <string id="30035">Enable Pre-Release Updates</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

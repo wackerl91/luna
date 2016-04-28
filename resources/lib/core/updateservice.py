@@ -13,7 +13,8 @@ from resources.lib.views.updateinfo import UpdateInfo
 
 class UpdateService:
     regexp = '(\d+\.)?(\d+\.)?(\*|\d+)'
-    api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
+    api_url = 'https://api.github.com/repos/wackerl91/luna/releases/latest'
+    pre_api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
 
     def __init__(self, plugin, core, logger):
         self.plugin = plugin
@@ -30,7 +31,18 @@ class UpdateService:
         update = None
 
         if not update_storage.get('checked') or ignore_checked:
-            response = json.load(urllib2.urlopen(self.api_url))
+            if self.plugin.get_setting('enable_pre_updates', bool):
+                response = json.load(urllib2.urlopen(self.pre_api_url))
+            else:
+                try:
+                    response = json.load(urllib2.urlopen(self.api_url))
+                except urllib2.HTTPError, e:
+                    if e.code == 404:
+                        update = None
+                        response = ''
+                    else:
+                        self.logger.error("An error occurred when trying to get latest release: %s" % e)
+                        return None
             for release in response:
                 if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
                     update = Update()

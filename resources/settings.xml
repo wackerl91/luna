@@ -4,8 +4,8 @@
         <setting label="30002" type="ipaddress" id="host"/>
         <setting label="30008" type="action" action="XBMC.RunPlugin(plugin://script.luna/actions/pair-host)" option="close"/>
         <setting label="30003" type="labelenum" id="framerate" values="30|60"/>
-        <setting label="Select Audio Device" type="action" action="XBMC.RunPlugin(plugin://script.luna/settings/select-audio)"/>
-        <setting label="Selected Device" type="text" id="audio_device_name" default=""/>
+        <setting label="30037" type="action" action="XBMC.RunPlugin(plugin://script.luna/settings/select-audio)"/>
+        <setting label="30036" type="text" id="audio_device_name" default=""/>
         <setting type="string" visible="false" id="audio_device" default=""/>
         <setting label="30023" type="bool" id="override_default_resolution" default="false"/>
         <setting label="30004" enable="eq(1,false) + eq(-1,true)" visible="eq(-1,true)" type="labelenum" id="resolution" values="1920x1080|1280x720"/>
@@ -24,6 +24,7 @@
         <setting label="30013" type="bool" id="remote_optimizations" default="false"/>
         <setting label="30014" type="bool" id="graphic_optimizations" default="false"/>
         <setting label="30015" type="bool" id="local_audio" default="false"/>
+        <setting label="30035" type="bool" id="enable_pre_updates" default="false"/>
     </category>
     <category label="30021">
         <setting label="30024" type="bool" id="disable_scraper" default="false"/>

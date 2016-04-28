@@ -10,6 +10,7 @@ class ConfigHelper:
         self.logger = logger
         self._reset()
         self.full_path = ''.join([self.plugin.storage_path, self.conf])
+        self.configure(False)
 
     def _reset(self):
         self.file_path = None
@@ -54,7 +55,7 @@ class ConfigHelper:
 
         self.full_path = ''.join([self.addon_path, self.conf])
 
-    def configure(self):
+    def configure(self, dump=True):
         binary_path = self._find_binary()
 
         if binary_path is None:
@@ -80,7 +81,8 @@ class ConfigHelper:
         }
         self._configure(**settings)
 
-        self._dump_conf()
+        if dump:
+            self._dump_conf()
 
     def _dump_conf(self):
         """
@@ -185,7 +187,7 @@ class ConfigHelper:
                     ' looking for binary file and dumping config file again.')
 
             binary_path = self._find_binary()
-            self.configure()
+            self.configure(False)
 
             return binary_path
 

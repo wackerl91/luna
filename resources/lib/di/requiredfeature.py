@@ -23,6 +23,7 @@ class RequiredFeature(object):
         else:
             feature = featurebroker.features[self.feature]
             module = importlib.import_module(feature.module)
+
             class_ = getattr(module, feature.class_name)
             if hasattr(feature, 'arguments'):
                 for index, arg in enumerate(feature.arguments):

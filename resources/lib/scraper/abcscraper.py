@@ -22,10 +22,10 @@ class AbstractScraper:
         pass
 
     @abstractmethod
-    def get_game_information(self, game_name):
+    def get_game_information(self, nvapp):
         """
         Queries game information from API and returns it as a dict
-        :type game_name: str
+        :type nvapp: NvApp
         :rtype: dict
         """
         pass

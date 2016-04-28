@@ -105,11 +105,6 @@ class NvHTTP(object):
         else:
             return response
 
-    def open_http_connection_to_string(self, url, enable_read_timeout):
-        response = self.open_http_connection(url, enable_read_timeout)
-
-        print response
-
     @staticmethod
     def get_server_version(server_info):
         return NvHTTP.get_xml_string(server_info, "appversion")

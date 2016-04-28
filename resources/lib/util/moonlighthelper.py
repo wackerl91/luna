@@ -126,9 +126,7 @@ class MoonlightHelper:
         """
         :type dialog: DialogProgress
         """
-        message, state = RequiredFeature('connection-manager').request().pair(dialog)
-        print message, state
-        return message, state
+        return RequiredFeature('connection-manager').request().pair(dialog)
 
     def launch_game(self, game_id):
         """

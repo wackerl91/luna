@@ -10,7 +10,6 @@ class AudioManager(object):
     def __init__(self):
         self.devices = []
         self.init_devices()
-        print self.devices
 
     def init_devices(self):
         cards_file = '/proc/asound/cards'

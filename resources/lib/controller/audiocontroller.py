@@ -8,7 +8,6 @@ class AudioController(object):
         self.plugin = plugin
 
     def select_audio_device(self):
-        print "Number of audio devices: " + str(len(self.audio_manager.devices))
         device_list = [dev.name for dev in self.audio_manager.devices]
         device_list.append('sysdefault')
         audio_device = xbmcgui.Dialog().select('Choose Audio Device', device_list)

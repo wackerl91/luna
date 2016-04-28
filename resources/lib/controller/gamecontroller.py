@@ -55,14 +55,7 @@ class GameController:
         for nvapp in game_list:
             progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
             game = Game(nvapp.title)
-            '''
-            if self.plugin.get_setting('disable_scraper', bool):
-                self.logger.info('Scraper have been disabled, just adding game names to list.')
-                progress_dialog.update(bar_movement * i,
-                                       line2='Scrapers have been disabled, just adding game names to list.')
-                storage[nvapp.id] = game
-            else:
-            '''
+
             if nvapp.id in cache:
                 if not storage.get(nvapp.id):
                     progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
@@ -122,7 +115,6 @@ class GameController:
         items = []
         for i, game_name in enumerate(storage):
             game = storage.get(game_name)
-            print game
             items.append({
                 'label': game.name,
                 'icon': game.get_selected_poster(),

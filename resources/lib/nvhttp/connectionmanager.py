@@ -7,7 +7,6 @@ class ConnectionManager(object):
         message = ''
         nvhttp = RequiredFeature('nvhttp').request()
         server_info = nvhttp.get_server_info()
-        print 'ConnectionManager Server Info: %s' % server_info
         if nvhttp.get_pair_state(server_info) == AbstractPairingManager.STATE_PAIRED:
             message = 'Already paired.'
             pair_state = AbstractPairingManager.STATE_PAIRED
@@ -17,11 +16,10 @@ class ConnectionManager(object):
                 pair_state = AbstractPairingManager.STATE_FAILED
             else:
                 pin_str = AbstractPairingManager.generate_pin_string()
-                # Display pin_str in UI Dialog
                 pin_message = 'Please enter the PIN: %s' % pin_str
-                print pin_message
                 dialog.update(0, pin_message)
                 pair_state = nvhttp.pair(server_info, pin_str)
+
                 if pair_state == AbstractPairingManager.STATE_PIN_WRONG:
                     message = 'PIN wrong.'
                 if pair_state == AbstractPairingManager.STATE_FAILED:

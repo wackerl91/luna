@@ -31,8 +31,7 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
 
         return True
 
-    @staticmethod
-    def validate_cert(cert, days=365):
+    def validate_cert(self, cert, days=365):
         t = long(time.time())
         now = ASN1.ASN1_UTCTIME()
         now.set_time(t)
@@ -45,11 +44,13 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
         private_key = EVP.PKey()
         rsa = M2RSA.gen_key(2048, 65537, lambda: None)
         private_key.assign_rsa(rsa)
+
         req = X509.Request()
         req.set_pubkey(private_key)
         name = req.get_subject()
         name.CN = 'NVIDIA GameStream Client'
         req.sign(private_key, 'sha1')
+
         public_key = req.get_pubkey()
         cert = X509.X509()
         cert.set_serial_number(1)
@@ -63,21 +64,15 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
         cert.add_ext(X509.new_extension('subjectKeyIdentifier', cert.get_fingerprint()))
         cert.sign(private_key, 'sha1')
 
-        '''
-        with open(self.cert_file, 'wb') as cert_file:
-            cert_file.write(cert.as_pem())
-            cert_file.close()
-        '''
         cert.save(self.cert_file, 1)
-        # rsa.save_key(self.key_file, None, lambda: None)
+
         with open(self.key_file, 'wb') as key_file:
             key_file.write(private_key.as_pem(None))
             key_file.close()
 
         self.load_cert_key_pair()
 
-    @staticmethod
-    def extract_cert_signature(cert):
+    def extract_cert_signature(self, cert):
         # TODO: Can this be done from M2Crypto's certificate object?
         der_cert = cert.as_der()
         der = asn1.DerSequence()
@@ -94,9 +89,8 @@ class AdvancedCryptoProvider(AbstractCryptoProvider):
 
         return sig
 
-    @staticmethod
-    def extract_cert_signature_as_hex(cert):
-        return AdvancedCryptoProvider.extract_cert_signature(cert).encode('hex')
+    def extract_cert_signature_as_hex(self, cert):
+        return self.extract_cert_signature(cert).encode('hex')
 
     def get_client_cert(self):
         if not self.cert:

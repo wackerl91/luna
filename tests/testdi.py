@@ -30,7 +30,7 @@ class TestScraperChain(unittest.TestCase):
         core = RequiredFeature('core').request()
         self.assertEqual(isinstance(core.logger.plugin, xbmcswift2.Plugin), True)
 
-    def testGetFeatureByTag(self):
+    def testGetWrapperFeature(self):
         pairing_manager = RequiredFeature('pairing-manager').request()
         self.assertIsInstance(pairing_manager, PairingManagerWrapper)
         self.assertEqual(hasattr(pairing_manager, '_pairing_manager'), True)

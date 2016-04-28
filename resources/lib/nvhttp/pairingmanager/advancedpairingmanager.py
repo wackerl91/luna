@@ -27,9 +27,6 @@ class AdvancedPairingManager(AbstractPairingManager):
         der_cert = cert.as_der()
         der = asn1.DerSequence()
         der.decode(der_cert)
-
-        # der_cert = der[0]
-        # der_algo = der[1]
         der_sig_raw = der[2]
 
         der_sig_dec = asn1.DerObject()
@@ -91,14 +88,6 @@ class AdvancedPairingManager(AbstractPairingManager):
 
     @staticmethod
     def _verify_signature(data, signature, cert):
-        """
-        rsakey = RSA.importKey(cert.get_pubkey())
-        signer = PKCS1_v1_5.new(rsakey)
-        digest = SHA256.new()
-        digest.update(data)
-        return signer.verify(digest, signature)
-        """
-        # rawsig = signature.decode('base64')
         pubkey = cert.get_pubkey()
         pubkey.reset_context(md='sha256')
         pubkey.verify_init()
@@ -107,13 +96,6 @@ class AdvancedPairingManager(AbstractPairingManager):
 
     @staticmethod
     def _sign_data(data, key):
-        """
-        rsakey = RSA.importKey(key)
-        signer = PKCS1_v1_5.new(rsakey)
-        digest = SHA256.new()
-        digest.update(data)
-        return signer.sign(digest)
-        """
         return key.sign(hashlib.sha256(data).digest(), 'sha256')
 
     def pair(self, nvhttp, server_info, pin):

@@ -29,12 +29,13 @@ class ConfigHelper:
         self.packetsize = None
         self.enable_custom_input = None
         self.full_path = None
+        self.audio_device = None
 
     def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
                    resolution_height=None, resolution=None,
                    framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
                    enable_custom_bitrate=False, bitrate=None, packetsize=None,
-                   enable_custom_input=False, override_default_resolution=False):
+                   enable_custom_input=False, override_default_resolution=False, audio_device=None):
 
         self.addon_path = addon_path
         self.binary_path = binary_path
@@ -52,6 +53,7 @@ class ConfigHelper:
         self.packetsize = packetsize
         self.enable_custom_input = enable_custom_input
         self.override_default_resolution = override_default_resolution
+        self.audio_device = audio_device
 
         self.full_path = ''.join([self.addon_path, self.conf])
 
@@ -77,7 +79,8 @@ class ConfigHelper:
             'bitrate':                      self.plugin.get_setting('bitrate', int),
             'packetsize':                   self.plugin.get_setting('packetsize', int),
             'enable_custom_input':          self.plugin.get_setting('enable_custom_input', bool),
-            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool)
+            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool),
+            'audio_device':                 self.plugin.get_setting('audio_device', str)
         }
         self._configure(**settings)
 
@@ -129,6 +132,12 @@ class ConfigHelper:
         config.set('General', 'sops', self.graphics_optimizations)
         config.set('General', 'remote', self.remote_optimizations)
         config.set('General', 'localaudio', self.local_audio)
+
+        if self.audio_device == 'sysdefault':
+            if config.has_option('General', 'audio'):
+                config.remove_option('General', 'audio')
+        elif self.audio_device:
+            config.set('General', 'audio', self.audio_device)
 
         if config.has_option('General', 'mapping'):
             config.remove_option('General', 'mapping')

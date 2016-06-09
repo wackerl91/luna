@@ -25,7 +25,7 @@
         <setting label="30014" type="bool" id="graphic_optimizations" default="false"/>
         <setting label="30015" type="bool" id="local_audio" default="false"/>
         <setting label="30035" type="bool" id="enable_pre_updates" default="false"/>
-        <setting label="30035" type="bool" id="enable_moonlight_debug" default="false"/>
+        <setting label="30038" type="bool" id="enable_moonlight_debug" default="false"/>
     </category>
     <category label="30021">
         <setting label="30024" type="bool" id="disable_scraper" default="false"/>

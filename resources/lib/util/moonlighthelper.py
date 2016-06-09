@@ -3,7 +3,6 @@ import os
 import subprocess
 import threading
 
-import re
 from xbmcswift2 import xbmc, xbmcaddon
 
 from resources.lib.di.requiredfeature import RequiredFeature
@@ -35,10 +34,6 @@ class MoonlightHelper:
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
     def create_ctrl_map(self, dialog, map_file):
-        """
-        :type dialog:   DialogProgress
-        :type map_file: str
-        """
         mapping_proc = subprocess.Popen(
                 ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
                  self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
@@ -123,22 +118,17 @@ class MoonlightHelper:
             return False
 
     def pair_host(self, dialog):
-        """
-        :type dialog: DialogProgress
-        """
         return RequiredFeature('connection-manager').request().pair(dialog)
 
     def launch_game(self, game_id):
-        """
-        :type game_id: str
-        """
         self.config_helper.configure()
         subprocess.call([
             self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh',
             self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh',
             self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh',
             game_id,
-            self.config_helper.get_config_path()
+            self.config_helper.get_config_path(),
+            self.plugin.get_setting('enable_moonlight_debug', str)
         ])
 
     def list_games(self):

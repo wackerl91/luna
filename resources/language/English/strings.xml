@@ -40,6 +40,7 @@
     <string id="30035">Enable Pre-Release Updates</string>
     <string id="30036">Selected Device</string>
     <string id="30037">Select Audio Device</string>
+    <string id="30038">Enable Moonlight Debug Output</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

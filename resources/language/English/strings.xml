@@ -22,7 +22,7 @@
     <string id="30017">Enable Custom Input</string>
     <string id="30018">Input Map</string>
     <string id="30019">Input Device</string>
-    <string id="30020">Create Map for Above Device</string>
+    <string id="30020">Create Controller Map</string>
     <string id="30021">Scraper</string>
     <string id="30022">Clear Game Cache</string>
     <string id="30023">Override Default Resolution</string>
@@ -36,6 +36,11 @@
     <string id="30031">Patch OSMC Skin</string>
     <string id="30032">Rollback OSMC Skin</string>
     <string id="30033">Force Enable Fanart (Movies and Luna)</string>
+    <string id="30034">Select Input Device(s)</string>
+    <string id="30035">Enable Pre-Release Updates</string>
+    <string id="30036">Selected Device</string>
+    <string id="30037">Select Audio Device</string>
+    <string id="30038">Enable Moonlight Debug Output</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

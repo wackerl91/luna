@@ -1,41 +1,38 @@
 import os
 import shutil
 
-from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.fanart import Fanart
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
 
 
-class ScraperChain(Component):
-    plugin = RequiredFeature('plugin')
-    logger = RequiredFeature('logger')
-
-    def __init__(self):
+class ScraperChain:
+    def __init__(self, plugin, logger):
+        self.plugin = plugin
+        self.logger = logger
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
 
-    def query_game_information(self, game_name):
-        """
-        :type game_name: str
-        :rtype game: Game
-        """
+    def query_game_information(self, nvapp):
         game_info = []
-        self.logger.info("Trying to get information for game: %s" % game_name)
-        if game_name not in self.game_blacklist:
+        self.logger.info("Trying to get information for game: %s" % nvapp.title)
+        if nvapp.title not in self.game_blacklist:
             for scraper in self.scraper_chain:
                 if scraper.is_enabled():
-                    game_info.append(Game.from_api_response(scraper.get_game_information(game_name)))
+                    game_info.append(Game.from_api_response(scraper.get_game_information(nvapp)))
 
         else:
-            game = Game(game_name, None)
+            game = Game(nvapp.title, None)
 
-            if game_name == 'Steam':
+            if nvapp.title == 'Steam':
                 fanart_path = os.path.join(self.plugin.addon.getAddonInfo('path'),
                                            'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
                 fanart = Fanart(fanart_path, fanart_path)
                 game.fanarts[os.path.basename(fanart_path)] = fanart
+                for scraper in self.scraper_chain:
+                    if scraper.name() == 'NvHTTP':
+                        game.posters = scraper.get_game_information(nvapp).posters
 
             game_info.append(game)
 

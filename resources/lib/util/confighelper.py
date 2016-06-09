@@ -1,18 +1,16 @@
 import ConfigParser
 import os
 
-from resources.lib.di.requiredfeature import RequiredFeature
-
-conf = 'luna.conf'
-
 
 class ConfigHelper:
-    plugin = RequiredFeature('plugin')
-    logger = RequiredFeature('logger')
+    conf = 'luna.conf'
 
-    def __init__(self):
+    def __init__(self, plugin, logger):
+        self.plugin = plugin
+        self.logger = logger
         self._reset()
-        self.full_path = ''.join([self.plugin.storage_path, conf])
+        self.full_path = ''.join([self.plugin.storage_path, self.conf])
+        self.configure(False)
 
     def _reset(self):
         self.file_path = None
@@ -30,15 +28,14 @@ class ConfigHelper:
         self.bitrate = None
         self.packetsize = None
         self.enable_custom_input = None
-        self.input_map = None
-        self.input_device = None
         self.full_path = None
+        self.audio_device = None
 
     def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
                    resolution_height=None, resolution=None,
                    framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
                    enable_custom_bitrate=False, bitrate=None, packetsize=None,
-                   enable_custom_input=False, input_map=None, input_device=None, override_default_resolution=False):
+                   enable_custom_input=False, override_default_resolution=False, audio_device=None):
 
         self.addon_path = addon_path
         self.binary_path = binary_path
@@ -55,13 +52,12 @@ class ConfigHelper:
         self.bitrate = bitrate
         self.packetsize = packetsize
         self.enable_custom_input = enable_custom_input
-        self.input_map = input_map
-        self.input_device = input_device
         self.override_default_resolution = override_default_resolution
+        self.audio_device = audio_device
 
-        self.full_path = ''.join([self.addon_path, conf])
+        self.full_path = ''.join([self.addon_path, self.conf])
 
-    def configure(self):
+    def configure(self, dump=True):
         binary_path = self._find_binary()
 
         if binary_path is None:
@@ -83,13 +79,13 @@ class ConfigHelper:
             'bitrate':                      self.plugin.get_setting('bitrate', int),
             'packetsize':                   self.plugin.get_setting('packetsize', int),
             'enable_custom_input':          self.plugin.get_setting('enable_custom_input', bool),
-            'input_map':                    self.plugin.get_setting('input_map', str),
-            'input_device':                 self.plugin.get_setting('input_device', str),
-            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool)
+            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool),
+            'audio_device':                 self.plugin.get_setting('audio_device', str)
         }
         self._configure(**settings)
 
-        self._dump_conf()
+        if dump:
+            self._dump_conf()
 
     def _dump_conf(self):
         """
@@ -133,28 +129,49 @@ class ConfigHelper:
         else:
             config.set('General', 'packetsize', 1024)
 
-        if self.enable_custom_input:
-            if self.input_map != '':
-                config.set('General', 'mapping', self.input_map)
-            else:
-                if config.has_option('General', 'mapping'):
-                    config.remove_option('General', 'mapping')
-
-            if self.input_device != '':
-                config.set('General', 'input', self.input_device)
-            else:
-                if config.has_option('General', 'input'):
-                    config.remove_option('General', 'input')
-        else:
-            if config.has_option('General', 'mapping'):
-                config.remove_option('General', 'mapping')
-
-            if config.has_option('General', 'input'):
-                config.remove_option('General', 'input')
-
         config.set('General', 'sops', self.graphics_optimizations)
         config.set('General', 'remote', self.remote_optimizations)
         config.set('General', 'localaudio', self.local_audio)
+
+        if self.audio_device == 'sysdefault':
+            if config.has_option('General', 'audio'):
+                config.remove_option('General', 'audio')
+        elif self.audio_device:
+            config.set('General', 'audio', self.audio_device)
+
+        if config.has_option('General', 'mapping'):
+            config.remove_option('General', 'mapping')
+
+        if config.has_option('General', 'input'):
+            config.remove_option('General', 'input')
+
+        for section in config.sections():
+            if section[:-2] == 'Input':
+                config.remove_section(section)
+                print 'Removed section %s' % section
+
+        if self.enable_custom_input:
+            input_storage = self.plugin.get_storage('input_storage')
+            print input_storage.raw_dict()
+            unmapped_devices = []
+            mapped_devices = []
+
+            for key, device in input_storage.iteritems():
+                if not device.mapping:
+                    unmapped_devices.append(device)
+                else:
+                    mapped_devices.append(device)
+
+            i = 0
+            for device in unmapped_devices:
+                config.add_section('Input ' + str(i))
+                config.set('Input ' + str(i), 'input', device.get_evdev())
+                i += 1
+            for device in mapped_devices:
+                config.add_section('Input ' + str(i))
+                config.set('Input ' + str(i), 'mapping', device.mapping)
+                config.set('Input ' + str(i), 'input', device.get_evdev())
+                i += 1
 
         with open(self.full_path, 'wb') as configfile:
             config.write(configfile)
@@ -179,7 +196,7 @@ class ConfigHelper:
                     ' looking for binary file and dumping config file again.')
 
             binary_path = self._find_binary()
-            self.configure()
+            self.configure(False)
 
             return binary_path
 

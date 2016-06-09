@@ -34,16 +34,17 @@ class UpdateInfo(pyxbmct.AddonDialogWindow):
             self.removeControl(self.window_close_button)
             self.removeControl(self.title_bar)
 
-        self.setGeometry(1280, 720, 12, 6, padding=60)
-        self.set_info_controls(update)
-        self.set_active_controls()
-        self.set_navigation()
-        self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
         # init controls
         self.version = None
         self.changelog = None
         self.button_update = None
         self.button_cancel = None
+
+        self.setGeometry(1280, 720, 12, 6, padding=60)
+        self.set_info_controls(update)
+        self.set_active_controls()
+        self.set_navigation()
+        self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
 
     def set_info_controls(self, update):
         update_headline = 'Luna %s available' % update.update_version

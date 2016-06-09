@@ -1,13 +1,7 @@
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
-
-
-class CoreMonitor(Component):
-    logger = RequiredFeature('logger')
-    config_helper = RequiredFeature('config-helper')
-
-    def __init__(self):
-        pass
+class CoreMonitor:
+    def __init__(self, config_helper, logger):
+        self.config_helper = config_helper
+        self.logger = logger
 
     def onSettingsChanged(self):
         self.logger.info('Settings change called')

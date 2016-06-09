@@ -1,18 +1,16 @@
 import os
 
 from xbmcswift2 import xbmcgui
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
+
+from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
 
 
-class ConfigController(Component):
-    plugin = RequiredFeature('plugin')
-    core = RequiredFeature('core')
-    moonlight_helper = RequiredFeature('moonlight-helper')
-    logger = RequiredFeature('logger')
-
-    def __init__(self):
-        pass
+class ConfigController:
+    def __init__(self, plugin, core, moonlight_helper, logger):
+        self.plugin = plugin
+        self.core = core
+        self.moonlight_helper = moonlight_helper
+        self.logger = logger
 
     def create_controller_mapping(self):
         self.logger.info('Starting mapping')
@@ -27,10 +25,13 @@ class ConfigController(Component):
                 self.core.string('starting_mapping')
         )
 
-        self.core.logger.info('Trying to call subprocess')
         map_file = '%s/%s-%s.map' % (os.path.expanduser('~'), controllers[ctrl_type], map_name)
 
-        success = self.moonlight_helper.create_ctrl_map(progress_dialog, map_file)
+        if controllers[ctrl_type] == 'XBOX':
+            success = self.moonlight_helper.create_ctrl_map_new(progress_dialog, map_file)
+        else:
+            self.core.logger.info('Trying to call subprocess')
+            success = self.moonlight_helper.create_ctrl_map(progress_dialog, map_file)
 
         if success:
             confirmed = xbmcgui.Dialog().yesno(
@@ -57,17 +58,18 @@ class ConfigController(Component):
                 'Starting Pairing'
         )
 
-        success = self.moonlight_helper.pair_host(pair_dialog)
+        message, state = self.moonlight_helper.pair_host(pair_dialog)
+        pair_dialog.close()
 
-        if success:
+        if state == AbstractPairingManager.STATE_PAIRED:
             xbmcgui.Dialog().ok(
                     self.core.string('name'),
-                    'Successfully paired'
+                    message
             )
         else:
             confirmed = xbmcgui.Dialog().yesno(
                     self.core.string('name'),
-                    'Pairing failed - do you want to try again?'
+                    '%s - Do you want to try again?' % message
             )
             if confirmed:
                 self.pair_host()

@@ -1,0 +1,176 @@
+--- !component
+  name: plugin
+  module: xbmcswift2
+  class_name: Plugin
+
+--- !component
+  name: logger
+  module: resources.lib.core.logger
+  class_name: Logger
+  arguments:
+    - '@plugin'
+
+--- !component
+  name: core
+  module: resources.lib.core.corefunctions
+  class_name: Core
+  arguments:
+    - '@plugin'
+    - '@logger'
+
+--- !component
+  name: config-helper
+  module: resources.lib.util.confighelper
+  class_name: ConfigHelper
+  arguments:
+    - '@plugin'
+    - '@logger'
+
+--- !component
+  name: core-monitor
+  module: resources.lib.core.coremonitor
+  class_name: CoreMonitor
+  arguments:
+    - '@config-helper'
+    - '@logger'
+
+--- !component
+  name: moonlight-helper
+  module: resources.lib.util.moonlighthelper
+  class_name: MoonlightHelper
+  arguments:
+    - '@plugin'
+    - '@config-helper'
+    - '@logger'
+
+--- !component
+  name: config-controller
+  module: resources.lib.controller.configcontroller
+  class_name: ConfigController
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@moonlight-helper'
+    - '@logger'
+
+--- !component
+  name: game-controller
+  module: resources.lib.controller.gamecontroller
+  class_name: GameController
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@moonlight-helper'
+    - '@scraper-chain'
+    - '@logger'
+
+--- !component
+  name: update-service
+  module: resources.lib.core.updateservice
+  class_name: UpdateService
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@logger'
+
+--- !component
+  name: skin-patcher
+  module: resources.lib.util.skinpatcher
+  class_name: SkinPatcher
+  arguments:
+    - '@core'
+    - '@plugin'
+
+--- !component
+  name: device-wrapper
+  module: resources.lib.util.devicewrapper
+  class_name: DeviceWrapper
+
+--- !component
+  name: scraper-chain
+  module: resources.lib.scraper.scraperchain
+  class_name: ScraperChain
+  arguments:
+    - '@plugin'
+    - '@logger'
+
+--- !component
+  name: omdb-scraper
+  module: resources.lib.scraper.omdbscraper
+  class_name: OmdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: tgdb-scraper
+  module: resources.lib.scraper.tgdbscraper
+  class_name: TgdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: igdb-scraper
+  module: resources.lib.scraper.igdbscraper
+  class_name: IgdbScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: nvhttp-scraper
+  module: resources.lib.scraper.nvhttpscraper
+  class_name: NvHTTPScraper
+  arguments:
+    - '@plugin'
+    - '@core'
+    - '@nvhttp'
+  tags:
+    - { name: scraper-chain }
+
+--- !component
+  name: connection-manager
+  module: resources.lib.nvhttp.connectionmanager
+  class_name: ConnectionManager
+
+--- !component
+  name: nvhttp
+  module: resources.lib.nvhttp.nvhttp
+  class_name: NvHTTP
+  arguments:
+    - '@pairing-manager'
+    - '@crypto-provider'
+    - '@config-helper'
+
+--- !component
+  name: pairing-manager
+  module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
+  class_name: PairingManagerWrapper
+
+--- !component
+  name: crypto-provider
+  module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
+  class_name: CryptoProviderWrapper
+  arguments:
+    - '@config-helper'
+
+--- !component
+  name: audio-manager
+  module: resources.lib.util.audiomanager
+  class_name: AudioManager
+
+--- !component
+  name: audio-controller
+  module: resources.lib.controller.audiocontroller
+  class_name: AudioController
+  arguments:
+    - '@audio-manager'
+    - '@config-helper'
+    - '@plugin'

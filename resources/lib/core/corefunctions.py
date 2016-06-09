@@ -5,9 +5,6 @@ from xml.etree.ElementTree import ElementTree
 
 from xbmcswift2 import xbmcaddon
 
-from resources.lib.di.component import Component
-from resources.lib.di.requiredfeature import RequiredFeature
-
 internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
 STRINGS = {
@@ -30,13 +27,11 @@ STRINGS = {
 }
 
 
-class Core(Component):
-    plugin = RequiredFeature('plugin')
-    logger = RequiredFeature('logger')
-
-    def __init__(self, ):
+class Core:
+    def __init__(self, plugin, logger):
+        self.plugin = plugin
+        self.logger = logger
         self.logger.info('[CoreService] - initialized')
-        pass
 
     def string(self, string_id):
         if string_id in STRINGS:

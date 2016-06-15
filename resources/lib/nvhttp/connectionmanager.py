@@ -3,9 +3,10 @@ from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractP
 
 
 class ConnectionManager(object):
-    def pair(self, dialog):
+    def pair(self, dialog, host):
         message = ''
         nvhttp = RequiredFeature('nvhttp').request()
+        nvhttp.configure_from_host_details(host)
         server_info = nvhttp.get_server_info()
         if nvhttp.get_pair_state(server_info) == AbstractPairingManager.STATE_PAIRED:
             message = 'Already paired.'

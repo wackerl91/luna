@@ -43,15 +43,26 @@ class UpdateService:
                     else:
                         self.logger.error("An error occurred when trying to get latest release: %s" % e)
                         return None
-            for release in response:
-                if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
+            if self.plugin.get_setting('enable_pre_updates', bool):
+                for release in response:
+                    if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
+                        update = Update()
+                        print self.current_version
+                        update.current_version = self.current_version
+                        update.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
+                        update.asset_url = release['assets'][0]['browser_download_url']
+                        update.asset_name = release['assets'][0]['name']
+                        update.changelog = release['body']
+                        update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
+            else:
+                if re.match(self.regexp, response['tag_name'].strip('v')).group() > self.current_version:
                     update = Update()
                     print self.current_version
                     update.current_version = self.current_version
-                    update.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
-                    update.asset_url = release['assets'][0]['browser_download_url']
-                    update.asset_name = release['assets'][0]['name']
-                    update.changelog = release['body']
+                    update.update_version = re.match(self.regexp, response['tag_name'].strip('v')).group()
+                    update.asset_url = response['assets'][0]['browser_download_url']
+                    update.asset_name = response['assets'][0]['name']
+                    update.changelog = response['body']
                     update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
 
             update_storage['checked'] = True

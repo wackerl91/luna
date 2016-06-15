@@ -1,17 +1,18 @@
 import xbmcgui
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
 
 class GameController:
-    def __init__(self, plugin, core, moonlight_helper, scraper_chain, logger):
+    def __init__(self, plugin, core, game_manager, moonlight_helper, scraper_chain, logger):
         self.plugin = plugin
         self.core = core
+        self.game_manager = game_manager
         self.moonlight_helper = moonlight_helper
         self.scraper_chain = scraper_chain
         self.logger = logger
 
-    def get_games(self):
+    def get_games(self, host):
+        # TODO: Needs to be host dependent!
         """
         Fills local game storage with scraper results (if enabled) or game names (if scrapers are disabled)
         """
@@ -42,43 +43,44 @@ class GameController:
 
         bar_movement = int(1.0 / len(game_list) * 100)
 
-        storage = self.core.get_storage()
+        # TODO: storage should be closed after access -> need to build a list(!!) of games and add them all together
+        games = self.game_manager.get_games(host)
         game_version_storage = self.plugin.get_storage('game_version')
 
         cache = {}
         if game_version_storage.get('version') == Game.version:
-            cache = storage.raw_dict().copy()
+            cache = games.raw_dict().copy()
 
-        storage.clear()
+        self.game_manager.remove_games(host)
 
         i = 1
         for nvapp in game_list:
             progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
-            game = Game(nvapp.title)
+            game = Game(nvapp.title, host.uuid)
 
             if nvapp.id in cache:
-                if not storage.get(nvapp.id):
+                if not games.get(nvapp.id):
                     progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
-                    storage[nvapp.id] = cache.get(nvapp.id)[0]
+                    games[nvapp.id] = cache.get(nvapp.id)[0]
             else:
                 try:
                     progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
-                    storage[nvapp.id] = self.scraper_chain.query_game_information(nvapp)
+                    games[nvapp.id] = self.scraper_chain.query_game_information(nvapp)
                 except KeyError:
                     self.logger.info(
                         'Key Error thrown while getting information for game {0}: {1}'
                         .format(nvapp.title,
                                 KeyError.message))
-                    storage[nvapp.id] = game
+                    games[nvapp.id] = game
             i += 1
 
         game_version_storage.clear()
         game_version_storage['version'] = Game.version
 
-        storage.sync()
+        games.sync()
         game_version_storage.sync()
 
-    def get_games_as_list(self):
+    def get_games_as_list(self, host):
         """
         Parses contents of local game storage into a list that can be interpreted by Kodi
         :rtype: list
@@ -107,14 +109,14 @@ class GameController:
                 )
             ]
 
-        storage = self.core.get_storage()
+        games = self.game_manager.get_games(host)
 
-        if len(storage.raw_dict()) == 0:
-            self.get_games()
+        if len(games.raw_dict()) == 0:
+            self.get_games(host)
 
         items = []
-        for i, game_name in enumerate(storage):
-            game = storage.get(game_name)
+        for i, game_name in enumerate(games):
+            game = games.get(game_name)
             items.append({
                 'label': game.name,
                 'icon': game.get_selected_poster(),
@@ -132,7 +134,8 @@ class GameController:
                     game_id=game.name
                 ),
                 'properties': {
-                    'fanart_image': game.get_selected_fanart().get_original()
+                    'fanart_image': game.get_selected_fanart().get_original(),
+                    'id': game.id
                 }
             })
 

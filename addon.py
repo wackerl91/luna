@@ -1,4 +1,7 @@
+import xbmc
+from resources.lib.controller.maincontroller import MainController
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.views.main import Main
 
 plugin = RequiredFeature('plugin').request()
 
@@ -8,40 +11,25 @@ addon_internal_path = plugin.addon.getAddonInfo('path')
 
 @plugin.route('/')
 def index():
-    default_fanart_path = addon_internal_path + '/fanart.jpg'
+    MainController().render()
 
-    items = [
-        {
-            'label': 'Games',
-            'thumbnail': addon_internal_path + '/resources/icons/controller.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='show_games'
-                    )
-        }, {
-            'label': 'Settings',
-            'thumbnail': addon_internal_path + '/resources/icons/cog.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='open_settings'
-                    )
-        }, {
-            'label': 'Check For Update',
-            'thumbnail': addon_internal_path + '/resources/icons/update.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='check_update'
-                    )
-        }
-    ]
 
-    return plugin.finish(items)
+@plugin.route('/hosts/info/<host_uuid>')
+def host_info(host_uuid):
+    logger = RequiredFeature('logger').request()
+    logger.info(host_uuid)
+    # TODO: This doesn't work anymore when called from xbmc.executbuiltin
+    game_controller = RequiredFeature('game-controller').request()
+    plugin.set_content('movies')
+    return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
+
+
+@plugin.route('/add_host')
+def add_host():
+    # TODO:
+    host_controller = RequiredFeature('host-controller').request()
+    host_controller.initiate()
+    del host_controller
 
 
 @plugin.route('/settings')
@@ -180,6 +168,9 @@ def launch_game_from_widget(xml_id):
     del game_controller
 
 if __name__ == '__main__':
+    import sys
+    logger = RequiredFeature('logger').request()
+    logger.info(sys.argv)
     core = RequiredFeature('core').request()
     update_storage = plugin.get_storage('update', TTL=24*60)
     if not update_storage.get('checked'):

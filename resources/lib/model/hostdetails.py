@@ -15,5 +15,8 @@ class HostDetails(object):
         self.local_ip = None
         self.remote_ip = None
         self.pair_state = None
+        self.gpu_type = None
+        self.gamelist_id = None
+        self.key_dir = None
         self.state = self.STATE_UNKNOWN
         self.reachability = self.REACH_UNKNOWN

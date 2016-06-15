@@ -18,11 +18,26 @@ class NvHTTP(object):
         self.crypto_provider = crypto_provider
         self.config_helper = config_helper
         self.config_helper.configure(False)
-        self.host_ip = self.config_helper.host_ip
-        self.key_dir = self.crypto_provider.get_key_dir()
-        self.uid = self.load_or_generate_uid()
+        self.key_base_dir = self.crypto_provider.get_key_dir()
+        # next settings should be set as they can change depending on the host
+        self.host_ip = ''
+        self.base_url_https = ''
+        self.base_url_http = ''
+        self.key_dir = ''
+        self.uid = ''
+
+    def set_host_ip(self, ip):
+        self.host_ip = ip
         self.base_url_https = 'https://%s:%s' % (self.host_ip, self.HTTPS_PORT)
         self.base_url_http = 'http://%s:%s' % (self.host_ip, self.HTTP_PORT)
+        # TODO: Where and when to load UID when configuring only via IP?
+
+    def configure_from_host_details(self, host_details):
+        self.host_ip = host_details.local_ip
+        self.key_dir = host_details.key_dir
+        self.base_url_https = 'https://%s:%s' % (self.host_ip, self.HTTPS_PORT)
+        self.base_url_http = 'http://%s:%s' % (self.host_ip, self.HTTP_PORT)
+        self.uid = self.load_or_generate_uid()
 
     def build_uid_uuid_string(self):
         return 'uniqueid=%s&uuid=%s' % (self.uid, uuid.uuid4())
@@ -70,7 +85,7 @@ class NvHTTP(object):
         return response.content
 
     def get_computer_details(self):
-        server_info = ET.ElementTree(ET.fromstring(self.get_server_info())).getroot()
+        server_info = ET.ElementTree(ET.fromstring(self.get_server_info().encode('utf-16'))).getroot()
 
         host = HostDetails()
         host.name = self.get_xml_string(server_info, 'hostname')
@@ -79,7 +94,12 @@ class NvHTTP(object):
         host.local_ip = self.get_xml_string(server_info, 'LocalIP')
         host.remote_ip = self.get_xml_string(server_info, 'ExternalIP')
         host.pair_state = int(self.get_xml_string(server_info, 'PairStatus'))
+        host.gpu_type = self.get_xml_string(server_info, 'gputype')
+        host.gamelist_id = self.get_xml_string(server_info, 'gamelistid')
+        host.key_dir = os.path.join(self.key_base_dir, host.uuid)
         host.state = HostDetails.STATE_ONLINE
+
+        self.key_dir = host.key_dir
 
         return host
 
@@ -190,6 +210,8 @@ class NvHTTP(object):
 
     def load_or_generate_uid(self):
         uid_file = os.path.join(self.key_dir, 'uniqueid.dat')
+        if not os.path.exists(self.key_dir):
+            os.mkdir(self.key_dir)
         if not os.path.isfile(uid_file):
             uid = hex(random.getrandbits(63)).rstrip("L").lstrip("0x")
             with open(uid_file, 'wb') as f:

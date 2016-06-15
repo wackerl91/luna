@@ -4,6 +4,11 @@
   class_name: Plugin
 
 --- !component
+  name: addon
+  module: xbmcaddon
+  class_name: Addon
+
+--- !component
   name: logger
   module: resources.lib.core.logger
   class_name: Logger
@@ -60,6 +65,7 @@
   arguments:
     - '@plugin'
     - '@core'
+    - '@game-manager'
     - '@moonlight-helper'
     - '@scraper-chain'
     - '@logger'
@@ -174,3 +180,47 @@
     - '@audio-manager'
     - '@config-helper'
     - '@plugin'
+
+--- !component
+  name: discovery-agent
+  module: resources.lib.nvhttp.mdns.discoveryagent
+  class_name: DiscoveryAgent
+
+--- !component
+  name: host-controller
+  module: resources.lib.controller.hostcontroller
+  class_name: HostController
+  arguments:
+    - '@logger'
+    - '@core'
+    - '@nvhttp'
+    - '@connection-manager'
+    - '@host-manager'
+
+--- !component
+  name: host-repository
+  module: resources.lib.repository.hostrepository
+  class_name: HostRepository
+  arguments:
+    - '@core'
+
+--- !component
+  name: host-manager
+  module: resources.lib.manager.hostmanager
+  class_name: HostManager
+  arguments:
+    - '@host-repository'
+
+--- !component
+  name: host-repository
+  module: resources.lib.repository.gamerepository
+  class_name: GameRepository
+  arguments:
+    - '@core'
+
+--- !component
+  name: game-manager
+  module: resources.lib.manager.gamemanger
+  class_name: GameManger
+  arguments:
+    - '@game-repository'

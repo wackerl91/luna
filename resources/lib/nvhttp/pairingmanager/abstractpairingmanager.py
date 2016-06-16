@@ -11,7 +11,7 @@ class AbstractPairingManager(object):
     STATE_FAILED = 3
 
     @abstractmethod
-    def pair(self, nvhttp, server_info, pin):
+    def pair(self, nvhttp, server_info, dialog):
         pass
 
     @staticmethod
@@ -24,3 +24,8 @@ class AbstractPairingManager(object):
     @staticmethod
     def generate_pin_string():
         return '%s%s%s%s' % (random.randint(0, 9), random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
+
+    @staticmethod
+    def update_dialog(pin, dialog):
+        pin_message = 'Please enter the PIN: %s' % pin
+        dialog.update(0, pin_message)

@@ -31,7 +31,8 @@ class UpdateService:
         update = None
 
         if not update_storage.get('checked') or ignore_checked:
-            if self.plugin.get_setting('enable_pre_updates', bool):
+            pre_updates_enabled = self.plugin.get_setting('enable_pre_updates', bool)
+            if pre_updates_enabled:
                 response = json.load(urllib2.urlopen(self.pre_api_url))
             else:
                 try:
@@ -43,16 +44,13 @@ class UpdateService:
                     else:
                         self.logger.error("An error occurred when trying to get latest release: %s" % e)
                         return None
-            for release in response:
-                if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
-                    update = Update()
-                    print self.current_version
-                    update.current_version = self.current_version
-                    update.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
-                    update.asset_url = release['assets'][0]['browser_download_url']
-                    update.asset_name = release['assets'][0]['name']
-                    update.changelog = release['body']
-                    update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
+            if not pre_updates_enabled:
+                self.parse_release_information(response)
+            else:
+                for release in response:
+                    self.logger.info(release)
+                    if re.match(self.regexp, release['tag_name'].strip('v')).group() > self.current_version:
+                        self.parse_release_information(release)
 
             update_storage['checked'] = True
             update_storage.sync()
@@ -105,3 +103,14 @@ class UpdateService:
             if len(name) > offset:
                 zipinfo.filename = name[offset:]
                 yield zipinfo
+
+    def parse_release_information(self, release):
+        update = Update()
+        update.current_version = self.current_version
+        update.update_version = re.match(self.regexp, release['tag_name'].strip('v')).group()
+        update.asset_url = release['assets'][0]['browser_download_url']
+        update.asset_name = release['assets'][0]['name']
+        update.changelog = release['body']
+        update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
+
+        return update

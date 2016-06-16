@@ -177,8 +177,8 @@ class NvHTTP(object):
 
         return response
 
-    def pair(self, server_info, pin):
-        return self.pairing_manager.pair(self, server_info, pin)
+    def pair(self, server_info, dialog):
+        return self.pairing_manager.pair(self, server_info, dialog)
 
     def unpair(self):
         self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)
@@ -190,6 +190,8 @@ class NvHTTP(object):
 
     def load_or_generate_uid(self):
         uid_file = os.path.join(self.key_dir, 'uniqueid.dat')
+        if not os.path.isdir(self.key_dir):
+            os.makedirs(self.key_dir)
         if not os.path.isfile(uid_file):
             uid = hex(random.getrandbits(63)).rstrip("L").lstrip("0x")
             with open(uid_file, 'wb') as f:

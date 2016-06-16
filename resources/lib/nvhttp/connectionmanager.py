@@ -15,10 +15,7 @@ class ConnectionManager(object):
                 message = 'Host is currently in-game, please exit the game before pairing.'
                 pair_state = AbstractPairingManager.STATE_FAILED
             else:
-                pin_str = AbstractPairingManager.generate_pin_string()
-                pin_message = 'Please enter the PIN: %s' % pin_str
-                dialog.update(0, pin_message)
-                pair_state = nvhttp.pair(server_info, pin_str)
+                pair_state = nvhttp.pair(server_info, dialog)
 
                 if pair_state == AbstractPairingManager.STATE_PIN_WRONG:
                     message = 'PIN wrong.'

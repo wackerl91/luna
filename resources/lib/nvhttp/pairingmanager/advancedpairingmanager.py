@@ -98,7 +98,10 @@ class AdvancedPairingManager(AbstractPairingManager):
     def _sign_data(data, key):
         return key.sign(hashlib.sha256(data).digest(), 'sha256')
 
-    def pair(self, nvhttp, server_info, pin):
+    def pair(self, nvhttp, server_info, dialog):
+        pin = self.generate_pin_string()
+        self.update_dialog(pin, dialog)
+
         server_major_version = nvhttp.get_server_major_version(server_info)
 
         if int(server_major_version) >= 7:

@@ -5,10 +5,10 @@ from resources.lib.scraper.abcscraper import AbstractScraper
 
 
 class NvHTTPScraper(AbstractScraper):
-    def __init__(self, plugin, core, nvhttp):
+    def __init__(self, plugin, core, request_service):
         AbstractScraper.__init__(self, plugin, core)
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
-        self.nvhttp = nvhttp
+        self.request_service = request_service
 
     def name(self):
         return 'NvHTTP'
@@ -23,7 +23,7 @@ class NvHTTPScraper(AbstractScraper):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, nvapp.id))
         response = ApiResponse()
         response.name = nvapp.title
-        raw_box_art = self.nvhttp.get_box_art(nvapp.id)
+        raw_box_art = self.request_service.get_box_art(nvapp.id)
         cover_path = self._dump_image_from_data(game_cover_path, nvapp.id, raw_box_art)
         response.posters.append(cover_path)
 
@@ -36,4 +36,4 @@ class NvHTTPScraper(AbstractScraper):
                 img.write(data)
                 img.close()
 
-            return file_path
+        return file_path

@@ -32,6 +32,7 @@ class MoonlightHelper:
         self.config_helper = config_helper
         self.logger = logger
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
+        self.host_context_service = RequiredFeature('host-context-service').request()
 
     def create_ctrl_map(self, dialog, map_file):
         mapping_proc = subprocess.Popen(
@@ -117,19 +118,20 @@ class MoonlightHelper:
 
             return False
 
-    def pair_host(self, dialog):
-        return RequiredFeature('connection-manager').request().pair(dialog)
-
     def launch_game(self, game_id):
         self.config_helper.configure()
+        host = self.host_context_service.get_current_context()
         subprocess.call([
             self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh',
             self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh',
             self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh',
+            host.local_ip,
+            host.key_dir,
             game_id,
             self.config_helper.get_config_path(),
             self.plugin.get_setting('enable_moonlight_debug', str)
         ])
 
     def list_games(self):
-        return RequiredFeature('nvhttp').request().get_app_list()
+        request_service = RequiredFeature('request-service').request()
+        return request_service.get_app_list()

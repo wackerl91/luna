@@ -42,9 +42,10 @@ def create_label():
 
 
 class SelectInput(pyxbmct.AddonDialogWindow):
-    def __init__(self, title=''):
+    def __init__(self, controller, title=''):
         print 'Init Called'
         super(SelectInput, self).__init__(title)
+        self.controller = controller
         self.plugin = RequiredFeature('plugin').request()
         self.core = RequiredFeature('core').request()
         self.device_wrapper = RequiredFeature('device-wrapper').request()

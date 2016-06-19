@@ -12,7 +12,7 @@ class MdnsComputer:
         mdnscomputer = cls(
             service_info.type,
             service_info.name,
-            service_info.address,
+            '.'.join(str(ord(i)) for i in service_info.address),
             service_info.port,
             service_info.server
         )

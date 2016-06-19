@@ -15,7 +15,6 @@ class ConfigHelper:
     def _reset(self):
         self.file_path = None
         self.binary_path = None
-        self.host_ip = None
         self.enable_custom_res = None
         self.resolution_width = None
         self.resolution_height = None
@@ -31,7 +30,7 @@ class ConfigHelper:
         self.full_path = None
         self.audio_device = None
 
-    def _configure(self, addon_path, binary_path=None, host_ip=None, enable_custom_res=False, resolution_width=None,
+    def _configure(self, addon_path, binary_path=None, enable_custom_res=False, resolution_width=None,
                    resolution_height=None, resolution=None,
                    framerate=None, graphics_optimizations=False, remote_optimizations=False, local_audio=False,
                    enable_custom_bitrate=False, bitrate=None, packetsize=None,
@@ -39,7 +38,6 @@ class ConfigHelper:
 
         self.addon_path = addon_path
         self.binary_path = binary_path
-        self.host_ip = host_ip
         self.enable_custom_res = enable_custom_res
         self.resolution_width = resolution_width,
         self.resolution_height = resolution_height,
@@ -66,7 +64,6 @@ class ConfigHelper:
         settings = {
             'addon_path':                   self.plugin.storage_path,
             'binary_path':                  binary_path,
-            'host_ip':                      self.plugin.get_setting('host', unicode),
             'enable_custom_res':            self.plugin.get_setting('enable_custom_res', bool),
             'resolution_width':             self.plugin.get_setting('resolution_width', str),
             'resolution_height':            self.plugin.get_setting('resolution_height', str),
@@ -98,7 +95,6 @@ class ConfigHelper:
             config.add_section('General')
 
         config.set('General', 'binpath', self.binary_path)
-        config.set('General', 'address', self.host_ip)
 
         if not self.override_default_resolution:
             if config.has_option('General', 'height'):

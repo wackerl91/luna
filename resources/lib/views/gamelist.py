@@ -1,5 +1,3 @@
-import os
-
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -12,34 +10,31 @@ class GameList(xbmcgui.WindowXML):
         xbmc.log("GameList Open")
         return super(GameList, cls).__new__(cls, "gamelist.xml", xbmcaddon.Addon().getAddonInfo('path'))
 
-    def __init__(self, host, games):
+    def __init__(self, controller, host):
         xbmc.log("GameList Init")
-        _ADDON_NAME = 'script.module.pyxbmct'
-        _addon = xbmcaddon.Addon(id=_ADDON_NAME)
-        _addon_path = _addon.getAddonInfo('path')
-        self._images = os.path.join(_addon_path, 'lib', 'pyxbmct', 'textures', 'default')
-        del _ADDON_NAME
-        del _addon
-        del _addon_path
-
         super(GameList, self).__init__("gamelist.xml", xbmcaddon.Addon().getAddonInfo('path'))
+        self.controller = controller
         self.host = host
-        self.games = games
+        self.games = []
         self.game_manager = RequiredFeature('game-manager').request()
+        self.game_controller = RequiredFeature('game-helper').request()
+        self.logger = RequiredFeature('logger').request()
         self.list = None
         self.cover = None
         self.fanart = None
+        xbmc.log("GameList Init - Done")
 
     def onInit(self):
         xbmc.log("GameList onInit")
+        self.games = self.game_controller.get_games_as_list(self.host)
         self.games.sort(key=lambda x: x['label'], reverse=False)
-        self.setFocusId(50)
         self.list = self.getControl(50)
         self.cover = self.getControl(1)
         self.fanart = self.getControl(2)
-        self.buildList()
+        self.build_list()
+        self.setFocusId(50)
 
-    def buildList(self):
+    def build_list(self):
         items = []
         # game = self.games[0]
         for game in self.games:
@@ -54,32 +49,56 @@ class GameList(xbmcgui.WindowXML):
 
             items.append(item)
 
+        self.logger.info("Adding list items")
         self.list.addItems(items)
-        currentItem = self.list.getListItem(self.list.getSelectedPosition())
-        self.cover.setImage(currentItem.getProperty('icon'))
+        try:
+            current_item = self.list.getListItem(self.list.getSelectedPosition())
+            self.cover.setImage(current_item.getProperty('icon'))
+            self.fanart.setImage(current_item.getProperty('fanart'))
+        except RuntimeError:
+            pass
 
     def onAction(self, action):
-        if self.getFocus() == self.list and (action.getId() == xbmcgui.ACTION_MOVE_UP or action.getId() == xbmcgui.ACTION_MOVE_DOWN):
-            currentItem = self.list.getListItem(self.list.getSelectedPosition())
-            self.cover.setImage(currentItem.getProperty('icon'))
-            self.fanart.setImage(currentItem.getProperty('fanart'))
-        elif self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_CONTEXT_MENU:
-            currentItem = self.list.getListItem(self.list.getSelectedPosition())
-            fanartCache = currentItem.getProperty('fanart')
-            coverCache = currentItem.getProperty('icon')
+        if action == xbmcgui.ACTION_NAV_BACK:
+            self.close()
 
-            window = GameContextMenu(self.host, currentItem)
+        if self.getFocus() == self.list and (
+                action.getId() == xbmcgui.ACTION_MOVE_UP or action.getId() == xbmcgui.ACTION_MOVE_DOWN):
+            current_item = self.list.getListItem(self.list.getSelectedPosition())
+            self.cover.setImage(current_item.getProperty('icon'))
+            self.fanart.setImage(current_item.getProperty('fanart'))
+        elif self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_CONTEXT_MENU:
+            current_item = self.list.getListItem(self.list.getSelectedPosition())
+            fanart_cache = current_item.getProperty('fanart')
+            cover_cache = current_item.getProperty('icon')
+
+            window = GameContextMenu(self.host, current_item)
             window.doModal()
+            refresh = window.refresh_required
             del window
 
-            loaded_game = self.game_manager.get_game_by_id(self.host, currentItem.getProperty('id'))
-            if fanartCache != loaded_game.selected_fanart:
-                self.list.getSelectedItem().setProperty('fanart', loaded_game.selected_fanart)
-                self.fanart.setImage(loaded_game.selected_fanart)
-            if coverCache != loaded_game.selected_poster:
-                self.list.getSelectedItem().setProperty('icon', loaded_game.selected_poster)
-                self.cover.setImage(loaded_game.selected_poster)
+            loaded_game = self.game_manager.get_game_by_id(self.host, current_item.getProperty('id'))
+            if fanart_cache != loaded_game.get_selected_fanart().get_original():
+                self.list.getSelectedItem().setProperty('fanart', loaded_game.get_selected_fanart().get_original())
+                self.fanart.setImage(loaded_game.get_selected_fanart().get_original())
+            if cover_cache != loaded_game.get_selected_poster():
+                self.list.getSelectedItem().setProperty('icon', loaded_game.get_selected_poster())
+                self.cover.setImage(loaded_game.get_selected_poster())
+
+            if refresh:
+                self.controller.refresh_list(self.host)
 
             self.setFocus(self.list)
-        elif action == xbmcgui.ACTION_NAV_BACK:
-            self.close()
+
+        elif self.getFocus() == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
+            current_item = self.list.getListItem(self.list.getSelectedPosition())
+            loaded_game = self.game_manager.get_game_by_id(self.host, current_item.getProperty('id'))
+
+            self.controller.launch_game(loaded_game)
+
+    def update(self, games):
+        self.games = games
+        self.games.sort(key=lambda x: x['label'], reverse=False)
+        self.list.reset()
+        self.build_list()
+        return

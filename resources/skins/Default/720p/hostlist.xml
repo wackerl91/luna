@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image" id="201">
+            <description>background image</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <texture>dialogs/DialogBackground_old.png</texture>
+        </control>
+        <control type="panel" id="202">
+            <left>100</left>
+            <top>100</top>
+            <width>1080</width>
+            <height>520</height>
+            <visible>true</visible>
+            <viewtype label="3D list">list</viewtype>
+            <orientation>vertical</orientation>
+            <scrolltime tween="sine" easing="out">200</scrolltime>
+            <itemlayout width="1080" height="55">
+                <control type="label">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Label</info>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>20</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Label2</info>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>40</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Property(gpu_type)</info>
+                </control>
+            </itemlayout>
+            <focusedlayout width="1080" height="55">
+                <control type="label">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FFE0B074</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Label</info>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>20</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Label2</info>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>40</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <align>center</align>
+                    <info>ListItem.Property(gpu_type)</info>
+                </control>
+            </focusedlayout>
+        </control>
+    </controls>
+</window>

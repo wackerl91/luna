@@ -35,9 +35,13 @@ class GameRepository(object):
                     self.storage.sync()
 
     def get_game_by_id(self, host, id):
+        self.logger.info('Trying to load game by id ...')
         try:
             game = self.storage[id]
+            if game:
+                self.logger.info('Found game by id, its host is %s' % game.host_uuid)
             if game.host_uuid == host.uuid:
+                self.logger.info('Host UUID matches, returning game')
                 return game
         except KeyError:
             self.logger.error('Couldnt find game with ID %s for host %s' % (host.uuid, id))

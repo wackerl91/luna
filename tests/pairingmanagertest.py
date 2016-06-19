@@ -1,7 +1,6 @@
-import base64
 import unittest
-from resources.lib.nvhttp.connectionmanager_aio import NvHTTP, PairingManager, Sha1PairingHash, Sha256PairingHash, \
-    CryptoProvider
+
+from backup.connectionmanager_aio import NvHTTP, PairingManager, Sha1PairingHash, CryptoProvider
 
 
 class PairingManagerTest(unittest.TestCase):

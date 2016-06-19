@@ -6,6 +6,7 @@ from typing import Any, List
 from xbmcswift2 import Plugin
 
 from resources.lib.core.logger import Logger
+from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.inputdevice import InputDevice
 from resources.lib.model.nvapp import NvApp
 from resources.lib.util.confighelper import ConfigHelper

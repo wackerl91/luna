@@ -2,7 +2,8 @@ import xbmcgui
 from resources.lib.model.game import Game
 
 
-class GameController:
+# TODO: This is more of a helper class, not a controller
+class GameHelper(object):
     def __init__(self, plugin, core, game_manager, moonlight_helper, scraper_chain, logger):
         self.plugin = plugin
         self.core = core
@@ -11,8 +12,7 @@ class GameController:
         self.scraper_chain = scraper_chain
         self.logger = logger
 
-    def get_games(self, host):
-        # TODO: Needs to be host dependent!
+    def get_games(self, host, silent=False):
         """
         Fills local game storage with scraper results (if enabled) or game names (if scrapers are disabled)
         """
@@ -28,18 +28,20 @@ class GameController:
             )
             return
 
-        progress_dialog = xbmcgui.DialogProgress()
-        progress_dialog.create(
-            self.core.string('name'),
-            'Refreshing Game List'
-        )
-
-        if game_list is None or len(game_list) == 0:
-            xbmcgui.Dialog().notification(
+        if not silent:
+            progress_dialog = xbmcgui.DialogProgress()
+            progress_dialog.create(
                 self.core.string('name'),
-                self.core.string('empty_game_list')
+                'Refreshing Game List'
             )
-            return
+
+        if not silent:
+            if game_list is None or len(game_list) == 0:
+                xbmcgui.Dialog().notification(
+                    self.core.string('name'),
+                    self.core.string('empty_game_list')
+                )
+                return
 
         bar_movement = int(1.0 / len(game_list) * 100)
 
@@ -49,22 +51,25 @@ class GameController:
 
         cache = {}
         if game_version_storage.get('version') == Game.version:
-            cache = games.raw_dict().copy()
+            cache = games.copy()
 
         self.game_manager.remove_games(host)
 
         i = 1
         for nvapp in game_list:
-            progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
+            if not silent:
+                progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
             game = Game(nvapp.title, host.uuid)
 
             if nvapp.id in cache:
                 if not games.get(nvapp.id):
-                    progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
+                    if not silent:
+                        progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
                     games[nvapp.id] = cache.get(nvapp.id)[0]
             else:
                 try:
-                    progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
+                    if not silent:
+                        progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
                     games[nvapp.id] = self.scraper_chain.query_game_information(nvapp)
                 except KeyError:
                     self.logger.info(
@@ -77,15 +82,19 @@ class GameController:
         game_version_storage.clear()
         game_version_storage['version'] = Game.version
 
-        games.sync()
+        for id, game in games.iteritems():
+            self.game_manager.add_game(host, game)
         game_version_storage.sync()
 
-    def get_games_as_list(self, host):
+        return games
+
+    def get_games_as_list(self, host, force_refresh=False):
         """
         Parses contents of local game storage into a list that can be interpreted by Kodi
         :rtype: list
         """
 
+        """
         def context_menu(game_id):
             return [
                 (
@@ -108,11 +117,14 @@ class GameController:
                     )
                 )
             ]
+        """
 
         games = self.game_manager.get_games(host)
 
-        if len(games.raw_dict()) == 0:
-            self.get_games(host)
+        if len(games) == 0:
+            games = self.get_games(host)
+        if force_refresh:
+            games = self.get_games(host, silent=True)
 
         items = []
         for i, game_name in enumerate(games):
@@ -128,11 +140,11 @@ class GameController:
                     'originaltitle': game.name,
                 },
                 'replace_context_menu': True,
-                'context_menu': context_menu(game_name),
-                'path': self.plugin.url_for(
-                    endpoint='launch_game',
-                    game_id=game.name
-                ),
+                # 'context_menu': context_menu(game_name),
+                # 'path': self.plugin.url_for(
+                #     endpoint='launch_game',
+                #     game_id=game.name
+                # ),
                 'properties': {
                     'fanart_image': game.get_selected_fanart().get_original(),
                     'id': game.id
@@ -140,10 +152,3 @@ class GameController:
             })
 
         return items
-
-    def launch_game(self, game_name):
-        """
-        Launches game with specified name
-        :type game_name: str
-        """
-        self.moonlight_helper.launch_game(game_name)

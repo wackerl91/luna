@@ -1,6 +1,6 @@
 import hashlib
 
-from resources.lib.nvhttp.abstractpairinghash import AbstractPairingHash
+from resources.lib.nvhttp.pairinghash.abstractpairinghash import AbstractPairingHash
 
 
 class Sha256PairingHash(AbstractPairingHash):

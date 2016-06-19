@@ -1,226 +1,247 @@
---- !component
-  name: plugin
-  module: xbmcswift2
-  class_name: Plugin
+services:
+    plugin:
+        module: xbmcswift2
+        class_name: Plugin
 
---- !component
-  name: addon
-  module: xbmcaddon
-  class_name: Addon
+    addon:
+        module: xbmcaddon
+        class_name: Addon
 
---- !component
-  name: logger
-  module: resources.lib.core.logger
-  class_name: Logger
-  arguments:
-    - '@plugin'
+    logger:
+        module: resources.lib.core.logger
+        class_name: Logger
+        arguments:
+          - '@plugin'
 
---- !component
-  name: core
-  module: resources.lib.core.corefunctions
-  class_name: Core
-  arguments:
-    - '@plugin'
-    - '@logger'
+    core:
+        module: resources.lib.core.corefunctions
+        class_name: Core
+        arguments:
+          - '@plugin'
+          - '@logger'
 
---- !component
-  name: config-helper
-  module: resources.lib.util.confighelper
-  class_name: ConfigHelper
-  arguments:
-    - '@plugin'
-    - '@logger'
+    config-helper:
+        module: resources.lib.util.confighelper
+        class_name: ConfigHelper
+        arguments:
+          - '@plugin'
+          - '@logger'
 
---- !component
-  name: core-monitor
-  module: resources.lib.core.coremonitor
-  class_name: CoreMonitor
-  arguments:
-    - '@config-helper'
-    - '@logger'
+    core-monitor:
+        module: resources.lib.core.coremonitor
+        class_name: CoreMonitor
+        arguments:
+          - '@config-helper'
+          - '@logger'
 
---- !component
-  name: moonlight-helper
-  module: resources.lib.util.moonlighthelper
-  class_name: MoonlightHelper
-  arguments:
-    - '@plugin'
-    - '@config-helper'
-    - '@logger'
+    moonlight-helper:
+        module: resources.lib.util.moonlighthelper
+        class_name: MoonlightHelper
+        arguments:
+          - '@plugin'
+          - '@config-helper'
+          - '@logger'
 
---- !component
-  name: config-controller
-  module: resources.lib.controller.configcontroller
-  class_name: ConfigController
-  arguments:
-    - '@plugin'
-    - '@core'
-    - '@moonlight-helper'
-    - '@logger'
+    game-helper:
+        module: resources.lib.util.gamehelper
+        class_name: GameHelper
+        arguments:
+          - '@plugin'
+          - '@core'
+          - '@game-manager'
+          - '@moonlight-helper'
+          - '@scraper-chain'
+          - '@logger'
+        lazy: true
 
---- !component
-  name: game-controller
-  module: resources.lib.controller.gamecontroller
-  class_name: GameController
-  arguments:
-    - '@plugin'
-    - '@core'
-    - '@game-manager'
-    - '@moonlight-helper'
-    - '@scraper-chain'
-    - '@logger'
+    update-service:
+        module: resources.lib.core.updateservice
+        class_name: UpdateService
+        arguments:
+          - '@plugin'
+          - '@core'
+          - '@logger'
 
---- !component
-  name: update-service
-  module: resources.lib.core.updateservice
-  class_name: UpdateService
-  arguments:
-    - '@plugin'
-    - '@core'
-    - '@logger'
+    skin-patcher:
+        module: resources.lib.util.skinpatcher
+        class_name: SkinPatcher
+        arguments:
+          - '@core'
+          - '@plugin'
 
---- !component
-  name: skin-patcher
-  module: resources.lib.util.skinpatcher
-  class_name: SkinPatcher
-  arguments:
-    - '@core'
-    - '@plugin'
+    device-wrapper:
+        module: resources.lib.util.devicewrapper
+        class_name: DeviceWrapper
 
---- !component
-  name: device-wrapper
-  module: resources.lib.util.devicewrapper
-  class_name: DeviceWrapper
+    scraper-chain:
+        module: resources.lib.scraper.scraperchain
+        class_name: ScraperChain
+        arguments:
+          - '@plugin'
+          - '@logger'
 
---- !component
-  name: scraper-chain
-  module: resources.lib.scraper.scraperchain
-  class_name: ScraperChain
-  arguments:
-    - '@plugin'
-    - '@logger'
+    omdb-scraper:
+        module: resources.lib.scraper.omdbscraper
+        class_name: OmdbScraper
+        arguments:
+          - '@plugin'
+          - '@core'
+        tags:
+          - { name: scraper-chain }
 
---- !component
-  name: omdb-scraper
-  module: resources.lib.scraper.omdbscraper
-  class_name: OmdbScraper
-  arguments:
-    - '@plugin'
-    - '@core'
-  tags:
-    - { name: scraper-chain }
+    tgdb-scraper:
+        module: resources.lib.scraper.tgdbscraper
+        class_name: TgdbScraper
+        arguments:
+          - '@plugin'
+          - '@core'
+        tags:
+          - { name: scraper-chain }
 
---- !component
-  name: tgdb-scraper
-  module: resources.lib.scraper.tgdbscraper
-  class_name: TgdbScraper
-  arguments:
-    - '@plugin'
-    - '@core'
-  tags:
-    - { name: scraper-chain }
+    igdb-scraper:
+        module: resources.lib.scraper.igdbscraper
+        class_name: IgdbScraper
+        arguments:
+          - '@plugin'
+          - '@core'
+        tags:
+          - { name: scraper-chain }
 
---- !component
-  name: igdb-scraper
-  module: resources.lib.scraper.igdbscraper
-  class_name: IgdbScraper
-  arguments:
-    - '@plugin'
-    - '@core'
-  tags:
-    - { name: scraper-chain }
+    nvhttp-scraper:
+        module: resources.lib.scraper.nvhttpscraper
+        class_name: NvHTTPScraper
+        arguments:
+          - '@plugin'
+          - '@core'
+          - '@request-service'
+        tags:
+          - { name: scraper-chain }
 
---- !component
-  name: nvhttp-scraper
-  module: resources.lib.scraper.nvhttpscraper
-  class_name: NvHTTPScraper
-  arguments:
-    - '@plugin'
-    - '@core'
-    - '@nvhttp'
-  tags:
-    - { name: scraper-chain }
+    connection-manager:
+        module: resources.lib.nvhttp.connectionmanager.connectionmanager
+        class_name: ConnectionManager
+        arguments:
+          - '@request-service'
+          - '@pairing-manager'
+        lazy: true
 
---- !component
-  name: connection-manager
-  module: resources.lib.nvhttp.connectionmanager
-  class_name: ConnectionManager
+    pairing-manager:
+        module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
+        class_name: PairingManagerWrapper
 
---- !component
-  name: nvhttp
-  module: resources.lib.nvhttp.nvhttp
-  class_name: NvHTTP
-  arguments:
-    - '@pairing-manager'
-    - '@crypto-provider'
-    - '@config-helper'
+    audio-manager:
+        module: resources.lib.util.audiomanager
+        class_name: AudioManager
 
---- !component
-  name: pairing-manager
-  module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
-  class_name: PairingManagerWrapper
+    discovery-agent:
+        module: resources.lib.nvhttp.mdns.discoveryagent
+        class_name: DiscoveryAgent
 
---- !component
-  name: crypto-provider
-  module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
-  class_name: CryptoProviderWrapper
-  arguments:
-    - '@config-helper'
+    host-controller:
+        module: resources.lib.controller.hostcontroller
+        class_name: HostController
+        arguments:
+          - '@logger'
+          - '@core'
+          - '@connection-manager'
+          - '@host-manager'
+          - '@host-context-service'
 
---- !component
-  name: audio-manager
-  module: resources.lib.util.audiomanager
-  class_name: AudioManager
+    host-repository:
+        module: resources.lib.repository.hostrepository
+        class_name: HostRepository
+        arguments:
+          - '@core'
 
---- !component
-  name: audio-controller
-  module: resources.lib.controller.audiocontroller
-  class_name: AudioController
-  arguments:
-    - '@audio-manager'
-    - '@config-helper'
-    - '@plugin'
+    host-manager:
+        module: resources.lib.manager.hostmanager
+        class_name: HostManager
+        arguments:
+          - '@host-repository'
+        tags:
+          - { name: manager }
 
---- !component
-  name: discovery-agent
-  module: resources.lib.nvhttp.mdns.discoveryagent
-  class_name: DiscoveryAgent
+    game-repository:
+        module: resources.lib.repository.gamerepository
+        class_name: GameRepository
+        arguments:
+          - '@core'
 
---- !component
-  name: host-controller
-  module: resources.lib.controller.hostcontroller
-  class_name: HostController
-  arguments:
-    - '@logger'
-    - '@core'
-    - '@nvhttp'
-    - '@connection-manager'
-    - '@host-manager'
+    game-manager:
+        module: resources.lib.manager.gamemanager
+        class_name: GameManager
+        arguments:
+          - '@game-repository'
+        tags:
+          - { name: manager }
 
---- !component
-  name: host-repository
-  module: resources.lib.repository.hostrepository
-  class_name: HostRepository
-  arguments:
-    - '@core'
+    host-context-service:
+        module: resources.lib.service.hostcontextservice
+        class_name: HostContextService
 
---- !component
-  name: host-manager
-  module: resources.lib.manager.hostmanager
-  class_name: HostManager
-  arguments:
-    - '@host-repository'
+    request-service-factory:
+        module: resources.lib.factory.requestservicefactory
+        class_name: RequestServiceFactory
+        arguments:
+          - '@host-context-service'
 
---- !component
-  name: host-repository
-  module: resources.lib.repository.gamerepository
-  class_name: GameRepository
-  arguments:
-    - '@core'
+    request-service:
+        module: resources.lib.nvhttp.request.requestservice
+        class_name: RequestService
+        arguments:
+          - '@crypto-provider'
+          - '@config-helper'
+        factory_class: '@request-service-factory'
+        factory_method: 'create_request_service'
 
---- !component
-  name: game-manager
-  module: resources.lib.manager.gamemanger
-  class_name: GameManger
-  arguments:
-    - '@game-repository'
+    crypto-provider-factory:
+        module: resources.lib.factory.cryptoproviderfactory
+        class_name: CryptoProviderFactory
+        arguments:
+          - '@host-context-service'
+
+    crypto-provider:
+        module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
+        class_name: CryptoProviderWrapper
+        arguments:
+          - '@config-helper'
+        factory_class: '@crypto-provider-factory'
+        factory_method: 'create_crypto_provider'
+
+    router:
+        module: resources.lib.routing.router
+        class_name: Router
+
+    #
+    # Controllers
+    #
+
+    main-controller:
+        module: resources.lib.controller.maincontroller
+        class_name: MainController
+
+    game-list-controller:
+        module: resources.lib.controller.gamelistcontroller
+        class_name: GameListController
+
+    audio-controller:
+        module: resources.lib.controller.audiocontroller
+        class_name: AudioController
+        arguments:
+          - '@audio-manager'
+          - '@config-helper'
+          - '@plugin'
+
+    host-controller:
+        module: resources.lib.controller.hostcontroller
+        class_name: HostController
+        arguments:
+          - '@logger'
+          - '@core'
+          - '@connection-manager'
+          - '@host-manager'
+          - '@host-context-service'
+
+    controller-config-controller:
+        module: resources.lib.controller.controllerconfigurationcontroller
+        class_name: ControllerConfigurationController

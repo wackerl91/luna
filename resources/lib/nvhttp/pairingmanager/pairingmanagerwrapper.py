@@ -9,10 +9,10 @@ class PairingManagerWrapper(AbstractPairingManager):
         # implementation will be lazy loaded when needed
         self._pairing_manager = None
 
-    def pair(self, nvhttp, server_info, pin):
+    def pair(self, request_service, server_info, pin):
         if self._pairing_manager is None:
             self._load_pairing_manager()
-        return self._pairing_manager.pair(nvhttp, server_info, pin)
+        return self._pairing_manager.pair(request_service, server_info, pin)
 
     def _load_pairing_manager(self):
         try:

@@ -2,6 +2,7 @@ import os
 
 import subprocess
 
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.fanart import Fanart
 
 
@@ -35,6 +36,8 @@ class Game:
         """
         game = cls(
             api_response.name,
+            None,
+            None,
             api_response.year,
             api_response.genre,
             api_response.plot,
@@ -42,6 +45,8 @@ class Game:
             api_response.fanarts
         )
 
+        if game.genre == [None]:
+            game.genre = []
         return game
 
     def merge(self, other):

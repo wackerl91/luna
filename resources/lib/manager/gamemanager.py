@@ -19,7 +19,7 @@ class GameManager(object):
         self.repository.remove_game_by_id(host, id, flush)
 
     def get_game_by_id(self, host, id):
-        self.repository.get_game_by_id(host, id)
+        return self.repository.get_game_by_id(host, id)
 
     def add_games(self, host, games):
         # TODO!!!!

@@ -11,12 +11,15 @@ class AbstractPairingManager(object):
     STATE_FAILED = 3
 
     @abstractmethod
-    def pair(self, nvhttp, server_info, dialog):
+    def pair(self, request_service, server_info, dialog):
+        pass
+
+    def unpair(self, request_service):
         pass
 
     @staticmethod
-    def get_pair_state(nvhttp, server_info):
-        if nvhttp.get_xml_string(server_info, 'PairStatus') != '1':
+    def get_pair_state(request_service, server_info):
+        if request_service.get_xml_string(server_info, 'PairStatus') != '1':
             return AbstractPairingManager.STATE_NOT_PAIRED
         else:
             return AbstractPairingManager.STATE_PAIRED

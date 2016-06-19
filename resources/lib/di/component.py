@@ -5,9 +5,17 @@ class Component(yaml.YAMLObject):
     """Symbolic base class for components"""
     yaml_tag = u'!component'
 
-    def __init__(self, name, module, class_name, arguments, tags):
+    def __init__(self, name, module, class_name, arguments, tags, factory_class, factory_method, lazy):
         self.name = name
         self.module = module
-        self.class_name = class_name,
-        self.arguments = arguments,
+        self.class_name = class_name
+        self.arguments = arguments
         self.tags = tags
+        self.factory_class = factory_class
+        self.factory_method = factory_method
+        self.lazy = lazy
+
+    @classmethod
+    def from_dict(cls, name, module=None, class_name=None, arguments=None, tags=None, factory_class=None,
+                  factory_method=None, lazy=None, **kwargs):
+        return cls(name, module, class_name, arguments, tags, factory_class, factory_method, lazy)

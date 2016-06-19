@@ -63,7 +63,16 @@ class Core:
             self.logger.info('Changed file permissions for moonlight-heartbeat')
 
     def get_storage(self, name='game_storage', file_format='pickle', TTL=None):
-        """Returns a storage for the given name. The returned storage is a
+        """
+        This method was originally part of xbmcswift2 by Jonathan Beluch.
+        Used in Luna in accordance with GPLv3; with the reason being that his storage engine didn't behave entirely
+        correct in conjunction with Luna's underlying architecture, namely the DI. (June, 2016)
+
+        This module contains persistent storage classes.
+
+        :copyright: (c) 2012 by Jonathan Beluch
+        :license: GPLv3, see LICENSE for more details.
+        Returns a storage for the given name. The returned storage is a
         fully functioning python dictionary and is designed to be used that
         way. It is usually not necessary for the caller to load or save the
         storage manually. If the storage does not already exist, it will be

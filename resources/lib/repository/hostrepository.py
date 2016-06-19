@@ -7,7 +7,6 @@ class HostRepository(object):
         self.logger = RequiredFeature('logger').request()
 
     def get_hosts(self):
-        self.logger.info('Get Hosts Called')
         return self.storage
 
     def add_host(self, host, flush=True):

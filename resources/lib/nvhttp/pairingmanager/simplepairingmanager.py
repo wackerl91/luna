@@ -13,11 +13,12 @@ class SimplePairingManager(AbstractPairingManager):
         self.config_helper = RequiredFeature('config-helper').request()
         self.logger = RequiredFeature('logger').request()
 
-    def pair(self, nvhttp, server_info, dialog):
+    def pair(self, request_service, server_info, dialog):
         self.logger.info('[MoonlightHelper] - Attempting to pair host: ' + self.config_helper.host_ip)
         pairing_proc = subprocess.Popen(
-                ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.config_helper.host_ip],
-                stdout=subprocess.PIPE)
+            ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.config_helper.host_ip,
+             '--keydir', self.crypto_provider.get_key_dir()],
+            stdout=subprocess.PIPE)
 
         lines_iterator = iter(pairing_proc.stdout.readline, b"")
 
@@ -29,8 +30,8 @@ class SimplePairingManager(AbstractPairingManager):
             if not pairing_thread.isAlive():
                 break
 
-        new_server_info = nvhttp.get_server_info()
-        if self.get_pair_state(nvhttp, new_server_info) == self.STATE_PAIRED:
+        new_server_info = request_service.get_server_info()
+        if self.get_pair_state(request_service, new_server_info) == self.STATE_PAIRED:
             return self.STATE_PAIRED
         else:
             return self.STATE_FAILED

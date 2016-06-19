@@ -1,0 +1,25 @@
+routing:
+    luna.routes.main:
+        class_name: MainController
+        service: '@main-controller'
+        prefix: 'main'
+
+    luna.routes.game:
+        class_name: GameListController
+        service: '@game-list-controller'
+        prefix: 'game'
+
+    luna.routes.audio:
+        class_name: AudioController
+        service: '@audio-controller'
+        prefix: 'audio'
+
+    luna.routes.host:
+        class_name: HostController
+        service: '@host-controller'
+        prefix: 'host'
+
+    luna.routes.controller:
+        class_name: ControllerConfigurationController
+        service: '@controller-config-controller'
+        prefix: 'controller'

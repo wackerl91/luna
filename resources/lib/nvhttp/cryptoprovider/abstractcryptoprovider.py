@@ -1,3 +1,4 @@
+import os
 from abc import ABCMeta, abstractmethod
 
 
@@ -31,3 +32,7 @@ class AbstractCryptoProvider(object):
     @abstractmethod
     def extract_cert_signature(self, cert):
         pass
+
+    @staticmethod
+    def get_key_base_path():
+        return os.path.join(os.path.expanduser('~'), '.cache/moonlight')

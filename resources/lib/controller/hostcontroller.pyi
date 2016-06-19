@@ -9,17 +9,15 @@ from resources.lib.core.logger import Logger
 from resources.lib.manager.hostmanager import HostManager
 from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.mdnscomputer import MdnsComputer
-from resources.lib.nvhttp.connectionmanager import ConnectionManager
+from resources.lib.nvhttp.connectionmanager.connectionmanager import ConnectionManager
 from resources.lib.nvhttp.mdns.discoveryagent import DiscoveryAgent
-from resources.lib.nvhttp.nvhttp import NvHTTP
 
 
 class HostController:
     discovery_agent = ... # type: DiscoveryAgent
-    def __init__(self, logger:Logger, core:Core, nvhttp:NvHTTP, connection_manager:ConnectionManager, host_manager:HostManager):
+    def __init__(self, logger:Logger, core:Core, connection_manager:ConnectionManager, host_manager:HostManager):
         self.logger = Logger
         self.core = Core
-        self.nvhttp = NvHTTP
         self.connection_manager = ConnectionManager
         self.host_manager = HostManager
         ...

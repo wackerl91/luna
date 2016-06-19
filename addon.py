@@ -1,17 +1,13 @@
-import xbmc
-from resources.lib.controller.maincontroller import MainController
-from resources.lib.di.requiredfeature import RequiredFeature
-from resources.lib.views.main import Main
+# from resources.lib.di.requiredfeature import RequiredFeature
+# from resources.lib.routing.router import router
 
-plugin = RequiredFeature('plugin').request()
-
-addon_path = plugin.storage_path
-addon_internal_path = plugin.addon.getAddonInfo('path')
-
-
+"""
 @plugin.route('/')
 def index():
-    MainController().render()
+    # MainController().index_action()
+    # controller = MainController()
+    # controller.render('index')
+    router.render('main_index')
 
 
 @plugin.route('/hosts/info/<host_uuid>')
@@ -166,8 +162,26 @@ def launch_game_from_widget(xml_id):
 
     del core
     del game_controller
+"""
+import xbmc
+from resources.lib.kernel.xbmcapplicationkernel import XBMCApplicationKernel
 
 if __name__ == '__main__':
+    import sys
+    xbmc.log(str(sys.argv))
+
+    def callback():
+        from resources.lib.di.requiredfeature import RequiredFeature
+        import threading
+        RequiredFeature('core').request().check_script_permissions()
+        updater = RequiredFeature('update-service').request()
+        update_thread = threading.Thread(target=updater.check_for_update)
+        update_thread.start()
+        router = RequiredFeature('router').request()
+        router.render('main_index')
+
+    XBMCApplicationKernel().bootstrap(callback)
+    """
     import sys
     logger = RequiredFeature('logger').request()
     logger.info(sys.argv)
@@ -190,9 +204,10 @@ if __name__ == '__main__':
             game_refresh_required = True
 
         if game_refresh_required:
-            game_controller = RequiredFeature('game-controller').request()
-            game_controller.get_games()
-            del game_controller
+            pass
+            #game_controller = RequiredFeature('game-controller').request()
+            #game_controller.get_games()
+            #del game_controller
 
         plugin.run()
         del plugin
@@ -205,3 +220,4 @@ if __name__ == '__main__':
                 core.string('configure_first')
         )
         del core
+    """

@@ -1,5 +1,8 @@
+import re
 from abc import ABCMeta
 import xml.etree.ElementTree as ETree
+
+from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class AbstractRequestService(object):
@@ -40,3 +43,22 @@ class AbstractRequestService(object):
     def get_server_major_version(server_info):
         server_version = AbstractRequestService.get_server_version(server_info)
         return int(server_version[:1])
+
+    @staticmethod
+    def re_encode_string(xml_string):
+        logger = RequiredFeature('logger').request()
+        regex = re.compile('UTF-\d{1,2}')
+
+        specified_encoding = regex.search(xml_string)
+
+        if specified_encoding is not None:
+            try:
+                logger.info("Trying to re-encode received XML as %s" % specified_encoding.group(0))
+                xml_string = xml_string.decode(specified_encoding.group(0))
+                xml_string = xml_string.encode(specified_encoding.group(0))
+            except UnicodeDecodeError:
+                logger.info("Re-encode failed, trying to decode as UTF-8 and re-encoding as specified.")
+                xml_string = xml_string.decode('UTF-8')
+                xml_string = xml_string.encode(specified_encoding.group(0))
+
+        return xml_string

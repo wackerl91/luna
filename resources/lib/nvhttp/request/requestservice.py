@@ -40,8 +40,6 @@ class RequestService(AbstractRequestService):
         self.key_dir = host_details.key_dir
         self.base_url_https = 'https://%s:%s' % (self.host_ip, self.HTTPS_PORT)
         self.base_url_http = 'http://%s:%s' % (self.host_ip, self.HTTP_PORT)
-        # TODO: Crypto Provider should be created via factory as well
-        # self.crypto_provider.set_base_path(self.key_dir)
         self.uid = self.load_or_generate_uid()
 
     def build_uid_uuid_string(self):
@@ -66,7 +64,7 @@ class RequestService(AbstractRequestService):
         return response.content
 
     def get_computer_details(self):
-        server_info = ETree.ElementTree(ETree.fromstring(self.get_server_info().encode('utf-16'))).getroot()
+        server_info = ETree.ElementTree(ETree.fromstring(self.re_encode_string(self.get_server_info()))).getroot()
 
         host = HostDetails()
         host.name = self.get_xml_string(server_info, 'hostname')
@@ -133,12 +131,13 @@ class RequestService(AbstractRequestService):
         if response.status_code in [401, 404]:
             return []
         else:
+            self.logger.info(response.content)
             app_list = self.get_app_list_from_string(response.content)
 
         return app_list
 
     def get_app_list_from_string(self, xml_string):
-        applist_root = ETree.ElementTree(ETree.fromstring(xml_string.encode('utf-16'))).getroot()
+        applist_root = ETree.ElementTree(ETree.fromstring(self.re_encode_string(xml_string))).getroot()
         applist = []
 
         for app in applist_root.findall('App'):
@@ -146,7 +145,7 @@ class RequestService(AbstractRequestService):
             if app.find('AppInstallPath') is not None:
                 nvapp.install_path = app.find('AppInstallPath').text
             if app.find('AppTitle') is not None:
-                nvapp.title = app.find('AppTitle').text
+                nvapp.title = app.find('AppTitle').text.encode('UTF-8')
             if app.find('Distributor') is not None:
                 nvapp.distributor = app.find('Distributor').text
             if app.find('ID') is not None:

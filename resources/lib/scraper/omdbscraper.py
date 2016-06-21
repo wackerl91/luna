@@ -70,6 +70,8 @@ class OmdbScraper(AbstractScraper):
     def _get_json_data(self, path, game):
         file_path = os.path.join(path, game+'_omdb.json')
         if not os.path.exists(file_path):
+            if not os.path.exists(os.path.dirname(file_path)):
+                os.makedirs(os.path.dirname(file_path))
             json_response = json.load(urllib2.urlopen(self.api_url % game))
             with open(file_path, 'w') as response_file:
                 json.dump(json_response, response_file)

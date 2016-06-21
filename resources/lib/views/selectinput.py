@@ -319,3 +319,11 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         print self.input_storage.raw_dict()
         print 'Save called, closing window ... '
         self.close()
+
+    def setAnimation(self, control):
+        control.setAnimations(
+            [
+                ('WindowOpen', 'effect=fade start=0 end=100 time=300',),
+                ('WindowClose', 'effect=fade start=100 end=0 time=300',)
+            ]
+        )

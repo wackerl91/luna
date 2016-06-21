@@ -44,6 +44,8 @@ class Main(xbmcgui.WindowXML):
             item.setLabel(host.name)
             item.setProperty('state', str(host.state))
             item.setProperty('uuid', host.uuid)
+            item.setThumbnailImage(
+                os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/host.png'))
 
             items.append(item)
             self.host_index_key_map[host.uuid] = i
@@ -52,16 +54,24 @@ class Main(xbmcgui.WindowXML):
         self.list.addItems(items)
 
         self.settings_item = xbmcgui.ListItem('Settings')
-        self.settings_item.setIconImage(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/cog.png'))
+        self.logger.info(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/cog.png'))
+        self.settings_item.setThumbnailImage(
+            os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/cog.png'))
 
         self.controller_config_item = xbmcgui.ListItem('Controller Configuration')
-        self.controller_config_item.setIconImage(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/controller.png'))
+        self.controller_config_item.setThumbnailImage(
+            os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/controller.png'))
 
         self.audio_config_item = xbmcgui.ListItem('Audio Configuration')
+        self.audio_config_item.setThumbnailImage(
+            os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/audio.png'))
 
         self.add_host_item = xbmcgui.ListItem('Add Host')
+        self.add_host_item.setThumbnailImage(
+            os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/add.png'))
 
-        self.options_list.addItems([self.settings_item, self.controller_config_item, self.audio_config_item, self.add_host_item, ])
+        self.options_list.addItems(
+            [self.settings_item, self.controller_config_item, self.audio_config_item, self.add_host_item, ])
 
     def update(self):
         self.hosts = self.host_manager.get_hosts()

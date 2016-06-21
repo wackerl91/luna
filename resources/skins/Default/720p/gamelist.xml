@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
+    <animation effect="fade" time="500" start="0" end="100">WindowOpen</animation>
+    <animation effect="fade" time="500" start="100" end="0">WindowClos</animation>
     <controls>
         <control type="image" id="2">
             <description>background image</description>
@@ -7,6 +9,7 @@
             <posy>0</posy>
             <width>1280</width>
             <height>720</height>
+            <fadetime>200</fadetime>
             <texture colordiffuse="50D3D3D3"></texture>
         </control>
         <control type="image" id="1">
@@ -15,6 +18,7 @@
             <width>330</width>
             <height>330</height>
             <aspectratio>keep</aspectratio>
+            <fadetime>200</fadetime>
             <texture></texture>
         </control>
         <control type="scrollbar" id="61">
@@ -25,9 +29,9 @@
             <onleft>50</onleft>
             <showonepage>false</showonepage>
             <orientation>vertical</orientation>
-            <texturesliderbackground colordiffuse="22ffffff" border="3">common/ScrollbarVertical.png</texturesliderbackground>
-            <texturesliderbar colordiffuse="ColorNF" border="3">common/ScrollbarVertical.png</texturesliderbar>
-            <texturesliderbarfocus colordiffuse="ColorFO" border="3">common/ScrollbarVertical.png</texturesliderbarfocus>
+            <texturesliderbackground colordiffuse="22ffffff" border="3">common/scrollbar_v.png</texturesliderbackground>
+            <texturesliderbar colordiffuse="ColorNF" border="3">common/scrollbar_v.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="ColorFO" border="3">common/scrollbar_v.png</texturesliderbarfocus>
             <textureslidernib>-</textureslidernib>
             <textureslidernibfocus>-</textureslidernibfocus>
         </control>
@@ -57,19 +61,6 @@
                     <align>left</align>
                     <info>ListItem.Label</info>
                 </control>
-<!--                <control type="label">
-                    <left>30</left>
-                    <top>30</top>
-                    <width>750</width>
-                    <height>22</height>
-                    <font>font13</font>
-                    &lt;!&ndash;<aligny>center</aligny>&ndash;&gt;
-                    <textcolor>FF808080</textcolor>
-                    <selectedcolor>green</selectedcolor>
-                    <textcolor>grey</textcolor>
-                    <align>left</align>
-                    <info>ListItem.Genre</info>
-                </control>-->
             </itemlayout>
             <focusedlayout width="850" height="55">
                 <control type="label">
@@ -90,7 +81,6 @@
                     <width>750</width>
                     <height>22</height>
                     <font>font13</font>
-                    <!--<aligny>center</aligny>-->
                     <selectedcolor>FFE0B074</selectedcolor>
                     <textcolor>grey</textcolor>
                     <align>left</align>

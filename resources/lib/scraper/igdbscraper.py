@@ -102,6 +102,8 @@ class IgdbScraper(AbstractScraper):
     def _get_json_data(self, url_opener, path, game, best_match_id):
         file_path = os.path.join(path, game+'_igdb.json')
         if not os.path.exists(file_path) and best_match_id is not None:
+            if not os.path.exists(os.path.dirname(file_path)):
+                os.makedirs(os.path.dirname(file_path))
             response = url_opener.open(self.api_url % best_match_id)
             if response.getcode() in [200, 304]:
                 json_response = json.load(response)

@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-    <!--<coordinates>
-        <origin x="0" y="0"/>
-    </coordinates>-->
+    <animation effect="fade" time="300" start="0" end="100">WindowOpen</animation>
+    <animation effect="fade" time="300" start="100" end="0">WindowClos</animation>
     <controls>
-        <!--<control type="image" id="72">
-            <width>1280</width>
-            <height>720</height>
-            <texture colordiffuse="CC000000">common/white.png</texture>
-        </control>-->
         <control type="list" id="70">
             <centerleft>50%</centerleft>
-            <!--<centertop>50%</centertop>-->
-            <!--<left>490</left>-->
             <width>440</width>
             <height>auto</height>
             <onup>noop</onup>
@@ -26,11 +18,8 @@
                     <width>250</width>
                     <height>55</height>
                     <texture colordiffuse="CC000000">common/white.png</texture>
-                    <!--<texture colordiffuse="50696969">common/white.png</texture>-->
                 </control>
                 <control type="label">
-                    <!--<left>700</left>-->
-                    <!--<top>200</top>-->
                     <centerleft>50%</centerleft>
                     <top>350</top>
                     <width>440</width>
@@ -50,7 +39,6 @@
                     <width>250</width>
                     <height>55</height>
                     <texture colordiffuse="CC000000">common/white.png</texture>
-                    <!--<texture colordiffuse="50696969">common/white.png</texture>-->
                 </control>
                 <control type="label">
                     <centerleft>50%</centerleft>
@@ -66,12 +54,5 @@
                 </control>
             </focusedlayout>
         </control>
-        <!--<control type="image" id="71">
-            <centerleft>50%</centerleft>
-            <centertop>50%</centertop>
-            <width>250</width>
-            <height>300</height>
-            <texture colordiffuse="50696969">common/white.png</texture>
-        </control>-->
     </controls>
 </window>

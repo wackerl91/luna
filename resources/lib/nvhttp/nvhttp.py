@@ -1,10 +1,12 @@
 import os
 import random
+import re
 import uuid
 import xml.etree.ElementTree as ET
 
 import requests
 
+from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.nvapp import NvApp
 
@@ -70,7 +72,7 @@ class NvHTTP(object):
         return response.content
 
     def get_computer_details(self):
-        server_info = ET.ElementTree(ET.fromstring(self.get_server_info())).getroot()
+        server_info = ET.ElementTree(ET.fromstring(self.re_encode_string(self.get_server_info()))).getroot()
 
         host = HostDetails()
         host.name = self.get_xml_string(server_info, 'hostname')
@@ -136,7 +138,8 @@ class NvHTTP(object):
         return None
 
     def get_app_list(self):
-        response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), False, False)
+        response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), False,
+                                             False)
         if response.status_code in [401, 404]:
             return []
         else:
@@ -145,7 +148,7 @@ class NvHTTP(object):
         return applist
 
     def get_app_list_from_string(self, xml_string):
-        applist_root = ET.ElementTree(ET.fromstring(xml_string.encode('utf-16'))).getroot()
+        applist_root = ET.ElementTree(ET.fromstring(self.re_encode_string(xml_string))).getroot()
         applist = []
 
         for app in applist_root.findall('App'):
@@ -153,7 +156,7 @@ class NvHTTP(object):
             if app.find('AppInstallPath') is not None:
                 nvapp.install_path = app.find('AppInstallPath').text
             if app.find('AppTitle') is not None:
-                nvapp.title = app.find('AppTitle').text
+                nvapp.title = app.find('AppTitle').text.encode('UTF-8')
             if app.find('Distributor') is not None:
                 nvapp.distributor = app.find('Distributor').text
             if app.find('ID') is not None:
@@ -203,3 +206,22 @@ class NvHTTP(object):
                 uid = f.read()
 
         return str(uid)
+
+    def re_encode_string(self, xml_string):
+        logger = RequiredFeature('logger').request()
+        regex = re.compile('UTF-\d{1,2}')
+
+        specified_encoding = regex.search(xml_string)
+
+        if specified_encoding is not None:
+            try:
+                logger.info("Trying to re-encode received XML as %s" % specified_encoding.group(0))
+                xml_string = xml_string.decode(specified_encoding.group(0))
+                xml_string = xml_string.encode(specified_encoding.group(0))
+            except UnicodeDecodeError:
+                logger.info(
+                    "Re-encode failed, trying to decode as UTF-8 and re-encoding as %s." % specified_encoding.group(0))
+                xml_string = xml_string.decode('UTF-8')
+                xml_string = xml_string.encode(specified_encoding.group(0))
+
+        return xml_string

@@ -23,3 +23,8 @@ routing:
         class_name: ControllerConfigurationController
         service: '@controller-config-controller'
         prefix: 'controller'
+
+    luna.routes.settings:
+        class_name: SettingsController
+        service: '@settings-controller'
+        prefix: 'settings'

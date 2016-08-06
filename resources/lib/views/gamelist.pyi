@@ -5,6 +5,7 @@
 from typing import List
 
 import xbmcgui
+from resources.lib.controller import gamelistcontroller
 from resources.lib.core.logger import Logger
 from resources.lib.manager.gamemanager import GameManager
 from resources.lib.model.game import Game
@@ -24,7 +25,7 @@ class GameList(xbmcgui.WindowXML):
     list = ... # type: ControlList
     cover = ... # type: ControlImage
     fanart = ... # type: ControlImage
-    def __init__(self:GameListType, host:HostDetails): ...
+    def __init__(self:GameListType, controller: gamelistcontroller, host:HostDetails): ...
     def onInit(self): ...
     def build_list(self): ...
     def onAction(self, action:Action): ...

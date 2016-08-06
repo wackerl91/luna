@@ -60,7 +60,13 @@ class XBMCApplicationKernel(object):
         preload_thread.start()
 
     def _preload_controllers(self):
+        from resources.lib.di.requiredfeature import RequiredFeature
+        main_route = self.router.main_route
+        controller = RequiredFeature(main_route.service[1:]).request()
+        self.router.register(controller.__class__)
+
         for key, route in self.router.routing.iteritems():
-            from resources.lib.di.requiredfeature import RequiredFeature
-            RequiredFeature(route.service[1:]).request()
+            if not route.is_main_route:
+                controller = RequiredFeature(route.service[1:]).request()
+                self.router.register(controller.__class__)
         xbmc.log("[script.luna.kernel]: Pre-Loading Controllers ... done")

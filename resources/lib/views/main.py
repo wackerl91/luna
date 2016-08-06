@@ -100,7 +100,8 @@ class Main(xbmcgui.WindowXML):
             if action == xbmcgui.ACTION_SELECT_ITEM:
                 # TODO: Assign actions as item properties and call them
                 if self.options_list.getSelectedPosition() == 0:
-                    xbmcaddon.Addon().openSettings()
+                    self.controller.render('settings_index')
+                    # xbmcaddon.Addon().openSettings()
                 if self.options_list.getSelectedPosition() == 1:
                     self.controller.render('controller_select')
                 if self.options_list.getSelectedPosition() == 2:

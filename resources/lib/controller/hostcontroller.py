@@ -3,14 +3,13 @@ import importlib
 import xbmc
 import xbmcgui
 
-from resources.lib.controller.basecontroller import BaseController, register, route
+from resources.lib.controller.basecontroller import BaseController, route
 from resources.lib.nvhttp.request.staticrequestservice import StaticRequestService
 from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
 from resources.lib.views.hostlist import HostList
 from xbmcgui import Dialog, INPUT_IPADDRESS
 
 
-@register
 class HostController(BaseController):
     def __init__(self, logger, core, connection_manager, host_manager, host_context_service):
         self.logger = logger
@@ -133,4 +132,4 @@ class HostController(BaseController):
             class_ = getattr(module, class_name)
             self.discovery_agent = class_()
         except ImportError:
-            self.logger.info("Couldn't load discover agent")
+            self.logger.info("Couldn't load discovery agent")

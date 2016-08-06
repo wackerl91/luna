@@ -10,6 +10,7 @@ class Route(yaml.YAMLObject):
         self.class_name = class_name
         self.service = service
         self.prefix = prefix
+        self.is_main_route = (prefix == 'main')
 
     @classmethod
     def from_dict(cls, service_name=None, class_name=None, service=None, prefix=None, **kwargs):

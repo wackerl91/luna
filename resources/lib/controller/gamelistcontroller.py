@@ -1,11 +1,10 @@
 import threading
 
-from resources.lib.controller.basecontroller import BaseController, route, register
+from resources.lib.controller.basecontroller import BaseController, route
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.views.gamelist import GameList
 
 
-@register
 class GameListController(BaseController):
     def __init__(self):
         self.game_helper = RequiredFeature('game-helper').request()

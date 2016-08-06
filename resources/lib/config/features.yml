@@ -245,3 +245,8 @@ services:
     controller-config-controller:
         module: resources.lib.controller.controllerconfigurationcontroller
         class_name: ControllerConfigurationController
+
+    settings-controller:
+        module: resources.lib.controller.settingscontroller
+        class_name: SettingsController
+

@@ -1,8 +1,7 @@
 import xbmcgui
-from resources.lib.controller.basecontroller import BaseController, route, register
+from resources.lib.controller.basecontroller import BaseController, route
 
 
-@register
 class AudioController(BaseController):
     def __init__(self, audio_manager, config_helper, plugin):
         self.audio_manager = audio_manager

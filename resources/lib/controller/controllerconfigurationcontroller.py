@@ -1,8 +1,7 @@
-from resources.lib.controller.basecontroller import BaseController, register, route
+from resources.lib.controller.basecontroller import BaseController, route
 from resources.lib.views.selectinput import SelectInput
 
 
-@register
 class ControllerConfigurationController(BaseController):
     def __init__(self):
         super(ControllerConfigurationController, self).__init__()

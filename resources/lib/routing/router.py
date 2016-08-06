@@ -16,6 +16,7 @@ class Router(object):
         self.routes = {}
         self._routes_cache = {}
         self.routing = {}
+        self.main_route = None
 
     def _parse_config(self):
         if 'xbmcaddon' in sys.modules:
@@ -37,24 +38,29 @@ class Router(object):
         xbmc.log("[script.luna.router]: Registering route for class: %s" % route.class_name)
         self.routes[route.class_name] = {}
         self.routing[route.class_name] = route
+        if route.is_main_route:
+            self.main_route = route
 
     def register(self, cls):
         route = self.routing[cls.__name__]
         routes_cache = {}
         for key, value in self._routes_cache.iteritems():
+            xbmc.log('%s_%s -> %s' % (route.prefix, key, value))
             routes_cache["%s_%s" % (route.prefix, key)] = value
         self.routes.update(routes_cache)
         self._routes_cache = {}
         return cls
-
+    """
     def route(self, name):
         def decorator(func):
             xbmc.log("[script.luna.router]: Adding route with name %s" % name)
             self._routes_cache[name] = func
             return func
         return decorator
+    """
 
     def render(self, name, instance=None, args=None):
+        xbmc.log("Trying to render: %s" % name)
         try:
             route = None
             prefix = name.split('_')[0]

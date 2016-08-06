@@ -3,14 +3,13 @@ import threading
 from requests import ConnectionError
 
 import xbmc
-from resources.lib.controller.basecontroller import BaseController, route, register
+from resources.lib.controller.basecontroller import BaseController, route
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.nvhttp.request.staticrequestservice import StaticRequestService
 
 from resources.lib.views.main import Main
 
 
-@register
 class MainController(BaseController):
     def __init__(self):
         super(MainController, self).__init__()
@@ -45,8 +44,9 @@ class MainController(BaseController):
             self.window.update()
         del host_controller
 
-    def open_settings(self):
-        self.addon.openSettings()
+    # def open_settings(self):
+        # self.render('settings_index')
+        # self.addon.openSettings()
 
     def update_host_status(self):
         update_host_thread = threading.Thread(target=self._update_host_status)

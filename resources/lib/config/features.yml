@@ -212,6 +212,13 @@ services:
         module: resources.lib.routing.router
         class_name: Router
 
+    settings-parser:
+        module: resources.lib.util.settingsparser
+        class_name: SettingsParser
+        arguments:
+          - '@addon'
+          - '@logger'
+
     #
     # Controllers
     #

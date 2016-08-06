@@ -13,6 +13,8 @@ class SettingsController(BaseController):
 
     @route(name='index')
     def index_action(self):
+        settings_parser = RequiredFeature('settings-parser').request()
+        settings_parser.get_settings()
         self.logger.info("INDEX ACTION CALLED")
         window = Settings(controller=self)
         window.doModal()

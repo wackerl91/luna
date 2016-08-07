@@ -137,26 +137,30 @@ class RequestService(AbstractRequestService):
         return app_list
 
     def get_app_list_from_string(self, xml_string):
-        applist_root = ETree.ElementTree(ETree.fromstring(self.re_encode_string(xml_string))).getroot()
-        applist = []
+        etree = self.build_etree(xml_string)
+        if etree is not None:
+            applist_root = ETree.ElementTree(etree).getroot()
+            applist = []
 
-        for app in applist_root.findall('App'):
-            nvapp = NvApp()
-            if app.find('AppInstallPath') is not None:
-                nvapp.install_path = app.find('AppInstallPath').text
-            if app.find('AppTitle') is not None:
-                nvapp.title = app.find('AppTitle').text.encode('UTF-8')
-            if app.find('Distributor') is not None:
-                nvapp.distributor = app.find('Distributor').text
-            if app.find('ID') is not None:
-                nvapp.id = app.find('ID').text
-            if app.find('MaxControllersForSingleSession') is not None:
-                nvapp.max_controllers = app.find('MaxControllersForSingleSession').text
-            if app.find('ShortName') is not None:
-                nvapp.short_name = app.find('ShortName').text
-            applist.append(nvapp)
+            for app in applist_root.findall('App'):
+                nvapp = NvApp()
+                if app.find('AppInstallPath') is not None:
+                    nvapp.install_path = app.find('AppInstallPath').text
+                if app.find('AppTitle') is not None:
+                    nvapp.title = app.find('AppTitle').text.encode('UTF-8')
+                if app.find('Distributor') is not None:
+                    nvapp.distributor = app.find('Distributor').text
+                if app.find('ID') is not None:
+                    nvapp.id = app.find('ID').text
+                if app.find('MaxControllersForSingleSession') is not None:
+                    nvapp.max_controllers = app.find('MaxControllersForSingleSession').text
+                if app.find('ShortName') is not None:
+                    nvapp.short_name = app.find('ShortName').text
+                applist.append(nvapp)
 
-        return applist
+            return applist
+        else:
+            raise ValueError("ETree is not set.")
 
     def get_box_art(self, app_id, asset_type=2, asset_idx=0):
         # TODO: What are the other asset types and indices?

@@ -72,18 +72,22 @@ class NvHTTP(object):
         return response.content
 
     def get_computer_details(self):
-        server_info = ET.ElementTree(ET.fromstring(self.re_encode_string(self.get_server_info()))).getroot()
+        etree = self.build_etree(self.get_server_info())
+        if etree is not None:
+            server_info = ET.ElementTree(etree).getroot()
 
-        host = HostDetails()
-        host.name = self.get_xml_string(server_info, 'hostname')
-        host.uuid = self.get_xml_string(server_info, 'uniqueid')
-        host.mac_address = self.get_xml_string(server_info, 'mac')
-        host.local_ip = self.get_xml_string(server_info, 'LocalIP')
-        host.remote_ip = self.get_xml_string(server_info, 'ExternalIP')
-        host.pair_state = int(self.get_xml_string(server_info, 'PairStatus'))
-        host.state = HostDetails.STATE_ONLINE
+            host = HostDetails()
+            host.name = self.get_xml_string(server_info, 'hostname')
+            host.uuid = self.get_xml_string(server_info, 'uniqueid')
+            host.mac_address = self.get_xml_string(server_info, 'mac')
+            host.local_ip = self.get_xml_string(server_info, 'LocalIP')
+            host.remote_ip = self.get_xml_string(server_info, 'ExternalIP')
+            host.pair_state = int(self.get_xml_string(server_info, 'PairStatus'))
+            host.state = HostDetails.STATE_ONLINE
 
-        return host
+            return host
+        else:
+            raise ValueError('ETree is not set.')
 
     def open_http_connection(self, url, enable_read_timeout, content_only=True):
         try:
@@ -148,26 +152,31 @@ class NvHTTP(object):
         return applist
 
     def get_app_list_from_string(self, xml_string):
-        applist_root = ET.ElementTree(ET.fromstring(self.re_encode_string(xml_string))).getroot()
-        applist = []
+        etree = self.build_etree(xml_string)
+        if etree is not None:
+            # ET.fromstring(self.re_encode_string(xml_string))
+            applist_root = ET.ElementTree(etree).getroot()
+            applist = []
 
-        for app in applist_root.findall('App'):
-            nvapp = NvApp()
-            if app.find('AppInstallPath') is not None:
-                nvapp.install_path = app.find('AppInstallPath').text
-            if app.find('AppTitle') is not None:
-                nvapp.title = app.find('AppTitle').text.encode('UTF-8')
-            if app.find('Distributor') is not None:
-                nvapp.distributor = app.find('Distributor').text
-            if app.find('ID') is not None:
-                nvapp.id = app.find('ID').text
-            if app.find('MaxControllersForSingleSession') is not None:
-                nvapp.max_controllers = app.find('MaxControllersForSingleSession').text
-            if app.find('ShortName') is not None:
-                nvapp.short_name = app.find('ShortName').text
-            applist.append(nvapp)
+            for app in applist_root.findall('App'):
+                nvapp = NvApp()
+                if app.find('AppInstallPath') is not None:
+                    nvapp.install_path = app.find('AppInstallPath').text
+                if app.find('AppTitle') is not None:
+                    nvapp.title = app.find('AppTitle').text.encode('UTF-8')
+                if app.find('Distributor') is not None:
+                    nvapp.distributor = app.find('Distributor').text
+                if app.find('ID') is not None:
+                    nvapp.id = app.find('ID').text
+                if app.find('MaxControllersForSingleSession') is not None:
+                    nvapp.max_controllers = app.find('MaxControllersForSingleSession').text
+                if app.find('ShortName') is not None:
+                    nvapp.short_name = app.find('ShortName').text
+                applist.append(nvapp)
 
-        return applist
+            return applist
+        else:
+            raise ValueError('ETree is not set.')
 
     def get_box_art(self, app_id, asset_type=2, asset_idx=0):
         # TODO: What are the other asset types and indices?
@@ -213,15 +222,62 @@ class NvHTTP(object):
 
         specified_encoding = regex.search(xml_string)
 
+        logger.info("Trying to decode as: %s" % 'ASCII')
+        try:
+            xml_string = xml_string.decode(encoding='ascii')
+        except UnicodeDecodeError as e:
+            logger.info("Decoding as %s failed, trying as %s" % ('ASCII', 'UTF-8'))
+            try:
+                xml_string = xml_string.decode(encoding='UTF-8')
+            except UnicodeDecodeError as e:
+                logger.info("Decoding as %s failed, trying as %s" % ('UTF-8', 'UTF-16'))
+                try:
+                    xml_string = xml_string.decode(encoding='UTF-16')
+                except UnicodeDecodeError as e:
+                    logger.error("Decoding as UTF-16 failed, this was the last attempt. Offending string follows ...")
+                    logger.error(xml_string)
+                    raise ValueError("String Decode Failed")
+
         if specified_encoding is not None:
             try:
-                logger.info("Trying to re-encode received XML as %s" % specified_encoding.group(0))
-                xml_string = xml_string.decode(specified_encoding.group(0))
-                xml_string = xml_string.encode(specified_encoding.group(0))
-            except UnicodeDecodeError:
-                logger.info(
-                    "Re-encode failed, trying to decode as UTF-8 and re-encoding as %s." % specified_encoding.group(0))
-                xml_string = xml_string.decode('UTF-8')
-                xml_string = xml_string.encode(specified_encoding.group(0))
+                logger.info("Trying to encode as specified in XML: %s" % specified_encoding.group(0))
+                xml_string = xml_string.encode(encoding=specified_encoding.group(0))
+            except UnicodeEncodeError as e:
+                new_encode_setting = 'UTF-16' if specified_encoding.group(0) == 'UTF-8' else 'UTF-8'
+                logger.info("Encoding as %s failed, trying as %s" % (specified_encoding.group(0), new_encode_setting))
+                try:
+                    xml_string = xml_string.encode(encoding=new_encode_setting)
+                except UnicodeEncodeError as e:
+                    logger.error(
+                        "Encoding as %s failed, this was the last attempt. Offending string follows ..." %
+                        new_encode_setting)
+                    logger.error(xml_string)
+                    raise ValueError("String Encode Failed")
 
-        return xml_string
+            return xml_string
+        else:
+            logger.info("RegExp couldn't find a match in the XML string ...")
+            try:
+                logger.info("Trying to encode as: UTF-8")
+                xml_string = xml_string.encode(encoding='UTF-8')
+            except UnicodeEncodeError as e:
+                logger.info("Encoding as UTF-8 failed, trying as UTF-16")
+                try:
+                    xml_string = xml_string.encode(encoding='UTF-16')
+                except UnicodeEncodeError as e:
+                    logger.error("Encoding as UTF-16 failed, this was the last attempt. Offending string follows ...")
+                    logger.error(xml_string)
+                    raise ValueError("String Encode Failed")
+
+            return xml_string
+
+    def build_etree(self, xml_string):
+        try:
+            etree = ET.fromstring(self.re_encode_string(xml_string))
+        except ET.ParseError as e:
+            logger = RequiredFeature('logger').request()
+            logger.error("Building ETree from XML failed: %s. Offending string follows ..." % e.message)
+            logger.error(xml_string)
+            raise ValueError("Building ETree Failed")
+
+        return etree

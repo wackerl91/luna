@@ -67,6 +67,7 @@ class Router(object):
             for key, _route in self.routing.iteritems():
                 if _route.prefix == prefix:
                     route = _route
+            # TODO: if we need to refactor this, call Dennis
             if route is not None:
                 instance = RequiredFeature(route.service[1:]).request()
                 if args:

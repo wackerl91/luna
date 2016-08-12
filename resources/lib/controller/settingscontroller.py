@@ -9,13 +9,11 @@ class SettingsController(BaseController):
         self.addon = RequiredFeature('addon').request()
         self.logger = RequiredFeature('logger').request()
         self.window = None
-        self.logger.info("Settings Controller INIT")
 
     @route(name='index')
     def index_action(self):
         settings_parser = RequiredFeature('settings-parser').request()
         settings_parser.get_settings()
-        self.logger.info("INDEX ACTION CALLED")
         window = Settings(controller=self)
         window.doModal()
         del window

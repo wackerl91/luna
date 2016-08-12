@@ -43,3 +43,8 @@ class Setting(object):
             self.subsetting = kwargs['subsetting']
         else:
             self.subsetting = None
+
+        if 'current_value' in kwargs.keys():
+            self.current_value = kwargs['current_value']
+        else:
+            self.current_value = self.default

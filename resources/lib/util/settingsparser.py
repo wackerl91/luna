@@ -32,10 +32,10 @@ class SettingsParser(object):
         if self._get_settings_hash() != self.settings_hash:
             etree = ET.ElementTree(file=self.settings_path)
             self.settings_tree = etree.getroot()
-            self.logger.info(self.settings_tree)
 
     def get_settings(self):
         if self.settings_hash == self._get_settings_hash() and len(self.settings_dict) > 0:
+            self.update_values()
             return self.settings_dict
         else:
             self._reload_settings()
@@ -59,8 +59,10 @@ class SettingsParser(object):
                         for item in setting.items():
                             setting_args[item[0]] = item[1]
 
-                        _setting = Setting(setting_id, setting_label, setting_prio, kwargs=setting_args)
-                        self.logger.info(setting_args)
+                        current_value = self.addon.getSetting(setting_id)
+                        setting_args['current_value'] = current_value
+
+                        _setting = Setting(setting_id, setting_label, setting_prio, None, **setting_args)
 
                         setting_prio += 1
                         cat.settings[setting_id] = _setting
@@ -70,3 +72,8 @@ class SettingsParser(object):
                 self.logger.info("Category added: %s" % cat_label)
 
             return self.settings_dict
+
+    def update_values(self):
+        for key, category in self.settings_dict.iteritems():
+            for setting_key, setting in category.settings.iteritems():
+                setting.current_value = self.addon.getSetting(setting.setting_id)

@@ -40,7 +40,7 @@
             <height>660</height>
             <itemgap>0</itemgap>
             <onleft>noop</onleft>
-            <onright>303</onright>
+            <!--<onright>303</onright>-->
             <onup>noop</onup>
             <ondown>9001</ondown>
             <orientation>vertical</orientation>
@@ -75,167 +75,6 @@
             </focusedlayout>
         </control>
 
-
-        <!-- Right grouplist -->
-        <!--<control type="panel" id="303">
-            <left>400</left>
-            <top>152</top>
-            <width>1200</width>
-            <height>660</height>
-            <itemgap>0</itemgap>
-            <onleft>302</onleft>
-            <onright>400</onright>
-            <onup>noop</onup>
-            <ondown>9001</ondown>
-            <orientation>vertical</orientation>
-            <scrolltime tween="sine" easing="out">240</scrolltime>
-            <itemlayout width="1200" height="44">
-                <control type="label">
-                    <left>0</left>
-                    <top>0</top>
-                    <width>1200</width>
-                    <height>44</height>
-                    <font>Small</font>
-                    <aligny>top</aligny>
-                    <textcolor>FF808080</textcolor>
-                    <selectedcolor>green</selectedcolor>
-                    <align>left</align>
-                    <onright>$INFO[ListItem.Property(buttonDownId)]</onright>
-                    <info>ListItem.Label</info>
-                </control>
-                <control type="image" id="$INFO[ListItem.Property(buttonDownId)]">
-                    <description>Value Button</description>
-                    <left>300</left>
-                    <top>0</top>
-                    <width>23</width>
-                    <height>44</height>
-                    <font>font13</font>
-                    <aligny>center</aligny>
-                    <texture>common/ArrowDownNF.png</texture>
-                    <label>-</label>
-                    <onleft>303</onleft>
-                    <onright>$INFO[ListItem.Property(buttonUpId)]</onright>
-                    &lt;!&ndash;<visible>StringCompare(ListItem.Property(type), labelenum)</visible>&ndash;&gt;
-                </control>
-                <control type="image" id="$INFO[ListItem.Property(buttonUpId)]">
-                    <description>Value Button</description>
-                    <left>325</left>
-                    <top>0</top>
-                    <width>23</width>
-                    <height>44</height>
-                    <font>font13</font>
-                    <aligny>center</aligny>
-                    <texture>common/ArrowUpNF.png</texture>
-                    <label>-</label>
-                    <onleft>$INFO[ListItem.Property(buttonDownId)]</onleft>
-                    &lt;!&ndash;<visible>StringCompare(ListItem.Property(type), labelenum)</visible>&ndash;&gt;
-                </control>
-                &lt;!&ndash;<control type="label" id="1003">
-                    <description>Rule Field label</description>
-                    <width>300</width>
-                    <height>40</height>
-                    <font>font13</font>
-                    <label>Options go here</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <textcolor>white</textcolor>
-                    <shadowcolor>black</shadowcolor>
-                </control>&ndash;&gt;
-            </itemlayout>
-            <focusedlayout width="1200" height="44">
-                <control type="label">
-                    <left>0</left>
-                    <top>0</top>
-                    <width>1200</width>
-                    <height>44</height>
-                    <font>Small</font>
-                    <aligny>top</aligny>
-                    <textcolor>FFE0B074</textcolor>
-                    <selectedcolor>green</selectedcolor>
-                    <align>left</align>
-                    <onright>$INFO[ListItem.Property(buttonDownId)]</onright>
-                    <info>ListItem.Label</info>
-                </control>
-                <control type="image" id="$INFO[ListItem.Property(buttonDownId)]">
-                    <description>Value Button</description>
-                    <left>300</left>
-                    <top>0</top>
-                    <width>23</width>
-                    <height>44</height>
-                    <font>font13</font>
-                    <aligny>center</aligny>
-                    <texture>common/ArrowDownNF.png</texture>
-                    <label>-</label>
-                    <onleft>303</onleft>
-                    <onright>$INFO[ListItem.Property(buttonUpId)]</onright>
-                    &lt;!&ndash;<visible>StringCompare(ListItem.Property(type), labelenum)</visible>&ndash;&gt;
-                </control>
-                <control type="image" id="$INFO[ListItem.Property(buttonUpId)]">
-                    <description>Value Button</description>
-                    <left>325</left>
-                    <top>0</top>
-                    <width>23</width>
-                    <height>44</height>
-                    <font>font13</font>
-                    <aligny>center</aligny>
-                    <texture>common/ArrowUpNF.png</texture>
-                    <label>-</label>
-                    <onleft>$INFO[ListItem.Property(buttonDownId)]</onleft>
-                    &lt;!&ndash;<visible>StringCompare(ListItem.Property(type), labelenum)</visible>&ndash;&gt;
-                </control>
-            </focusedlayout>
-        </control>-->
-
-        <!-- Default button -->
-        <!--<control type="button" id="13">
-            <width>360</width>
-            <height>66</height>
-        </control>
-
-        &lt;!&ndash; Default button &ndash;&gt;
-        <control type="button" id="3">
-            <width>1200</width>
-            <height>66</height>
-        </control>
-
-        &lt;!&ndash; Default radiobutton &ndash;&gt;
-        <control type="radiobutton" id="4">
-            <width>1200</width>
-            <height>66</height>
-            <textwidth>1120</textwidth>
-        </control>
-
-        &lt;!&ndash; Default spincontrolex &ndash;&gt;
-        <control type="spincontrolex" id="305">
-            <top>500</top>
-            <left>500</left>
-            <width>1200</width>
-            <height>66</height>
-            <textwidth>1120</textwidth>
-        </control>
-
-        &lt;!&ndash; Default label &ndash;&gt;
-        <control type="label" id="7">
-            <width>1200</width>
-            <height>66</height>
-            <label>-</label>
-        </control>
-
-        &lt;!&ndash; Default seperator &ndash;&gt;
-        &lt;!&ndash;
-            <control type="image" id="6">
-                <width>1200</width>
-                <height>20</height>
-                <texture border="1,12,1,1" colordiffuse="ColorHeading">common/ScrollBackgroundHorizontal.png</texture>
-            </control>
-        &ndash;&gt;
-
-        &lt;!&ndash; Default slider &ndash;&gt;
-        <control type="sliderex" id="8">
-            <width>1200</width>
-            <height>66</height>
-        </control>-->
-
         <!-- Button grouplist -->
         <control type="grouplist" id="9001">
             <left>400</left>
@@ -250,19 +89,16 @@
             <orientation>horizontal</orientation>
 
             <!-- OK Button -->
-            <control type="button" id="10">
+            <control type="button" id="303">
                 <width>266</width>
                 <label>186</label>
             </control>
 
             <!-- Cancel Button -->
-            <control type="button" id="11">
+            <control type="button" id="304">
                 <width>266</width>
                 <label>222</label>
             </control>
-
         </control>
-
     </controls>
-
 </window>

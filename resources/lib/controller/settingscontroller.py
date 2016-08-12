@@ -17,3 +17,11 @@ class SettingsController(BaseController):
         window = Settings(controller=self)
         window.doModal()
         del window
+
+    def save(self, settings):
+        for category in settings:
+            for setting_id, setting in category.settings:
+                new_value = setting.current_value
+                if new_value != setting.default and new_value is not None:
+                    self.addon.setSetting(setting_id, setting.current_value)
+        return

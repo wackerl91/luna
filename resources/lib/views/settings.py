@@ -17,6 +17,8 @@ class Settings(xbmcgui.WindowXMLDialog):
         super(Settings, self).__init__('settings.xml', xbmcaddon.Addon().getAddonInfo('path'))
         self.controller = controller
         self.settings_parser = RequiredFeature('settings-parser').request()
+        self.ok_btn = None
+        self.cancel_btn = None
         self.settings = []
         self.category_list = None
         self.settings_workarounds = {}
@@ -31,6 +33,8 @@ class Settings(xbmcgui.WindowXMLDialog):
         self.settings = [setting for key, setting in self.settings_parser.get_settings().iteritems()]
         self.settings.sort(key=lambda x: x.priority, reverse=False)
         self.category_list = self.getControl(302)
+        self.ok_btn = self.getControl(303)
+        self.cancel_btn = self.getControl(304)
         self.build_list()
         self.setFocusId(302)
 
@@ -361,7 +365,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                     label='[COLOR FFE0B074]' + current_control.getLabel() + '[/COLOR]',
                     font='Small'
                 )
-        # TODO: This deselects when using sliders
+
         elif action == xbmcgui.ACTION_MOVE_LEFT:
             for key, wa_btn in self.settings_workarounds[selected_category_label].iteritems():
                 self.logger.info("Changing Color for Label @ %s" % wa_btn)
@@ -381,3 +385,17 @@ class Settings(xbmcgui.WindowXMLDialog):
         if action == xbmcgui.ACTION_SELECT_ITEM and selected_category_label in self.needs_state_update:
             for control in self.needs_state_update[selected_category_label]:
                 control.update_state()
+
+        if action == xbmcgui.ACTION_SELECT_ITEM and focus == self.ok_btn:
+            for setting_id, setting_ctrl_group in self.setting_id_group.iteritems():
+                for category in self.settings:
+                    if setting_id in category.settings:
+                        _setting = category.settings[setting_id]
+                        new_setting_value = setting_ctrl_group.get_value()
+                        _setting.current_value = new_setting_value
+
+            self.controller.save(self.settings)
+            self.close()
+
+        if action == xbmcgui.ACTION_SELECT_ITEM and focus == self.cancel_btn:
+            self.close()

@@ -17,16 +17,19 @@ class Settings(xbmcgui.WindowXMLDialog):
         super(Settings, self).__init__('settings.xml', xbmcaddon.Addon().getAddonInfo('path'))
         self.controller = controller
         self.settings_parser = RequiredFeature('settings-parser').request()
+        # View Controls
         self.ok_btn = None
         self.cancel_btn = None
-        self.settings = []
         self.category_list = None
+        # Settings List
+        self.settings = []
+        # Internal Control Tracking
+        self.selected_cat_cache = ''
         self.settings_workarounds = {}
-        self.button_dict = {}
         self.forward_controls = []
         self.needs_state_update = {}
         self.setting_id_group = {}
-        self.selected_cat_cache = ''
+
         self.logger = RequiredFeature('logger').request()
 
     def onInit(self):
@@ -58,7 +61,7 @@ class Settings(xbmcgui.WindowXMLDialog):
             ctrl_wrapper.setEnabled(True)
         self.selected_cat_cache = self.settings[0].cat_label
 
-        first_ctrl = self.button_dict[self.settings[0].cat_label][0]
+        first_ctrl = self.settings_workarounds[self.settings[0].cat_label][self.settings[0].cat_label+152]
         self.category_list.controlRight(first_ctrl.get_main_control())
 
     def build_settings_list(self, category, cat_settings):
@@ -70,7 +73,6 @@ class Settings(xbmcgui.WindowXMLDialog):
                 settings.append(setting)
         settings.sort(key=lambda x: x.priority, reverse=False)
 
-        self.button_dict[category.cat_label] = []
         self.settings_workarounds[category.cat_label] = {}
 
         item_offset = 0
@@ -110,7 +112,6 @@ class Settings(xbmcgui.WindowXMLDialog):
                 pass
             self.settings_workarounds[category.cat_label][pos] = list_item
             self.setting_id_group[setting.setting_id] = list_item
-            self.button_dict[category.cat_label].append(ctrl_wrapper)
 
             item_offset += 1
 

@@ -24,11 +24,13 @@ class Settings(xbmcgui.WindowXMLDialog):
         # Settings List
         self.settings = []
         # Internal Control Tracking
-        self.selected_cat_cache = ''
-        self.settings_workarounds = {}
-        self.forward_controls = []
-        self.needs_state_update = {}
-        self.setting_id_group = {}
+        self.selected_cat_cache = ''  # Currently selected category
+        self.setting_groups = {}  # Category -> SettingGroup Map
+        self.forward_controls = []  # Controls which support / need action forwarding
+        self.needs_state_update = {}  # Controls which need state updates (conditions attached)
+        # TODO: This can be replaced by referencing the setting on settinggroup
+        self.setting_id_group = {}  # Setting ID -> SettingGroup Map (used for getting current values and saving)
+        self.btn_id_group = {}  # Button ID -> SettingGroup Map (used for determining focus group)
 
         self.logger = RequiredFeature('logger').request()
 
@@ -56,12 +58,13 @@ class Settings(xbmcgui.WindowXMLDialog):
         for category in self.settings:
             self.build_settings_list(category, category.settings)
 
-        for pos, ctrl_wrapper in self.settings_workarounds[self.settings[0].cat_label].iteritems():
+        for pos, ctrl_wrapper in self.setting_groups[self.settings[0].cat_label].iteritems():
             ctrl_wrapper.setVisible(True)
             ctrl_wrapper.setEnabled(True)
         self.selected_cat_cache = self.settings[0].cat_label
 
-        first_ctrl = self.settings_workarounds[self.settings[0].cat_label][self.settings[0].cat_label+152]
+        # TODO: TypeError: coercing to Unicode: need string or buffer, int found
+        first_ctrl = self.setting_groups[self.settings[0].cat_label][self.settings[0].cat_label+152]
         self.category_list.controlRight(first_ctrl.get_main_control())
 
     def build_settings_list(self, category, cat_settings):
@@ -73,7 +76,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                 settings.append(setting)
         settings.sort(key=lambda x: x.priority, reverse=False)
 
-        self.settings_workarounds[category.cat_label] = {}
+        self.setting_groups[category.cat_label] = {}
 
         item_offset = 0
         for setting in settings:
@@ -103,14 +106,17 @@ class Settings(xbmcgui.WindowXMLDialog):
 
             ctrl_wrapper = SettingGroup(self, label=label, control=button)
 
+            for single_control in ctrl_wrapper.get_all_controls():
+                self.btn_id_group[single_control.getId()] = ctrl_wrapper
+
             pos = "%s:%s" % (category.cat_label, button.getY())
             previous_pos = "%s:%s" % (category.cat_label, button.getY() - 44)
             list_item = LinkedListItem(ctrl_wrapper)
             try:
-                list_item.set_previous(self.settings_workarounds[category.cat_label][previous_pos])
+                list_item.set_previous(self.setting_groups[category.cat_label][previous_pos])
             except KeyError:
                 pass
-            self.settings_workarounds[category.cat_label][pos] = list_item
+            self.setting_groups[category.cat_label][pos] = list_item
             self.setting_id_group[setting.setting_id] = list_item
 
             item_offset += 1
@@ -152,7 +158,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                     current_control.append_visible_condition(target_control, target_value)
                     self.needs_state_update[category.cat_label].append(current_control)
 
-        for key, control in self.settings_workarounds[category.cat_label].iteritems():
+        for key, control in self.setting_groups[category.cat_label].iteritems():
             current_control = control
 
             previous_ctrl = current_control
@@ -175,11 +181,11 @@ class Settings(xbmcgui.WindowXMLDialog):
 
     def switch_settings_to_category(self, category, previous_category):
         if previous_category != '':
-            for pos, ctrl_wrapper in self.settings_workarounds[previous_category].iteritems():
+            for pos, ctrl_wrapper in self.setting_groups[previous_category].iteritems():
                 ctrl_wrapper.setVisible(False)
                 ctrl_wrapper.setEnabled(False)
         first = None
-        for pos, ctrl_wrapper in self.settings_workarounds[category].iteritems():
+        for pos, ctrl_wrapper in self.setting_groups[category].iteritems():
             if not first:
                 first = ctrl_wrapper
             if ctrl_wrapper.getY() < first.getY():
@@ -213,7 +219,7 @@ class Settings(xbmcgui.WindowXMLDialog):
             nofocus_texture_off = focus_texture_off
 
             button = xbmcgui.ControlRadioButton(
-                700,
+                1157,
                 152 + (44 * item_offset),
                 200,
                 44,
@@ -223,7 +229,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                 noFocusOnTexture=nofocus_texture_on,
                 noFocusOffTexture=nofocus_texture_off
             )
-            button.setRadioDimension(700, 152 + (44 * item_offset), 30, 30)
+            button.setRadioDimension(1157, 152 + (44 * item_offset), 23, 23)
             self.addControl(button)
 
             if value == 'true':
@@ -241,20 +247,17 @@ class Settings(xbmcgui.WindowXMLDialog):
 
             btn_up = xbmcgui.ControlButton(
                 1157,  # <--- 1280 - 100 (border) - 23 (element width, not necessary when using ALIGN_RIGHT)
-                # int(152 + (44 * item_offset) - 8),
-                152 + (44 * item_offset),
+                152 + (44 * item_offset) - 8,
                 23,
                 44,
                 label='',
                 focusTexture=btn_up_fo,
                 noFocusTexture=btn_up_nf
-                # TODO: Try using image -> keep aspect ratio
             )
 
             btn_down = xbmcgui.ControlButton(
                 1132,
-                # int(152 + (44 * item_offset) - 8),
-                152 + (44 * item_offset),
+                152 + (44 * item_offset) - 8,
                 23,
                 44,
                 label='',
@@ -263,7 +266,7 @@ class Settings(xbmcgui.WindowXMLDialog):
             )
 
             label = xbmcgui.ControlLabel(
-                932,
+                930,
                 152 + (44 * item_offset),
                 200,
                 44,
@@ -332,10 +335,11 @@ class Settings(xbmcgui.WindowXMLDialog):
 
         focus = self.getFocus()
 
-        pos = "%s:%s" % (selected_category_label, focus.getY())
+        # pos = "%s:%s" % (selected_category_label, focus.getY())
 
-        if pos in self.settings_workarounds[selected_category_label] and focus != self.category_list:
-            current_control = self.settings_workarounds[selected_category_label].get(pos)
+        # if pos in self.setting_groups[selected_category_label] and focus != self.category_list:
+        if focus.getId() in self.btn_id_group and focus != self.category_list:
+            current_control = self.btn_id_group.get(focus.getId())
 
             previously_selected_control = None
             if action == xbmcgui.ACTION_MOVE_DOWN:
@@ -368,7 +372,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                 )
 
         elif action == xbmcgui.ACTION_MOVE_LEFT:
-            for key, wa_btn in self.settings_workarounds[selected_category_label].iteritems():
+            for key, wa_btn in self.setting_groups[selected_category_label].iteritems():
                 self.logger.info("Changing Color for Label @ %s" % wa_btn)
                 original_label = wa_btn.getLabel()
                 if original_label[1:6] == 'COLOR':

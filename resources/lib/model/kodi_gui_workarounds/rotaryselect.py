@@ -61,6 +61,12 @@ class RotarySelect(object):
     def get_main_control(self):
         return self.btn_down
 
+    def get_all_controls(self):
+        return [
+            self.btn_down,
+            self.btn_up
+        ]
+
     def getId(self):
         return self.btn_down.getId()
 

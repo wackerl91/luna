@@ -132,3 +132,13 @@ class SettingGroup(object):
     def update_state(self):
         self.setVisible(True)
         self.setEnabled(True)
+
+    def get_all_controls(self):
+        from resources.lib.model.kodi_gui_workarounds.rotaryselect import RotarySelect
+        if isinstance(self.control, RotarySelect):
+            return self.control.get_all_controls()
+        from resources.lib.model.kodi_gui_workarounds.slider import Slider
+        if isinstance(self.control, Slider):
+            return self.control.get_all_controls()
+        else:
+            return [self.control]

@@ -60,6 +60,9 @@ class Slider(object):
     def get_main_control(self):
         return self.label
 
+    def get_all_controls(self):
+        return [self.label]
+
     def getId(self):
         return self.label.getId()
 

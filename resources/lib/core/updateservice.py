@@ -27,7 +27,8 @@ class UpdateService:
         self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
-        update_storage = self.plugin.get_storage('update', TTL=24*60)
+        xbmc.log("[script.luna.updater]: Checking for update ...")
+        update_storage = self.core.get_storage('update', TTL=24*60)
         update = None
 
         if not update_storage.get('checked') or ignore_checked:
@@ -54,6 +55,7 @@ class UpdateService:
 
             update_storage['checked'] = True
             update_storage.sync()
+            xbmc.log("[script.luna.updater]: Checking for update ... done")
 
             if update is not None:
                 xbmcgui.Dialog().notification(
@@ -67,6 +69,8 @@ class UpdateService:
                     self.core.string('no_update_available')
                 )
                 return None
+        else:
+            xbmc.log("[script.luna.updater]: Checking for update ... done")
 
     def initiate_update(self, update):
         if update.asset_name is not None:

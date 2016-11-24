@@ -54,6 +54,8 @@ class AbstractScraper:
         if url != 'N/A':
             file_path = os.path.join(base_path, os.path.basename(url))
             if not os.path.exists(file_path):
+                if not os.path.exists(os.path.dirname(file_path)):
+                    os.makedirs(os.path.dirname(file_path))
                 with open(file_path, 'wb') as img:
                     curl = subprocess.Popen(['curl', '-XGET', url], stdout=subprocess.PIPE)
                     img.write(curl.stdout.read())

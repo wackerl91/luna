@@ -6,9 +6,9 @@ from Crypto.Cipher import AES
 from Crypto.Util import asn1
 from M2Crypto import X509
 
+from resources.lib.nvhttp.pairinghash.sha256pairinghash import Sha256PairingHash
+from resources.lib.nvhttp.pairinghash.sha1pairinghash import Sha1PairingHash
 from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractPairingManager
-from resources.lib.nvhttp.sha1pairinghash import Sha1PairingHash
-from resources.lib.nvhttp.sha256pairinghash import Sha256PairingHash
 
 
 class AdvancedPairingManager(AbstractPairingManager):
@@ -19,8 +19,8 @@ class AdvancedPairingManager(AbstractPairingManager):
         self.pem_cert_bytes = crypto_provider.get_pem_encoded_client_cert()
 
     @staticmethod
-    def _extract_plain_cert(nvhttp, text):
-        cert_text = nvhttp.get_xml_string(text, "plaincert")
+    def _extract_plain_cert(request_service, text):
+        cert_text = request_service.get_xml_string(text, "plaincert")
 
         cert = X509.load_cert_string(cert_text.decode('hex'))
 
@@ -98,11 +98,11 @@ class AdvancedPairingManager(AbstractPairingManager):
     def _sign_data(data, key):
         return key.sign(hashlib.sha256(data).digest(), 'sha256')
 
-    def pair(self, nvhttp, server_info, dialog):
+    def pair(self, request_service, server_info, dialog):
         pin = self.generate_pin_string()
         self.update_dialog(pin, dialog)
 
-        server_major_version = nvhttp.get_server_major_version(server_info)
+        server_major_version = request_service.get_server_major_version(server_info)
 
         if int(server_major_version) >= 7:
             hash_algo = Sha256PairingHash()
@@ -114,37 +114,37 @@ class AdvancedPairingManager(AbstractPairingManager):
 
         aes_key = self._generate_aes_key(hash_algo, salt_and_pin)
 
-        get_cert = nvhttp.open_http_connection(
-            nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
+        get_cert = request_service.open_http_connection(
+            request_service.base_url_http + '/pair?' + request_service.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&phrase=getservercert&salt=' +
             self.bytes_to_hex(salt) + '&clientcert=' + self.bytes_to_hex(self.pem_cert_bytes),
             False
         )
-        if int(nvhttp.get_xml_string(get_cert, 'paired')) != 1:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+        if int(request_service.get_xml_string(get_cert, 'paired')) != 1:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED
 
-        server_cert, server_sig = self._extract_plain_cert(nvhttp, get_cert)
+        server_cert, server_sig = self._extract_plain_cert(request_service, get_cert)
 
         rnd_challenge = self._get_random_bytes(16)
         encrypted_challenge = self._encrypt_aes(rnd_challenge, aes_key)
 
-        challenge_response = nvhttp.open_http_connection(
-            nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
+        challenge_response = request_service.open_http_connection(
+            request_service.base_url_http + '/pair?' + request_service.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&clientchallenge=' + self.bytes_to_hex(encrypted_challenge),
             True
         )
-        if int(nvhttp.get_xml_string(challenge_response, 'paired')) != 1:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+        if int(request_service.get_xml_string(challenge_response, 'paired')) != 1:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED
 
-        enc_srv_challenge_response = self._hex_to_bytes(nvhttp.get_xml_string(challenge_response, 'challengeresponse'))
+        enc_srv_challenge_response = self._hex_to_bytes(request_service.get_xml_string(challenge_response, 'challengeresponse'))
         dec_srv_challenge_response = self._decrypt_aes(enc_srv_challenge_response, aes_key)
 
         srv_response = dec_srv_challenge_response[:hash_algo.get_hash_length()]
@@ -159,25 +159,25 @@ class AdvancedPairingManager(AbstractPairingManager):
         )
         enc_challenge_response = self._encrypt_aes(challenge_response_hash, aes_key)
 
-        secret_response = nvhttp.open_http_connection(
-            nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
+        secret_response = request_service.open_http_connection(
+            request_service.base_url_http + '/pair?' + request_service.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&serverchallengeresp=' + self.bytes_to_hex(enc_challenge_response),
             True
         )
-        if int(nvhttp.get_xml_string(secret_response, 'paired')) != 1:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+        if int(request_service.get_xml_string(secret_response, 'paired')) != 1:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED
 
-        srv_secret_response = self._hex_to_bytes(nvhttp.get_xml_string(secret_response, 'pairingsecret'))
+        srv_secret_response = self._hex_to_bytes(request_service.get_xml_string(secret_response, 'pairingsecret'))
         srv_secret = srv_secret_response[:16]
         srv_signature = srv_secret_response[16:272]
 
         if not self._verify_signature(srv_secret, srv_signature, server_cert):
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED
@@ -189,33 +189,33 @@ class AdvancedPairingManager(AbstractPairingManager):
             )
         )
         if not srv_challenge_response_hash == srv_response:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_PIN_WRONG
 
         client_pairing_secret = self._concat_bytes(client_secret, self._sign_data(client_secret, self.private_key))
-        client_secret_response = nvhttp.open_http_connection(
-            nvhttp.base_url_http + '/pair?' + nvhttp.build_uid_uuid_string() +
+        client_secret_response = request_service.open_http_connection(
+            request_service.base_url_http + '/pair?' + request_service.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&clientpairingsecret=' + self.bytes_to_hex(client_pairing_secret),
             True
         )
-        if int(nvhttp.get_xml_string(client_secret_response, 'paired')) != 1:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+        if int(request_service.get_xml_string(client_secret_response, 'paired')) != 1:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED
 
-        pair_challenge = nvhttp.open_http_connection(
-            nvhttp.base_url_https + '/pair?' + nvhttp.build_uid_uuid_string() +
+        pair_challenge = request_service.open_http_connection(
+            request_service.base_url_https + '/pair?' + request_service.build_uid_uuid_string() +
             '&devicename=roth&updateState=1&phrase=pairchallenge',
             True
         )
-        if int(nvhttp.get_xml_string(pair_challenge, 'paired')) != 1:
-            nvhttp.open_http_connection(
-                nvhttp.base_url_http + '/unpair?' + nvhttp.build_uid_uuid_string(),
+        if int(request_service.get_xml_string(pair_challenge, 'paired')) != 1:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
                 True
             )
             return self.STATE_FAILED

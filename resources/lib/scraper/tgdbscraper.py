@@ -76,6 +76,8 @@ class TgdbScraper(AbstractScraper):
         file_path = os.path.join(self.api_cache, id, game+'_tgdb.xml')
 
         if not os.path.isfile(file_path):
+            if not os.path.exists(os.path.dirname(file_path)):
+                os.makedirs(os.path.dirname(file_path))
             curl = subprocess.Popen(['curl', '-XGET', self.api_url % game], stdout=subprocess.PIPE)
             with open(file_path, 'w') as response_file:
                 response_file.write(curl.stdout.read())

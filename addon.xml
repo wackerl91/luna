@@ -8,10 +8,10 @@
     <import addon="script.module.yaml" version="3.11.0" />
     <import addon="script.module.requests" version="2.4.3" />
   </requires>
-  <extension point="xbmc.python.pluginsource" library="addon.py">
+  <extension point="xbmc.python.script" library="addon.py">
     <provides>executable</provides>
   </extension>
-  <extension point="xbmc.service" library="service.py" start="login"/>
+  <!--<extension point="xbmc.service" library="service.py" start="login"/>-->
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <language></language>

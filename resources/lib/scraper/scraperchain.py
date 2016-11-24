@@ -20,10 +20,13 @@ class ScraperChain:
         if nvapp.title not in self.game_blacklist:
             for scraper in self.scraper_chain:
                 if scraper.is_enabled():
-                    game_info.append(Game.from_api_response(scraper.get_game_information(nvapp)))
+                    api_response = scraper.get_game_information(nvapp)
+                    game = Game.from_api_response(api_response)
+                    game.id = nvapp.id
+                    game_info.append(game)
 
         else:
-            game = Game(nvapp.title, None)
+            game = Game(nvapp.title, None, nvapp.id)
 
             if nvapp.title == 'Steam':
                 fanart_path = os.path.join(self.plugin.addon.getAddonInfo('path'),

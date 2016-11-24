@@ -1,15 +1,9 @@
 import os
-
 import sys
 import yaml
+import xbmcaddon
 
-try:
-    import xbmcaddon
-except ImportError:
-    from xbmcswift2 import Plugin
-
-# DO NOT DELETE THE FOLLOWING IMPORT
-import resources.lib.di.component
+from resources.lib.di.component import Component
 
 
 class FeatureBroker:
@@ -18,7 +12,6 @@ class FeatureBroker:
         self.tags = {}
         self.initialized = {}
         self.allow_replace = allow_replace
-        self._parse_config()
 
     def _parse_config(self):
         if 'xbmcaddon' in sys.modules:
@@ -27,10 +20,15 @@ class FeatureBroker:
             features_path = 'resources/lib/config/features.yml'
 
         with open(features_path) as config:
-            features = yaml.load_all(config)
-            for feature in features:
+            feature_objects = []
+            service_definitions = yaml.safe_load(config)
+            for _service in service_definitions['services']:
+                feature = Component.from_dict(_service, **service_definitions['services'][_service])
+                feature_objects.append(feature)
+            for feature in feature_objects:
                 self._provide(feature)
-                if hasattr(feature, 'tags'):
+                tags = getattr(feature, 'tags', None)
+                if tags is not None:
                     for tag in feature.tags:
                         self.tag(tag['name'], feature.name)
 
@@ -85,7 +83,7 @@ class FeatureBroker:
         return provider
 
 
-features = FeatureBroker()
+features = None
 
 
 def no_assertion(obj): return True

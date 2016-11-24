@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <animation effect="fade" time="500" start="0" end="100">WindowOpen</animation>
+    <animation effect="fade" time="500" start="100" end="0">WindowClos</animation>
+    <controls>
+        <control type="image" id="101">
+            <description>background image</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <texture colordiffuse="50D3D3D3">common/mesh.png</texture>
+        </control>
+        <control type="image" id="104">
+            <description>luna logo</description>
+            <top>50</top>
+            <left>100</left>
+            <width>300</width>
+            <height>150</height>
+            <aspectratio>keep</aspectratio>
+            <texture>common/luna.png</texture>
+        </control>
+        <control type="panel" id="102">
+            <left>100</left>
+            <top>250</top>
+            <width>1080</width>
+            <height>150</height>
+            <visible>true</visible>
+            <viewtype label="3D list">list</viewtype>
+            <ondown>103</ondown>
+            <orientation>horizontal</orientation>
+            <scrolltime tween="sine" easing="out">200</scrolltime>
+            <itemlayout width="325" height="150">
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture colordiffuse="50696969">common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <visible>StringCompare(ListItem.Property(state), 0)</visible>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture colordiffuse="5077B900">common/host_white.png</texture>
+                </control>
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <visible>StringCompare(ListItem.Property(state), 1)</visible>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture colordiffuse="50FE0000">common/host_white.png</texture>
+                </control>
+                <control type="image">
+                    <top>30</top>
+                    <left>125</left>
+                    <width>50</width>
+                    <height>50</height>
+                    <aspectratio>keep</aspectratio>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture>$INFO[ListItem.Art(thumb)]</texture>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>100</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <selectedcolor>green</selectedcolor>
+                    <align>center</align>
+                    <!--<info>ListItem.Property(state)</info>-->
+                    <info>ListItem.Label</info>
+                </control>
+            </itemlayout>
+            <focusedlayout width="325" height="150">
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture colordiffuse="50696969">common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <visible>StringCompare(ListItem.Property(state), 0)</visible>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture colordiffuse="5077B900">common/host_white.png</texture>
+                </control>
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <visible>StringCompare(ListItem.Property(state), 1)</visible>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture colordiffuse="50FE0000">common/host_white.png</texture>
+                </control>
+                <control type="image">
+                    <top>30</top>
+                    <left>125</left>
+                    <width>50</width>
+                    <height>50</height>
+                    <aspectratio>keep</aspectratio>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture>$INFO[ListItem.Art(thumb)]</texture>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>100</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FFE0B074</textcolor>
+                    <selectedcolor>green</selectedcolor>
+                    <align>center</align>
+                    <!--<info>ListItem.Property(state)</info>-->
+                    <info>ListItem.Label</info>
+                </control>
+            </focusedlayout>
+        </control>
+        <control type="panel" id="103">
+            <left>100</left>
+            <top>425</top>
+            <width>1080</width>
+            <height>150</height>
+            <visible>true</visible>
+            <viewtype label="3D list">list</viewtype>
+            <onup>102</onup>
+            <orientation>horizontal</orientation>
+            <scrolltime tween="sine" easing="out">200</scrolltime>
+            <itemlayout width="325" height="150">
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture colordiffuse="50696969">common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>30</top>
+                    <left>125</left>
+                    <width>50</width>
+                    <height>50</height>
+                    <aspectratio>keep</aspectratio>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <texture>$INFO[ListItem.Art(thumb)]</texture>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>100</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FF808080</textcolor>
+                    <selectedcolor>green</selectedcolor>
+                    <align>center</align>
+                    <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
+                    <info>ListItem.Label</info>
+                </control>
+            </itemlayout>
+            <focusedlayout width="325" height="150">
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>300</width>
+                    <height>150</height>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture colordiffuse="50696969">common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>30</top>
+                    <left>125</left>
+                    <width>50</width>
+                    <height>50</height>
+                    <aspectratio>keep</aspectratio>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <texture>$INFO[ListItem.Art(thumb)]</texture>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>100</top>
+                    <width>300</width>
+                    <height>20</height>
+                    <font>Small</font>
+                    <textcolor>FFE0B074</textcolor>
+                    <selectedcolor>green</selectedcolor>
+                    <align>center</align>
+                    <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
+                    <info>ListItem.Label</info>
+                </control>
+            </focusedlayout>
+        </control>
+    </controls>
+</window>

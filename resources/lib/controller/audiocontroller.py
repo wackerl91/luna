@@ -1,12 +1,14 @@
 import xbmcgui
+from resources.lib.controller.basecontroller import BaseController, route
 
 
-class AudioController(object):
+class AudioController(BaseController):
     def __init__(self, audio_manager, config_helper, plugin):
         self.audio_manager = audio_manager
         self.config_helper = config_helper
         self.plugin = plugin
 
+    @route(name="select")
     def select_audio_device(self):
         device_list = [dev.name for dev in self.audio_manager.devices]
         device_list.append('sysdefault')

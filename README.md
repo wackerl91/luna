@@ -37,7 +37,7 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 - Have a look at existing issues (this includes closed ones!) before opening a new one
 
 ## Credits
-- Logo [Ben Biedrawa](http://sooulart.com)
+- Logo [Ben Biedrawa](http://BengerengTV.com)
 - Icons from [Freepik](http://www.flaticon.com/authors/freepik), provided by [flaticon](www.flaticon.com)
 - Game information and posters are provided by [OMDB](http://www.omdbapi.com) under CC-BY4.0
 - Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)

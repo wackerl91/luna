@@ -20,8 +20,12 @@ class SettingsController(BaseController):
 
     def save(self, settings):
         for category in settings:
-            for setting_id, setting in category.settings:
+            for _, setting in category.settings.iteritems():
                 new_value = setting.current_value
                 if new_value != setting.default and new_value is not None:
-                    self.addon.setSetting(setting_id, setting.current_value)
+                    self.logger.info("Setting '%s' changed value: %s -> %s."
+                                     % (setting.setting_label,
+                                        self.addon.getSetting(setting.setting_id),
+                                        new_value))
+                    self.addon.setSetting(setting.setting_id, str(setting.current_value))
         return

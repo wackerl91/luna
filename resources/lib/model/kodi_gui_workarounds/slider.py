@@ -25,7 +25,7 @@ class Slider(object):
         return
 
     def forward_input(self, action_id):
-        # TODO: Use pass focus ID and compare it to label ID
+        # TODO: Pass focus ID and compare it to label ID
         if self.window.getFocus() == self.label:
             if action_id == xbmcgui.ACTION_MOVE_LEFT:
                 self.selected_index -= 1

@@ -8,6 +8,14 @@ from resources.lib.model.kodi_gui_workarounds.settinggroup import SettingGroup
 from resources.lib.model.kodi_gui_workarounds.rotaryselect import RotarySelect
 from resources.lib.model.kodi_gui_workarounds.slider import Slider
 
+ALIGN_LEFT = 0
+ALIGN_RIGHT = 1
+ALIGN_CENTER_X = 2
+ALIGN_CENTER_Y = 4
+ALIGN_CENTER = 6
+ALIGN_TRUNCATED = 8
+ALIGN_JUSTIFY = 10
+
 
 class Settings(xbmcgui.WindowXMLDialog):
     def __new__(cls, *args, **kwargs):
@@ -31,6 +39,7 @@ class Settings(xbmcgui.WindowXMLDialog):
         # TODO: This can be replaced by referencing the setting on settinggroup
         self.setting_id_group = {}  # Setting ID -> SettingGroup Map (used for getting current values and saving)
         self.btn_id_group = {}  # Button ID -> SettingGroup Map (used for determining focus group)
+        self.current_last = None  # Stores current category's last setting
 
         self.logger = RequiredFeature('logger').request()
 
@@ -63,9 +72,7 @@ class Settings(xbmcgui.WindowXMLDialog):
             ctrl_wrapper.setEnabled(True)
         self.selected_cat_cache = self.settings[0].cat_label
 
-        # TODO: TypeError: coercing to Unicode: need string or buffer, int found
-        first_ctrl = self.setting_groups[self.settings[0].cat_label][self.settings[0].cat_label+152]
-        self.category_list.controlRight(first_ctrl.get_main_control())
+        self.switch_settings_to_category(self.selected_cat_cache, '')
 
     def build_settings_list(self, category, cat_settings):
         self.logger.info("Adding settings list items for category: %s" % category.cat_label)
@@ -106,12 +113,13 @@ class Settings(xbmcgui.WindowXMLDialog):
 
             ctrl_wrapper = SettingGroup(self, label=label, control=button)
 
+            list_item = LinkedListItem(ctrl_wrapper)
+
             for single_control in ctrl_wrapper.get_all_controls():
-                self.btn_id_group[single_control.getId()] = ctrl_wrapper
+                self.btn_id_group[single_control.getId()] = list_item
 
             pos = "%s:%s" % (category.cat_label, button.getY())
             previous_pos = "%s:%s" % (category.cat_label, button.getY() - 44)
-            list_item = LinkedListItem(ctrl_wrapper)
             try:
                 list_item.set_previous(self.setting_groups[category.cat_label][previous_pos])
             except KeyError:
@@ -137,6 +145,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                     self.logger.info(
                         "Setting is pointing to control: %s , offset: %s, target_control: %s" % (
                             setting.setting_id, index_offset, target_control))
+
                     current_control.append_enable_condition(target_control, target_value)
                     self.needs_state_update[category.cat_label].append(current_control)
 
@@ -176,6 +185,8 @@ class Settings(xbmcgui.WindowXMLDialog):
                     break
             if next_control != current_control:
                 current_control.controlDown(next_control.get_main_control())
+            elif next_control == current_control:
+                current_control.controlDown(self.ok_btn)
 
             current_control.controlLeft(self.category_list)
 
@@ -185,24 +196,38 @@ class Settings(xbmcgui.WindowXMLDialog):
                 ctrl_wrapper.setVisible(False)
                 ctrl_wrapper.setEnabled(False)
         first = None
+        last = None
         for pos, ctrl_wrapper in self.setting_groups[category].iteritems():
+            ctrl_wrapper.setVisible(True)
+            ctrl_wrapper.setEnabled(True)
+
+            if not ctrl_wrapper.is_enabled() or not ctrl_wrapper.is_visible():
+                continue
+
             if not first:
                 first = ctrl_wrapper
             if ctrl_wrapper.getY() < first.getY():
                 first = ctrl_wrapper
-            ctrl_wrapper.setVisible(True)
-            ctrl_wrapper.setEnabled(True)
+
+            if not last:
+                last = ctrl_wrapper
+            if ctrl_wrapper.getY() > last.getY():
+                last = ctrl_wrapper
 
         self.category_list.controlRight(first.get_main_control())
+        self.ok_btn.controlUp(last.get_main_control())
+        self.cancel_btn.controlUp(last.get_main_control())
+        self.current_last = last
 
     def build_button_for_type(self, control_type, item_offset, setting):
         value = setting.current_value
         if control_type == 'text':
             button = xbmcgui.ControlButton(
-                700,
+                400,
                 152 + (44 * item_offset),
-                1200,
+                780,  # <--- 1280 - 400 (x-coord) - 100 (border)
                 44,
+                alignment=ALIGN_RIGHT,
                 label=value,
                 textColor='0xFF808080',
                 focusedColor='0xFFE0B074',
@@ -286,10 +311,11 @@ class Settings(xbmcgui.WindowXMLDialog):
             return rotary_select
         elif control_type == 'slider':
             label = xbmcgui.ControlButton(
-                650,
+                400,
                 152 + (44 * item_offset),
-                200,
+                780,  # <--- 1280 - 400 (x-coord) - 100 (border)
                 44,
+                alignment=ALIGN_RIGHT,
                 label='',
                 textColor='0xFF808080',
                 font='Small'
@@ -333,7 +359,12 @@ class Settings(xbmcgui.WindowXMLDialog):
             self.selected_cat_cache = selected_category_label
             self.switch_settings_to_category(selected_category_label, previous_cat)
 
-        focus = self.getFocus()
+        try:
+            focus = self.getFocus()
+        # RuntimeError happens when using a mouse, which causes all elements to use focus until selected
+        except RuntimeError:
+            pass
+            return
 
         # pos = "%s:%s" % (selected_category_label, focus.getY())
 
@@ -381,6 +412,14 @@ class Settings(xbmcgui.WindowXMLDialog):
                     label=original_label,
                     font='Small'
                 )
+
+        elif focus == self.ok_btn or focus == self.cancel_btn:
+            if action == xbmcgui.ACTION_MOVE_DOWN and self.current_last is not None:
+                if self.current_last.getLabel()[1:6] == 'COLOR':
+                    self.current_last.setLabel(
+                        label=self.current_last.getLabel()[16:-8],
+                        font='Small',
+                    )
 
         # TODO: Only forward to controls of current category
         for control in self.forward_controls:

@@ -36,15 +36,13 @@ class MoonlightHelper:
 
     def create_ctrl_map(self, dialog, map_file):
         mapping_proc = subprocess.Popen(
-                ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
-                 self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+            ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
+             self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
         lines_iterator = iter(mapping_proc.stdout.readline, b"")
 
         mapping_thread = threading.Thread(target=loop_lines, args=(dialog, lines_iterator))
         mapping_thread.start()
-
-        success = False
 
         # TODO: Make a method or function from this
         while True:
@@ -84,7 +82,7 @@ class MoonlightHelper:
 
         print 'num buttons: %s' % input_wrapper.num_buttons
         print 'num_axes: %s' % input_wrapper.num_axes
-        expected_input_number = input_wrapper.num_buttons + (input_wrapper.num_axes *2)
+        expected_input_number = input_wrapper.num_buttons + (input_wrapper.num_axes * 2)
 
         js = StoppableJSHandler(input_wrapper, input_map)
         it = StoppableInputHandler(input_queue, input_map, dialog, expected_input_number)

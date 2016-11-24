@@ -24,7 +24,7 @@ class GameContextMenu(xbmcgui.WindowXMLDialog):
         self.setFocus(self.list)
 
     def build_list(self):
-        items = ['Game Information', 'Addon Settings', 'Refresh List']
+        items = ['Game Information', 'Refresh List']
         self.list.addItems(items)
 
     def onAction(self, action):
@@ -36,8 +36,6 @@ class GameContextMenu(xbmcgui.WindowXMLDialog):
                 window.doModal()
                 del window
             if selected_position == 1:
-                RequiredFeature('addon').request().openSettings()
-            if selected_position == 2:
                 self.refresh_required = True
                 self.close()
                 xbmc.log('Clicked Full Refresh')

@@ -53,6 +53,8 @@ class GameHelper(object):
         if game_version_storage.get('version') == Game.version:
             cache = games.copy()
 
+        games.clear()
+
         self.game_manager.remove_games(host)
 
         i = 1
@@ -65,7 +67,7 @@ class GameHelper(object):
                 if not games.get(nvapp.id):
                     if not silent:
                         progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
-                    games[nvapp.id] = cache.get(nvapp.id)[0]
+                    games[nvapp.id] = cache.get(nvapp.id)
             else:
                 try:
                     if not silent:
@@ -93,32 +95,6 @@ class GameHelper(object):
         Parses contents of local game storage into a list that can be interpreted by Kodi
         :rtype: list
         """
-
-        """
-        def context_menu(game_id):
-            return [
-                (
-                    'Game Information',
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                        endpoint='show_game_info',
-                        game_id=game_id
-                    )
-                ),
-                (
-                    self.core.string('addon_settings'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                        endpoint='open_settings'
-                    )
-                ),
-                (
-                    self.core.string('full_refresh'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                        endpoint='do_full_refresh'
-                    )
-                )
-            ]
-        """
-
         games = self.game_manager.get_games(host)
 
         if len(games) == 0:

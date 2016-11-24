@@ -26,15 +26,6 @@ class RequestService(AbstractRequestService):
         self.key_dir = ''
         self.uid = ''
 
-    """
-    def set_host_ip(self, ip):
-        self.host_ip = ip
-        self.base_url_https = 'https://%s:%s' % (self.host_ip, self.HTTPS_PORT)
-        self.base_url_http = 'http://%s:%s' % (self.host_ip, self.HTTP_PORT)
-        # self.crypto_provider.set_base_path(os.path.join(os.path.expanduser('~'), '.cache/moonlight'))
-        # TODO: Where and when to load UID when configuring only via IP?
-    """
-
     def configure(self, host_details):
         self.host_ip = host_details.local_ip
         self.key_dir = host_details.key_dir

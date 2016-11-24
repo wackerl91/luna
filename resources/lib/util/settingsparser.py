@@ -62,7 +62,7 @@ class SettingsParser(object):
                         current_value = self.addon.getSetting(setting_id)
                         setting_args['current_value'] = current_value
 
-                        _setting = Setting(setting_id, setting_label, setting_prio, None, **setting_args)
+                        _setting = Setting(setting_id, setting_label, setting_prio, **setting_args)
 
                         setting_prio += 1
                         cat.settings[setting_id] = _setting

@@ -20,3 +20,6 @@ class BaseController(object):
             return router.render(name, args=args)
         else:
             return router.render(name)
+
+    def route_exists(self, name):
+        return router.route_exists(name)

@@ -79,6 +79,7 @@ services:
         arguments:
           - '@plugin'
           - '@logger'
+        lazy: true
 
     omdb-scraper:
         module: resources.lib.scraper.omdbscraper
@@ -257,3 +258,10 @@ services:
         module: resources.lib.controller.settingscontroller
         class_name: SettingsController
 
+    cache-controller:
+        module: resources.lib.controller.cachecontroller
+        class_name: CacheController
+        arguments:
+          - '@core'
+          - '@scraper-chain'
+          - '@logger'

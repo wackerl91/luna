@@ -48,3 +48,8 @@ class Setting(object):
             self.current_value = kwargs['current_value']
         else:
             self.current_value = self.default
+
+        if 'action' in kwargs.keys():
+            self.route = kwargs['action']
+        else:
+            self.route = None

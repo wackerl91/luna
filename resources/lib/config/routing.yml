@@ -28,3 +28,8 @@ routing:
         class_name: SettingsController
         service: '@settings-controller'
         prefix: 'settings'
+
+    luna.routes.cache:
+        class_name: CacheController
+        service: '@cache-controller'
+        prefix: 'cache'

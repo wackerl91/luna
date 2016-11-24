@@ -84,3 +84,6 @@ class Router(object):
                     return self.routes["%s_%s" % (route.prefix, name)]
                 except KeyError:
                     pass
+
+    def route_exists(self, name):
+        return name in self.routes.keys()

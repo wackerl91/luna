@@ -3,6 +3,7 @@ import os
 import xbmcaddon
 import xbmcgui
 from resources.lib.di.requiredfeature import RequiredFeature
+from resources.lib.model.kodi_gui_workarounds.action import Action
 from resources.lib.model.kodi_gui_workarounds.linkedlistitem import LinkedListItem
 from resources.lib.model.kodi_gui_workarounds.settinggroup import SettingGroup
 from resources.lib.model.kodi_gui_workarounds.rotaryselect import RotarySelect
@@ -327,6 +328,19 @@ class Settings(xbmcgui.WindowXMLDialog):
             self.forward_controls.append(button)
             return button
 
+        elif control_type == 'action':
+            label = xbmcgui.ControlButton(
+                400,
+                152 + (44 * item_offset),
+                780,  # <--- 1280 - 400 (x-coord) - 100 (border)
+                44,
+                label=''
+            )
+
+            button = Action(self, label, setting.route)
+            self.forward_controls.append(button)
+            return button
+
         else:
             button = xbmcgui.ControlButton(
                 700,
@@ -361,7 +375,7 @@ class Settings(xbmcgui.WindowXMLDialog):
 
         try:
             focus = self.getFocus()
-        # RuntimeError happens when using a mouse, which causes all elements to use focus until selected
+        # RuntimeError happens when using a mouse, which causes all elements to lose focus until selected
         except RuntimeError:
             pass
             return
@@ -423,7 +437,9 @@ class Settings(xbmcgui.WindowXMLDialog):
 
         # TODO: Only forward to controls of current category
         for control in self.forward_controls:
-            control.forward_input(action.getId())
+            ret_val = control.forward_input(action.getId())
+            if ret_val and isinstance(ret_val, str) and self.controller.route_exists(ret_val):
+                self.controller.render(ret_val)
 
         # Use callbacks for this???
         if action == xbmcgui.ACTION_SELECT_ITEM and selected_category_label in self.needs_state_update:

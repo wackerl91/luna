@@ -24,7 +24,7 @@ class HostController(BaseController):
     def wake_host(self, host):
         """
         This partly taken from Dipl.-Ing. (FH) Georg Kainzbauer http://www.gtkdb.de/index_31_2254.html
-        Magic packets aren't that after all, but it's nice to get some fast and working code.
+        Magic packets aren't that magic after all, but it's nice to get some fast and working code.
         """
         progress_dialog = xbmcgui.DialogProgress()
         progress_dialog.create('Luna', 'Preparing to wake host: %s' % host.name)
@@ -65,6 +65,15 @@ class HostController(BaseController):
                     raise ValueError
         except ValueError:
             return self.enter_ip()
+
+    @route(name='remove')
+    def remove_host(self, host):
+        self.host_context_service.set_current_context(host)
+        self.connection_manager.unpair()
+
+        self.host_manager.remove_host(host)
+
+        return True
 
     def pair_selected_host(self, host):
         self.host_context_service.set_current_context(host)

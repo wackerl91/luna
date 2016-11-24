@@ -9,7 +9,8 @@ class ConnectionManager(object):
     def pair(self, dialog):
         message = ''
         server_info = self.request_service.get_server_info()
-        if self.pairing_manager.get_pair_state(self.request_service, server_info) == AbstractPairingManager.STATE_PAIRED:
+        if self.pairing_manager.get_pair_state(self.request_service,
+                                               server_info) == AbstractPairingManager.STATE_PAIRED:
             message = 'Already paired.'
             pair_state = AbstractPairingManager.STATE_PAIRED
         else:
@@ -27,3 +28,13 @@ class ConnectionManager(object):
                     message = 'Pairing successful.'
 
         return message, pair_state
+
+    def unpair(self):
+        try:
+            server_info = self.request_service.get_server_info()
+            if self.pairing_manager.get_pair_state(self.request_service,
+                                                   server_info) == AbstractPairingManager.STATE_PAIRED:
+                self.pairing_manager.unpair(self.request_service, server_info)
+        except ValueError:
+            # Unpairing a host needs to be fire and forget
+            pass

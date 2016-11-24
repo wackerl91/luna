@@ -77,6 +77,7 @@ class Main(xbmcgui.WindowXML):
         self.hosts = self.host_manager.get_hosts()
         self.list.reset()
         self.options_list.reset()
+        self.host_index_key_map.clear()
         self.build_list()
 
     def update_host_status(self, hosts):
@@ -101,7 +102,6 @@ class Main(xbmcgui.WindowXML):
                 # TODO: Assign actions as item properties and call them
                 if self.options_list.getSelectedPosition() == 0:
                     self.controller.render('settings_index')
-                    # xbmcaddon.Addon().openSettings()
                 if self.options_list.getSelectedPosition() == 1:
                     self.controller.render('controller_select')
                 if self.options_list.getSelectedPosition() == 2:
@@ -117,7 +117,10 @@ class Main(xbmcgui.WindowXML):
                 window = HostContextMenu(host, self.controller)
                 window.doModal()
                 del window
-                self.setFocus(self.list)
+                if len(self.host_index_key_map) > 0:
+                    self.setFocusId(102)
+                else:
+                    self.setFocusId(103)
             if action == xbmcgui.ACTION_SELECT_ITEM:
                 selected_item = self.list.getSelectedItem()
                 host = self.hosts[selected_item.getProperty('uuid')]

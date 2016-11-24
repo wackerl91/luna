@@ -14,8 +14,15 @@ class AbstractPairingManager(object):
     def pair(self, request_service, server_info, dialog):
         pass
 
-    def unpair(self, request_service):
-        pass
+    def unpair(self, request_service, server_info):
+        try:
+            request_service.open_http_connection(
+                request_service.base_url_http + '/unpair?' + request_service.build_uid_uuid_string(),
+                True
+            )
+        except ValueError:
+            # Unpairing a host needs to be fire and forget
+            pass
 
     @staticmethod
     def get_pair_state(request_service, server_info):

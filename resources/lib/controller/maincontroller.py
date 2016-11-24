@@ -21,9 +21,7 @@ class MainController(BaseController):
 
     @route(name="index")
     def index_action(self):
-        # Manually close the spinning wheel since it gets stuck for fullscreen windows
         self.window = Main(controller=self)
-        xbmc.executebuiltin("Dialog.Close(busydialog)")
         self.update_host_status()
         self.window.doModal()
         del self.window
@@ -44,9 +42,11 @@ class MainController(BaseController):
             self.window.update()
         del host_controller
 
-    # def open_settings(self):
-        # self.render('settings_index')
-        # self.addon.openSettings()
+    @route(name="host_remove")
+    def remove_host(self, host):
+        ret_val = self.render('host_remove', {'host': host})
+        if ret_val:
+            self.window.update()
 
     def update_host_status(self):
         update_host_thread = threading.Thread(target=self._update_host_status)

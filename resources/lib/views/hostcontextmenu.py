@@ -18,7 +18,7 @@ class HostContextMenu(xbmcgui.WindowXMLDialog):
         self.setFocus(self.list)
 
     def build_list(self):
-        items = ['Wake Host']
+        items = ['Wake Host', 'Remove Host']
         self.list.addItems(items)
 
     def onAction(self, action):
@@ -28,4 +28,7 @@ class HostContextMenu(xbmcgui.WindowXMLDialog):
             selected_position = self.list.getSelectedPosition()
             if selected_position == 0:
                 self.controller.render('host_wake', {'host': self.host})
+                self.close()
+            if selected_position == 1:
+                self.controller.render('main_host_remove', {'host': self.host})
                 self.close()

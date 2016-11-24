@@ -5,7 +5,7 @@ from resources.lib.model.audiodevice import AudioDevice
 
 
 class AudioManager(object):
-    CARDS_REGEX = r'[ ]?(\d) \[\w+[ ]+\]: (\w+[-_]*\w+) - ((\w+[ ]?)+)'
+    CARDS_REGEX = r'[ ]?(\d) \[\w+[ ]*\]: (\w+[-_]*\w+) - ((\w+[ ]?)+)'
 
     def __init__(self):
         self.devices = []
@@ -43,15 +43,19 @@ class AudioManager(object):
 
             card = card_info[0][-2]
             dev = card_info[1][-2]
+            card_id = card_info[4].replace('\n', '')
             name = card_info[5]
 
             device = AudioDevice()
             audio_id = audio_id.replace('-', ' ')
 
-            if name[6:].replace(audio_id, '').strip() == '':
-                device.name = audio_name.replace('\n', '')
+            if card_id[4:] != '':
+                device.name = card_id[4:].strip()
             else:
-                device.name = name[6:].replace('\n', '')
+                if name[6:].replace(audio_id, '').strip() == '':
+                    device.name = audio_name.replace('\n', '')
+                else:
+                    device.name = name[6:].replace('\n', '')
 
             device.handler = 'hw:%s,%s' % (card, dev)
             subdevices_info.append(device)

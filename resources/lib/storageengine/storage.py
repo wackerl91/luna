@@ -11,6 +11,7 @@ import os
 import csv
 import json
 import time
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -35,13 +36,13 @@ class _PersistentDictMixin(object):
     """
 
     def __init__(self, filename, flag='c', mode=None, file_format='pickle'):
-        self.flag = flag                    # r=readonly, c=create, or n=new
-        self.mode = mode                    # None or an octal triple like 0644
-        self.file_format = file_format      # 'csv', 'json', or 'pickle'
+        self.flag = flag  # r=readonly, c=create, or n=new
+        self.mode = mode  # None or an octal triple like 0644
+        self.file_format = file_format  # 'csv', 'json', or 'pickle'
         self.filename = filename
         if flag != 'n' and os.access(filename, os.R_OK):
             log.info('Reading %s storage from disk at "%s"',
-                      self.file_format, self.filename)
+                     self.file_format, self.filename)
             fileobj = open(filename, 'rb' if file_format == 'pickle' else 'r')
             with fileobj:
                 self.load(fileobj)
@@ -60,7 +61,7 @@ class _PersistentDictMixin(object):
             raise
         finally:
             fileobj.close()
-        shutil.move(tempname, self.filename)    # atomic commit
+        shutil.move(tempname, self.filename)  # atomic commit
         if self.mode is not None:
             os.chmod(self.filename, self.mode)
 
@@ -174,7 +175,7 @@ class TimedStorage(_Storage):
     def __getitem__(self, key):
         val, timestamp = self._items[key]
         if self.TTL and (datetime.utcnow() -
-            datetime.utcfromtimestamp(timestamp) > self.TTL):
+                             datetime.utcfromtimestamp(timestamp) > self.TTL):
             del self._items[key]
             return self._items[key][0]  # Will raise KeyError
         return val
@@ -186,5 +187,5 @@ class TimedStorage(_Storage):
         for key, val in mapping.items():
             _, timestamp = val
             if not self.TTL or (datetime.utcnow() -
-                datetime.utcfromtimestamp(timestamp) < self.TTL):
+                                    datetime.utcfromtimestamp(timestamp) < self.TTL):
                 self.__setitem__(key, val, raw=True)

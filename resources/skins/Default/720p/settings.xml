@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
     <!-- addonsettings -->
-    <!--<defaultcontrol always="true">9</defaultcontrol>-->
     <animation type="WindowOpen">
         <effect type="slide" start="0,80" end="0,0" center="auto" tween="back" easing="out" time="300"/>
         <effect type="fade" start="0" end="100" time="300"/>
@@ -28,7 +27,6 @@
             <width>1620</width>
             <height>72</height>
             <font>XLarge</font>
-            <!--<label>$INFO[Window.Property(heading)]</label>-->
             <label>Settings</label>
         </control>
 
@@ -40,7 +38,6 @@
             <height>660</height>
             <itemgap>0</itemgap>
             <onleft>noop</onleft>
-            <!--<onright>303</onright>-->
             <onup>noop</onup>
             <ondown>9001</ondown>
             <orientation>vertical</orientation>

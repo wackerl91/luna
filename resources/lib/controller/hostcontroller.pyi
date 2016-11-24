@@ -11,18 +11,19 @@ from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.mdnscomputer import MdnsComputer
 from resources.lib.nvhttp.connectionmanager.connectionmanager import ConnectionManager
 from resources.lib.nvhttp.mdns.discoveryagent import DiscoveryAgent
+from resources.lib.service.hostcontextservice import HostContextService
 
 
 class HostController:
+    logger = ... # type: Logger
+    core = ... # type: Core
+    connection_manager = ... # type: ConnectionManager
+    host_manager = ... # type: HostManager
     discovery_agent = ... # type: DiscoveryAgent
-    def __init__(self, logger:Logger, core:Core, connection_manager:ConnectionManager, host_manager:HostManager):
-        self.logger = Logger
-        self.core = Core
-        self.connection_manager = ConnectionManager
-        self.host_manager = HostManager
-        ...
+    host_context_service = ... # type: HostContextService
+    def __init__(self, logger:Logger, core:Core, connection_manager:ConnectionManager, host_manager:HostManager): ...
     def initiate(self): ...
     def pair_selected_host(self, host:HostDetails): ...
     def select_host(self, hosts: Dict[MdnsComputer]): ...
     def enter_ip(self) -> AnyStr: ...
-    def __load_agent(self): ...
+    def _load_agent(self) -> None: ...

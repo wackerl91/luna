@@ -18,7 +18,7 @@ class HostController(BaseController):
         self.host_manager = host_manager
         self.host_context_service = host_context_service
         self.discovery_agent = None
-        self.__load_agent()
+        self._load_agent()
 
     @route(name='wake')
     def wake_host(self, host):
@@ -134,7 +134,7 @@ class HostController(BaseController):
         else:
             return None
 
-    def __load_agent(self):
+    def _load_agent(self):
         try:
             module = importlib.import_module('resources.lib.nvhttp.mdns.discoveryagent')
             class_name = 'DiscoveryAgent'

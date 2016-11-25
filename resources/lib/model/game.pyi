@@ -1,0 +1,29 @@
+from typing import Dict
+from typing import List
+
+from resources.lib.model.fanart import Fanart
+
+
+class Game:
+    version = ... # type: int
+    name = ... # type: str
+    host_uuid = ... # type: str
+    id = ... # type: str
+    year = ... # type: str
+    genre = ... # type: List[str]
+    plot = ... # type: str
+    posters = ... # type: List[str]
+    fanarts = ... # type: Dict[Fanart]
+    selected_fanart = ... # type: Fanart
+    selected_poster = ... # type: str
+    def __init__(self, name:str, host_uuid:str, id:str=None, year:str=None, genre:List[str]=None, plot:str=None, posters:List[str]=None, fanarts:Dict[str]=None): ...
+    @classmethod
+    def from_api_response(cls, api_response): ...
+    def merge(self, other) -> None: ...
+    def get_fanart(self, alt) -> Fanart: ...
+    def get_selected_fanart(self) -> Fanart: ...
+    def set_selected_fanart(self, uri:str): ...
+    def get_genre_as_string(self) -> str: ...
+    def get_poster(self, index:int, alt:str): ...
+    def get_selected_poster(self) -> str: ...
+    def _replace_thumb(self, thumbfile:str, original:str) -> str:

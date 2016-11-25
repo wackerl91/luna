@@ -11,6 +11,7 @@ class Update:
         self.changelog = changelog
         self.file_path = file_path
 
+    # TODO: move logic out of the model
     def do_update(self):
         updater = RequiredFeature('update-service').request()
         updater.do_update(self)

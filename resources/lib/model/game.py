@@ -2,7 +2,6 @@ import os
 
 import subprocess
 
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.fanart import Fanart
 
 

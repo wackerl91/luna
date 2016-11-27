@@ -2,6 +2,7 @@ import xbmcaddon
 import xbmcgui
 from resources.lib.di.requiredfeature import RequiredFeature
 
+
 # TODO: Needs styling
 class HostList(xbmcgui.WindowXMLDialog):
     def __new__(cls, *args, **kwargs):

@@ -1,5 +1,4 @@
 class GameManager(object):
-    # TODO: host aware methods
     def __init__(self, repository):
         self.repository = repository
 
@@ -24,3 +23,6 @@ class GameManager(object):
     def add_games(self, host, games):
         # TODO!!!!
         pass
+
+    def clear(self):
+        self.repository.clear()

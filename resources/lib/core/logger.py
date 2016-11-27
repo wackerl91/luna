@@ -1,6 +1,7 @@
 from xbmcswift2 import Plugin
 
 
+# TODO: Rebuild without xbmcswift2
 class Logger:
 
     def __init__(self, plugin):

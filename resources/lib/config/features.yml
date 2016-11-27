@@ -78,8 +78,8 @@ services:
         class_name: ScraperChain
         arguments:
           - '@plugin'
+          - '@game-manager'
           - '@logger'
-        lazy: true
 
     omdb-scraper:
         module: resources.lib.scraper.omdbscraper
@@ -263,5 +263,6 @@ services:
         class_name: CacheController
         arguments:
           - '@core'
-          - '@scraper-chain'
+          - '@plugin'
+          - '@game-manager'
           - '@logger'

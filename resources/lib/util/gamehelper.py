@@ -62,17 +62,20 @@ class GameHelper(object):
             if not silent:
                 progress_dialog.update(bar_movement * i, 'Processing: %s' % nvapp.title, '')
             game = Game(nvapp.title, host.uuid)
+            self.logger.info("Processing: %s" % nvapp.title)
 
             if nvapp.id in cache:
                 if not games.get(nvapp.id):
                     if not silent:
                         progress_dialog.update(bar_movement * i, line2='Restoring information from cache')
                     games[nvapp.id] = cache.get(nvapp.id)
+                    self.logger.info("Restored information from cache")
             else:
                 try:
                     if not silent:
                         progress_dialog.update(bar_movement * i, line2='Getting Information from Online Sources')
                     games[nvapp.id] = self.scraper_chain.query_game_information(nvapp)
+                    self.logger.info("Loaded information from online sources")
                 except KeyError:
                     self.logger.info(
                         'Key Error thrown while getting information for game {0}: {1}'

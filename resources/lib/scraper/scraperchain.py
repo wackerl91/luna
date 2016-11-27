@@ -8,8 +8,9 @@ from resources.lib.scraper.abcscraper import AbstractScraper
 
 
 class ScraperChain:
-    def __init__(self, plugin, logger):
+    def __init__(self, plugin, game_manager, logger):
         self.plugin = plugin
+        self.game_manager = game_manager
         self.logger = logger
         self.scraper_chain = []
         self.game_blacklist = ['Steam', 'Steam Client Bootstrapper']
@@ -36,6 +37,7 @@ class ScraperChain:
                 for scraper in self.scraper_chain:
                     if scraper.name() == 'NvHTTP':
                         game.posters = scraper.get_game_information(nvapp).posters
+                        self.logger.info("Appending steam posters: %s" % game.posters)
 
             game_info.append(game)
 
@@ -47,16 +49,20 @@ class ScraperChain:
         return game
 
     def reset_cache(self):
-        self.plugin.get_storage('game_storage').clear()
+        self.logger.info("Reset cache requested ...")
+        self.game_manager.clear()
 
         paths = []
         for scraper in self.scraper_chain:
+            self.logger.info("Getting paths from scraper: %s" % scraper.name())
             for path in scraper.return_paths():
                 paths.append(path)
         unique_paths = set(paths)
 
         for path in unique_paths:
+            self.logger.info("Attempting to clear path: %s" % path)
             if os.path.exists(path):
+                self.logger.info("Clearing path: %s" % path)
                 shutil.rmtree(path, ignore_errors=True)
 
     def append(self, scrapers):

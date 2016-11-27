@@ -46,3 +46,8 @@ class GameRepository(object):
         except KeyError:
             self.logger.error('Couldnt find game with ID %s for host %s' % (host.uuid, id))
             return None
+
+    def clear(self):
+        self.logger.info('Clearing game_storage')
+        self.storage.clear()
+        self.storage.sync()

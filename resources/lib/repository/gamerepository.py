@@ -13,6 +13,7 @@ class GameRepository(object):
     def add_game(self, host, game, flush=True):
         if game.host_uuid == '' or game.host_uuid is None:
             game.host_uuid = host.uuid
+        # TODO: this is really bad if the same games happen to be installed on multiple machines ...
         self.storage[game.id] = game
         if flush:
             self.storage.sync()

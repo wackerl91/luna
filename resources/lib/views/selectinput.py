@@ -43,18 +43,19 @@ def create_label():
 
 class SelectInput(pyxbmct.AddonDialogWindow):
     def __init__(self, controller, title=''):
-        print 'Init Called'
         super(SelectInput, self).__init__(title)
         self.controller = controller
         self.plugin = RequiredFeature('plugin').request()
         self.core = RequiredFeature('core').request()
         self.device_wrapper = RequiredFeature('device-wrapper').request()
+        self.logger = RequiredFeature('logger').request()
         self.available_devices = self.device_wrapper.devices
         self.md5 = hashlib.md5()
         self.input_storage = self.plugin.get_storage('input_storage')
 
+        self.logger.info('Init Called')
         for key, device in self.input_storage.iteritems():
-            print 'Devices during INIT: %s' % device.name
+            self.logger.info('Devices during INIT: %s' % device.name)
 
         background = None
         if self.core.get_active_skin() == 'skin.osmc':
@@ -85,7 +86,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
 
     def add_ctrl(self, device=None):
         idx = len(self.controls)
-        print 'Adding controler with index %s' % idx
+        self.logger.info('Adding controler with index %s' % idx)
         control = CtrlSelectionWrapper()
         self.md5.update(str(time.time()))
         ctrl_id = self.md5.hexdigest()
@@ -149,7 +150,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
             control.input_select_btn.controlDown(self.add_ctrl_btn)
         previous_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            print 'Looping controls, current index: %s' % _control.idx
+            self.logger.info('Looping controls, current index: %s' % _control.idx)
             if _control.idx == control.idx-1:
                 previous_control = _control
         if previous_control:
@@ -175,7 +176,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         if controller == -1:
             return
         else:
-            print device_names[controller]
+            self.logger.info(device_names[controller])
             device = self.device_wrapper.find_device_by_name(device_names[controller])
             control.device = device
             control.input_select_btn.setLabel(device.name)
@@ -192,7 +193,10 @@ class SelectInput(pyxbmct.AddonDialogWindow):
             if value.name == control.device.name:
                 del_key = key
         if not dry:
-            del self.input_storage[del_key]
+            try:
+                del self.input_storage[del_key]
+            except KeyError:
+                pass
             del self.controls[control.id]
             del control
             self.init_existing_controls()
@@ -203,7 +207,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         control.set_internal_navigation()
         next_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            print 'Looping controls, current index: %s' % _control.idx
+            self.logger.info('Looping controls, current index: %s' % _control.idx)
             if _control.idx == control.idx+1:
                 next_control = _control
         if next_control:
@@ -221,11 +225,11 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         for key, device in self.input_storage.iteritems():
                 if device.name == control.device.name:
                     device.mapping = None
-                    print 'Found device and saved mapping'
+                    self.logger.info('Found device and saved mapping')
                     break
         next_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            print 'Looping controls, current index: %s' % _control.idx
+            self.logger.info('Looping controls, current index: %s' % _control.idx)
             if _control.idx == control.idx+1:
                 next_control = _control
         if next_control:
@@ -242,14 +246,14 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         if browser:
             control.set_mapping_file(browser)
             for key, device in self.input_storage.iteritems():
-                print 'Iterating devices, current IS device: %s' % device.name
+                self.logger.info('Iterating devices, current IS device: %s' % device.name)
                 if device.name == control.device.name:
                     device.mapping = browser
-                    print 'Found device and saved mapping'
+                    self.logger.info('Found device and saved mapping')
                     break
 
     def create_mapping(self, control):
-        print 'Starting mapping'
+        self.logger.info('Starting mapping')
         map_name = xbmcgui.Dialog().input(self.core.string('enter_filename'))
 
         progress_dialog = xbmcgui.DialogProgress()
@@ -275,10 +279,10 @@ class SelectInput(pyxbmct.AddonDialogWindow):
             if confirmed:
                 control.set_mapping_file(map_file)
                 for key, device in self.input_storage.iteritems():
-                    print 'Iterating devices, current IS device: %s' % device.name
+                    self.logger.info('Iterating devices, current IS device: %s' % device.name)
                     if device.name == control.device.name:
                         device.mapping = map_file
-                        print 'Found device and saved mapping'
+                        self.logger.info('Found device and saved mapping')
                         break
 
         else:
@@ -295,9 +299,9 @@ class SelectInput(pyxbmct.AddonDialogWindow):
 
         del_keys = []
         for key, device in self.input_storage.iteritems():
-            print 'Iterating saved input devices in INIT: %s' % device.name
+            self.logger.info('Iterating saved input devices in INIT: %s' % device.name)
             if not self.device_wrapper.find_device_by_name(device.name):
-                print 'Could not find device by name: %s' % device.name
+                self.logger.info('Could not find device by name: %s' % device.name)
                 del_keys.append(key)
 
         for key in del_keys:
@@ -316,8 +320,8 @@ class SelectInput(pyxbmct.AddonDialogWindow):
 
     def close_and_save(self):
         self.input_storage.sync()
-        print self.input_storage.raw_dict()
-        print 'Save called, closing window ... '
+        self.logger.info(self.input_storage.raw_dict())
+        self.logger.info('Save called, closing window ... ')
         self.close()
 
     def setAnimation(self, control):

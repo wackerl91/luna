@@ -13,30 +13,29 @@ from resources.lib.nvhttp.request.abstractrequestservice import AbstractRequestS
 
 
 class RequestService(AbstractRequestService):
-    def __init__(self, crypto_provider, config_helper):
+    def __init__(self, crypto_provider, config_helper, host_context_service):
         self.crypto_provider = crypto_provider
         self.config_helper = config_helper
+        self.host_context_service = host_context_service
         self.config_helper.configure(False)
 
         self.logger = RequiredFeature('logger').request()
-        # next settings should be set as they can change depending on the host
-        self.host_ip = ''
-        self.base_url_https = ''
-        self.base_url_http = ''
-        self.key_dir = ''
-        self.uid = ''
 
-    def configure(self, host_details):
+    def _reconfigure(self):
+        host_details = self.host_context_service.get_current_context()
+
         self.host_ip = host_details.local_ip
         self.key_dir = host_details.key_dir
         self.base_url_https = 'https://%s:%s' % (self.host_ip, self.HTTPS_PORT)
         self.base_url_http = 'http://%s:%s' % (self.host_ip, self.HTTP_PORT)
-        self.uid = self.load_or_generate_uid()
+        self.uid = self._load_or_generate_uid()
 
     def build_uid_uuid_string(self):
+        self._reconfigure()
         return 'uniqueid=%s&uuid=%s' % (self.uid, uuid.uuid4())
 
     def get_server_info(self):
+        self._reconfigure()
         response = None
         try:
             response = self.open_http_connection(
@@ -70,7 +69,7 @@ class RequestService(AbstractRequestService):
         host.key_dir = os.path.join(AbstractCryptoProvider.get_key_base_path(), host.uuid)
         host.state = HostDetails.STATE_ONLINE
 
-        self.key_dir = host.key_dir
+        # self.key_dir = host.key_dir
 
         return host
 
@@ -118,6 +117,7 @@ class RequestService(AbstractRequestService):
         return None
 
     def get_app_list(self):
+        self._reconfigure()
         response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), False,
                                              False)
         if response.status_code in [401, 404]:
@@ -155,6 +155,7 @@ class RequestService(AbstractRequestService):
             raise ValueError("ETree is not set.")
 
     def get_box_art(self, app_id, asset_type=2, asset_idx=0):
+        self._reconfigure()
         # TODO: What are the other asset types and indices?
         response = self.open_http_connection(
             '{0:s}/appasset?{1:s}&appid={2:s}&AssetType={3:s}&AssetIdx={4:s}'.format(self.base_url_https,
@@ -168,7 +169,7 @@ class RequestService(AbstractRequestService):
 #    def unpair(self):
 #        self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)
 
-    def load_or_generate_uid(self):
+    def _load_or_generate_uid(self):
         uid_file = os.path.join(self.key_dir, 'uniqueid.dat')
         self.logger.info(self.key_dir)
         if not os.path.isdir(self.key_dir):

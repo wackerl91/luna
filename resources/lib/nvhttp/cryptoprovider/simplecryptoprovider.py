@@ -4,18 +4,21 @@ from resources.lib.nvhttp.cryptoprovider.abstractcryptoprovider import AbstractC
 
 
 class SimpleCryptoProvider(AbstractCryptoProvider):
-    def __init__(self, config_helper, host):
+    def __init__(self, host_context_service, config_helper):
+        super(SimpleCryptoProvider, self).__init__(host_context_service)
         self.config_helper = config_helper
-        self.host = host
 
     def get_cert_path(self):
-        return os.path.join(self.get_key_base_path(), self.host.uuid, 'client.pem')
+        super(SimpleCryptoProvider, self).get_cert_path()
+        return os.path.join(self.get_key_base_path(), self._current_host.uuid, 'client.pem')
 
     def get_key_path(self):
-        return os.path.join(self.get_key_base_path(), self.host.uuid, 'key.pem')
+        super(SimpleCryptoProvider, self).get_key_path()
+        return os.path.join(self.get_key_base_path(), self._current_host.uuid, 'key.pem')
 
     def get_key_dir(self):
-        return os.path.join(self.get_key_base_path(), self.host.uuid)
+        super(SimpleCryptoProvider, self).get_key_dir()
+        return os.path.join(self.get_key_base_path(), self._current_host.uuid)
 
     def get_pem_encoded_client_cert(self):
         raise NotImplementedError

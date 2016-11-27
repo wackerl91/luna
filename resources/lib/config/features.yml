@@ -180,25 +180,12 @@ services:
         module: resources.lib.service.hostcontextservice
         class_name: HostContextService
 
-    request-service-factory:
-        module: resources.lib.factory.requestservicefactory
-        class_name: RequestServiceFactory
-        arguments:
-          - '@host-context-service'
-
     request-service:
         module: resources.lib.nvhttp.request.requestservice
         class_name: RequestService
         arguments:
           - '@crypto-provider'
           - '@config-helper'
-        factory_class: '@request-service-factory'
-        factory_method: 'create_request_service'
-
-    crypto-provider-factory:
-        module: resources.lib.factory.cryptoproviderfactory
-        class_name: CryptoProviderFactory
-        arguments:
           - '@host-context-service'
 
     crypto-provider:
@@ -206,8 +193,7 @@ services:
         class_name: CryptoProviderWrapper
         arguments:
           - '@config-helper'
-        factory_class: '@crypto-provider-factory'
-        factory_method: 'create_crypto_provider'
+          - '@host-context-service'
 
     router:
         module: resources.lib.routing.router
@@ -264,5 +250,4 @@ services:
         arguments:
           - '@core'
           - '@plugin'
-          - '@game-manager'
-          - '@logger'
+          - '@scraper-chain'

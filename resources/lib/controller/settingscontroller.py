@@ -22,7 +22,9 @@ class SettingsController(BaseController):
         for category in settings:
             for _, setting in category.settings.iteritems():
                 new_value = setting.current_value
-                if new_value != setting.default and new_value is not None:
+                if new_value != setting.default and new_value != self.addon.getSetting(setting.setting_id) and new_value is not None:
+                    if isinstance(new_value, bool):
+                        setting.current_value = str(setting.current_value).lower()
                     self.logger.info("Setting '%s' changed value: %s -> %s."
                                      % (setting.setting_label,
                                         self.addon.getSetting(setting.setting_id),

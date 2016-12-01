@@ -75,12 +75,15 @@ class RequiredFeature(object):
                 else:
                     instance = class_()
                 assert self.assertion(instance), \
-                            "The value %s of %r does not match the specified criteria" \
-                            % (instance, self.feature)
+                    "The value %s of %r does not match the specified criteria" \
+                    % (instance, self.feature)
 
             try:
                 tagged_features = featurebroker.features.get_tagged_features(self.feature)
                 if featurebroker.has_methods('append')(instance):
+                    for key, tagged_feature in enumerate(tagged_features):
+                        tagged_features[key] = RequiredFeature(tagged_feature).request()
+
                     instance.append(tagged_features)
             except KeyError:
                 pass

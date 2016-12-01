@@ -1,6 +1,5 @@
 import xbmcaddon
 import xbmcgui
-from resources.lib.di.requiredfeature import RequiredFeature
 
 
 # TODO: Needs styling
@@ -13,7 +12,6 @@ class HostList(xbmcgui.WindowXMLDialog):
         self.hosts = hosts
         self.selected_host = None
         self.list = None
-        self.logger = RequiredFeature('logger').request()
 
     def onInit(self):
         self.list = self.getControl(202)
@@ -43,8 +41,7 @@ class HostList(xbmcgui.WindowXMLDialog):
                 selected_item = self.list.getSelectedItem()
                 try:
                     selected_host = self.hosts[selected_item.getProperty('uuid')]
-                    self.logger.info('Selected host by UUID: %s' % selected_host.uuid)
                     self.selected_host = selected_host
                     self.close()
                 except KeyError:
-                    self.logger.error('Couldn\'t find host by UUID: %s' % selected_item.getProperty('uuid'))
+                    pass

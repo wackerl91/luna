@@ -6,7 +6,8 @@ router = RequiredFeature('router').request()
 
 def route(name):
     def decorator(func):
-        xbmc.log("[script.luna.router]: Adding route with name %s" % name)
+        xbmc.log("[script.luna.router]: Adding route with name %s to cache" % name)
+        assert name not in router._routes_cache, "Route with name %s already exists on the same class" % name
         router._routes_cache[name] = func
         return func
 
@@ -15,7 +16,6 @@ def route(name):
 
 class BaseController(object):
     def render(self, name, args=None):
-        xbmc.log("Trying to render: %s" % name)
         if args:
             return router.render(name, args=args)
         else:

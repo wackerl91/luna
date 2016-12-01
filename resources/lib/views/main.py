@@ -22,7 +22,6 @@ class Main(xbmcgui.WindowXML):
         self.controller_config_item = None
         self.audio_config_item = None
         self.host_manager = RequiredFeature('host-manager').request()
-        self.logger = RequiredFeature('logger').request()
 
     def onInit(self):
         self.hosts = self.host_manager.get_hosts()
@@ -54,7 +53,7 @@ class Main(xbmcgui.WindowXML):
         self.list.addItems(items)
 
         self.settings_item = xbmcgui.ListItem('Settings')
-        self.logger.info(os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/cog.png'))
+
         self.settings_item.setThumbnailImage(
             os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'resources/icons/cog.png'))
 

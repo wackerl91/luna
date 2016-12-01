@@ -7,18 +7,14 @@ services:
         module: xbmcaddon
         class_name: Addon
 
-    logger:
-        module: resources.lib.core.logger
-        class_name: Logger
-        arguments:
-          - '@plugin'
-
     core:
         module: resources.lib.core.corefunctions
         class_name: Core
         arguments:
           - '@plugin'
           - '@logger'
+        tags:
+          - { name: logger, channel: core }
 
     config-helper:
         module: resources.lib.util.confighelper
@@ -26,6 +22,8 @@ services:
         arguments:
           - '@plugin'
           - '@logger'
+        tags:
+          - { name: logger, channel: config }
 
     core-monitor:
         module: resources.lib.core.coremonitor
@@ -33,6 +31,8 @@ services:
         arguments:
           - '@config-helper'
           - '@logger'
+        tags:
+          - { name: logger, channel: core }
 
     moonlight-helper:
         module: resources.lib.util.moonlighthelper
@@ -41,6 +41,8 @@ services:
           - '@plugin'
           - '@config-helper'
           - '@logger'
+        tags:
+          - { name: logger, channel: moonlight }
 
     game-helper:
         module: resources.lib.util.gamehelper
@@ -53,6 +55,8 @@ services:
           - '@scraper-chain'
           - '@logger'
         lazy: true
+        tags:
+          - { name: logger, channel: util }
 
     update-service:
         module: resources.lib.core.updateservice
@@ -61,6 +65,8 @@ services:
           - '@plugin'
           - '@core'
           - '@logger'
+        tags:
+          - { name: logger, channel: core }
 
     skin-patcher:
         module: resources.lib.util.skinpatcher
@@ -80,6 +86,8 @@ services:
           - '@plugin'
           - '@game-manager'
           - '@logger'
+        tags:
+          - { name: logger, channel: scraper }
 
     omdb-scraper:
         module: resources.lib.scraper.omdbscraper
@@ -129,6 +137,12 @@ services:
     pairing-manager:
         module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
         class_name: PairingManagerWrapper
+        arguments:
+          - '@crypto-provider'
+          - '@config-helper'
+          - '@logger'
+        tags:
+          - { name: logger, channel: nvhttp }
 
     audio-manager:
         module: resources.lib.util.audiomanager
@@ -147,12 +161,17 @@ services:
           - '@connection-manager'
           - '@host-manager'
           - '@host-context-service'
+        tags:
+          - { name: logger, channel: host }
 
     host-repository:
         module: resources.lib.repository.hostrepository
         class_name: HostRepository
         arguments:
           - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: repository }
 
     host-manager:
         module: resources.lib.manager.hostmanager
@@ -168,6 +187,8 @@ services:
         arguments:
           - '@core'
           - '@logger'
+        tags:
+          - { name: logger, channel: repository }
 
     game-manager:
         module: resources.lib.manager.gamemanager
@@ -180,6 +201,10 @@ services:
     host-context-service:
         module: resources.lib.service.hostcontextservice
         class_name: HostContextService
+        arguments:
+          - '@logger'
+        tags:
+          - { name: logger, channel: context }
 
     request-service:
         module: resources.lib.nvhttp.request.requestservice
@@ -188,6 +213,9 @@ services:
           - '@crypto-provider'
           - '@config-helper'
           - '@host-context-service'
+          - '@logger'
+        tags:
+          - { name: logger, channel: nvhttp }
 
     crypto-provider:
         module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
@@ -206,6 +234,8 @@ services:
         arguments:
           - '@addon'
           - '@logger'
+        tags:
+          - { name: logger, channel: core }
 
     #
     # Controllers
@@ -214,6 +244,13 @@ services:
     main-controller:
         module: resources.lib.controller.maincontroller
         class_name: MainController
+        arguments:
+          - '@addon'
+          - '@logger'
+          - '@host-context-service'
+          - '@host-manager'
+        tags:
+          - { name: logger, channel: controller }
 
     game-list-controller:
         module: resources.lib.controller.gamelistcontroller
@@ -236,6 +273,8 @@ services:
           - '@connection-manager'
           - '@host-manager'
           - '@host-context-service'
+        tags:
+          - { name: logger, channel: controller }
 
     controller-config-controller:
         module: resources.lib.controller.controllerconfigurationcontroller
@@ -244,6 +283,11 @@ services:
     settings-controller:
         module: resources.lib.controller.settingscontroller
         class_name: SettingsController
+        arguments:
+          - '@addon'
+          - '@logger'
+        tags:
+          - { name: logger, channel: controller }
 
     cache-controller:
         module: resources.lib.controller.cachecontroller

@@ -5,7 +5,6 @@ import xml.etree.ElementTree as ETree
 
 import requests
 
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.nvapp import NvApp
 from resources.lib.nvhttp.cryptoprovider.abstractcryptoprovider import AbstractCryptoProvider
@@ -13,13 +12,12 @@ from resources.lib.nvhttp.request.abstractrequestservice import AbstractRequestS
 
 
 class RequestService(AbstractRequestService):
-    def __init__(self, crypto_provider, config_helper, host_context_service):
+    def __init__(self, crypto_provider, config_helper, host_context_service, logger):
+        super(RequestService, self).__init__(logger)
         self.crypto_provider = crypto_provider
         self.config_helper = config_helper
         self.host_context_service = host_context_service
         self.config_helper.configure(False)
-
-        self.logger = RequiredFeature('logger').request()
 
     def _reconfigure(self):
         host_details = self.host_context_service.get_current_context()

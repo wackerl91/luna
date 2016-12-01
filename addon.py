@@ -1,10 +1,6 @@
-import xbmc
 from resources.lib.kernel.xbmcapplicationkernel import XBMCApplicationKernel
 
 if __name__ == '__main__':
-    import sys
-    xbmc.log(str(sys.argv))
-
     # TODO: This is sometimes called before main controller is known to router
     def callback():
         from resources.lib.di.requiredfeature import RequiredFeature

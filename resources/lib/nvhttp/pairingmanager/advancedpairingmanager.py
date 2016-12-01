@@ -12,11 +12,13 @@ from resources.lib.nvhttp.pairingmanager.abstractpairingmanager import AbstractP
 
 
 class AdvancedPairingManager(AbstractPairingManager):
-    def __init__(self, crypto_provider):
+    def __init__(self, crypto_provider, config_helper, logger):
         self.crypto_provider = crypto_provider
         self.cert = crypto_provider.get_client_cert()
         self.private_key = crypto_provider.get_client_private_key()
         self.pem_cert_bytes = crypto_provider.get_pem_encoded_client_cert()
+        self.config_helper = config_helper
+        self.logger = logger
 
     @staticmethod
     def _extract_plain_cert(request_service, text):

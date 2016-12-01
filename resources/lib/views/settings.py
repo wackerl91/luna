@@ -42,8 +42,6 @@ class Settings(xbmcgui.WindowXMLDialog):
         self.btn_id_group = {}  # Button ID -> SettingGroup Map (used for determining focus group)
         self.current_last = None  # Stores current category's last setting
 
-        self.logger = RequiredFeature('logger').request()
-
     def onInit(self):
         self.settings = [setting for key, setting in self.settings_parser.get_settings().iteritems()]
         self.settings.sort(key=lambda x: x.priority, reverse=False)
@@ -62,7 +60,6 @@ class Settings(xbmcgui.WindowXMLDialog):
             item.setProperty('id', str(category.priority))
             categories.append(item)
 
-        self.logger.info("Adding category list items")
         self.category_list.addItems(categories)
 
         for category in self.settings:
@@ -76,8 +73,6 @@ class Settings(xbmcgui.WindowXMLDialog):
         self.switch_settings_to_category(self.selected_cat_cache, '')
 
     def build_settings_list(self, category, cat_settings):
-        self.logger.info("Adding settings list items for category: %s" % category.cat_label)
-
         settings = []
         for setting_id, setting in cat_settings.iteritems():
             if setting.visible != "false":
@@ -143,10 +138,6 @@ class Settings(xbmcgui.WindowXMLDialog):
                     else:
                         target_control = current_control.get_x_previous(index_offset)
 
-                    self.logger.info(
-                        "Setting is pointing to control: %s , offset: %s, target_control: %s" % (
-                            setting.setting_id, index_offset, target_control))
-
                     current_control.append_enable_condition(target_control, target_value)
                     self.needs_state_update[category.cat_label].append(current_control)
 
@@ -162,9 +153,6 @@ class Settings(xbmcgui.WindowXMLDialog):
                     else:
                         target_control = current_control.get_x_previous(index_offset)
 
-                    self.logger.info(
-                        "Setting is pointing to control: %s , offset: %s, target_control: %s" % (
-                            setting.setting_id, index_offset, target_control))
                     current_control.append_visible_condition(target_control, target_value)
                     self.needs_state_update[category.cat_label].append(current_control)
 
@@ -365,11 +353,9 @@ class Settings(xbmcgui.WindowXMLDialog):
 
         selected_category = self.category_list.getSelectedItem()
         selected_category_label = selected_category.getLabel()
-        self.logger.info("Currently Selected Category: %s" % selected_category_label)
 
         if selected_category_label != self.selected_cat_cache:
             previous_cat = self.selected_cat_cache
-            self.logger.info("Category Changed: %s -> %s" % (previous_cat, selected_category_label))
             self.selected_cat_cache = selected_category_label
             self.switch_settings_to_category(selected_category_label, previous_cat)
 
@@ -418,7 +404,6 @@ class Settings(xbmcgui.WindowXMLDialog):
 
         elif action == xbmcgui.ACTION_MOVE_LEFT:
             for key, wa_btn in self.setting_groups[selected_category_label].iteritems():
-                self.logger.info("Changing Color for Label @ %s" % wa_btn)
                 original_label = wa_btn.getLabel()
                 if original_label[1:6] == 'COLOR':
                     original_label = original_label[16:-8]

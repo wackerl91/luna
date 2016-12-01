@@ -11,31 +11,31 @@ class AbstractCryptoProvider(object):
 
     @abstractmethod
     def get_cert_path(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def get_key_path(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def get_key_dir(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def get_client_cert(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def get_client_private_key(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def get_pem_encoded_client_cert(self):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @abstractmethod
     def extract_cert_signature(self, cert):
-        self._current_host = self.host_context_service.get_current_host()
+        self._current_host = self.host_context_service.get_current_context()
 
     @staticmethod
     def get_key_base_path():

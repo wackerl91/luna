@@ -18,7 +18,6 @@ class GameList(xbmcgui.WindowXML):
         self.games = []
         self.game_manager = RequiredFeature('game-manager').request()
         self.game_controller = RequiredFeature('game-helper').request()
-        self.logger = RequiredFeature('logger').request()
         self.list = None
         self.cover = None
         self.fanart = None
@@ -49,7 +48,6 @@ class GameList(xbmcgui.WindowXML):
 
             items.append(item)
 
-        self.logger.info("Adding list items")
         self.list.addItems(items)
         try:
             current_item = self.list.getListItem(self.list.getSelectedPosition())

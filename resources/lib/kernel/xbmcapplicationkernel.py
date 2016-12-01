@@ -50,8 +50,8 @@ class XBMCApplicationKernel(object):
     def _warmup_repositories(self):
         managers = featurebroker.features.get_tagged_features('manager')
         for manager in managers:
-            xbmc.log("[script.luna.kernel]: Currently warming up: %s" % manager)
-            RequiredFeature(manager).request()
+            xbmc.log("[script.luna.kernel]: Currently warming up: %s" % manager.name)
+            RequiredFeature(manager.name).request()
         xbmc.log('[script.luna.kernel]: Warming up managers ... done')
 
     def preload_controllers(self):

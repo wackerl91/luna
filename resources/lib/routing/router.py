@@ -45,11 +45,12 @@ class Router(object):
         route = self.routing[cls.__name__]
         routes_cache = {}
         for key, value in self._routes_cache.iteritems():
-            xbmc.log('%s_%s -> %s' % (route.prefix, key, value))
+            xbmc.log('[script.luna.router]: Added Route: %s_%s -> %s' % (route.prefix, key, value))
             routes_cache["%s_%s" % (route.prefix, key)] = value
         self.routes.update(routes_cache)
         self._routes_cache = {}
         return cls
+
     """
     def route(self, name):
         def decorator(func):
@@ -60,7 +61,6 @@ class Router(object):
     """
 
     def render(self, name, instance=None, args=None):
-        xbmc.log("Trying to render: %s" % name)
         try:
             route = None
             prefix = name.split('_')[0]

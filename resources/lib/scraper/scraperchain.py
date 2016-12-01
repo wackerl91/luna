@@ -67,8 +67,7 @@ class ScraperChain:
 
     def append(self, scrapers):
         for scraper in scrapers:
-            obj = RequiredFeature(scraper).request()
-            self._append_scraper(obj)
+            self._append_scraper(scraper)
 
     def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):

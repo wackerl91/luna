@@ -1,10 +1,7 @@
-from resources.lib.di.requiredfeature import RequiredFeature
-
-
 class HostRepository(object):
-    def __init__(self, core):
+    def __init__(self, core, logger):
         self.storage = core.get_storage('host')
-        self.logger = RequiredFeature('logger').request()
+        self.logger = logger
 
     def get_hosts(self):
         return self.storage

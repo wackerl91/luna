@@ -19,7 +19,6 @@ except ImportError:
 import shutil
 import collections
 from datetime import datetime
-from xbmcswift2.logger import log
 
 
 class _PersistentDictMixin(object):
@@ -41,8 +40,6 @@ class _PersistentDictMixin(object):
         self.file_format = file_format  # 'csv', 'json', or 'pickle'
         self.filename = filename
         if flag != 'n' and os.access(filename, os.R_OK):
-            log.info('Reading %s storage from disk at "%s"',
-                     self.file_format, self.filename)
             fileobj = open(filename, 'rb' if file_format == 'pickle' else 'r')
             with fileobj:
                 self.load(fileobj)

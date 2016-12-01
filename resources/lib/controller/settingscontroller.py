@@ -4,10 +4,10 @@ from resources.lib.views.settings import Settings
 
 
 class SettingsController(BaseController):
-    def __init__(self):
+    def __init__(self, addon, logger):
         super(SettingsController, self).__init__()
-        self.addon = RequiredFeature('addon').request()
-        self.logger = RequiredFeature('logger').request()
+        self.addon = addon
+        self.logger = logger
         self.window = None
 
     @route(name='index')

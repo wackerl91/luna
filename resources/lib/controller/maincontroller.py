@@ -2,7 +2,6 @@ import threading
 
 from requests import ConnectionError
 
-import xbmc
 from resources.lib.controller.basecontroller import BaseController, route
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.nvhttp.request.staticrequestservice import StaticRequestService
@@ -11,12 +10,12 @@ from resources.lib.views.main import Main
 
 
 class MainController(BaseController):
-    def __init__(self):
+    def __init__(self, addon, logger, host_context_service, host_manager):
         super(MainController, self).__init__()
-        self.addon = RequiredFeature('addon').request()
-        self.logger = RequiredFeature('logger').request()
-        self.host_context_service = RequiredFeature('host-context-service').request()
-        self.host_manager = RequiredFeature('host-manager').request()
+        self.addon = addon
+        self.logger = logger
+        self.host_context_service = host_context_service
+        self.host_manager = host_manager
         self.window = None
 
     @route(name="index")

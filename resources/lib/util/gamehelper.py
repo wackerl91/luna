@@ -2,7 +2,6 @@ import xbmcgui
 from resources.lib.model.game import Game
 
 
-# TODO: This is more of a helper class, not a controller
 class GameHelper(object):
     def __init__(self, plugin, core, game_manager, moonlight_helper, scraper_chain, logger):
         self.plugin = plugin

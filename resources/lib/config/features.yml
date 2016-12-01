@@ -167,6 +167,7 @@ services:
         class_name: GameRepository
         arguments:
           - '@core'
+          - '@logger'
 
     game-manager:
         module: resources.lib.manager.gamemanager

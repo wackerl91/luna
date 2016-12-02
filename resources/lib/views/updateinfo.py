@@ -2,7 +2,7 @@ import os
 
 import pyxbmct.addonwindow as pyxbmct
 
-from xbmcswift2 import xbmcaddon
+import xbmcaddon
 
 from resources.lib.di.requiredfeature import RequiredFeature
 
@@ -16,7 +16,6 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class UpdateInfo(pyxbmct.AddonDialogWindow):
-    plugin = RequiredFeature('plugin')
     core = RequiredFeature('core')
 
     def __init__(self, update, title=''):

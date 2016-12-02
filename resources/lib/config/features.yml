@@ -1,8 +1,4 @@
 services:
-    plugin:
-        module: xbmcswift2
-        class_name: Plugin
-
     addon:
         module: xbmcaddon
         class_name: Addon
@@ -11,7 +7,7 @@ services:
         module: resources.lib.core.corefunctions
         class_name: Core
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@logger'
         tags:
           - { name: logger, channel: core }
@@ -20,7 +16,8 @@ services:
         module: resources.lib.util.confighelper
         class_name: ConfigHelper
         arguments:
-          - '@plugin'
+          - '@addon'
+          - '@core'
           - '@logger'
         tags:
           - { name: logger, channel: config }
@@ -38,7 +35,7 @@ services:
         module: resources.lib.util.moonlighthelper
         class_name: MoonlightHelper
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@config-helper'
           - '@logger'
         tags:
@@ -48,7 +45,6 @@ services:
         module: resources.lib.util.gamehelper
         class_name: GameHelper
         arguments:
-          - '@plugin'
           - '@core'
           - '@game-manager'
           - '@moonlight-helper'
@@ -62,7 +58,7 @@ services:
         module: resources.lib.core.updateservice
         class_name: UpdateService
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@core'
           - '@logger'
         tags:
@@ -73,7 +69,7 @@ services:
         class_name: SkinPatcher
         arguments:
           - '@core'
-          - '@plugin'
+          - '@addon'
 
     device-wrapper:
         module: resources.lib.util.devicewrapper
@@ -83,7 +79,7 @@ services:
         module: resources.lib.scraper.scraperchain
         class_name: ScraperChain
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@game-manager'
           - '@logger'
         tags:
@@ -93,7 +89,7 @@ services:
         module: resources.lib.scraper.omdbscraper
         class_name: OmdbScraper
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@core'
         tags:
           - { name: scraper-chain }
@@ -102,7 +98,7 @@ services:
         module: resources.lib.scraper.tgdbscraper
         class_name: TgdbScraper
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@core'
         tags:
           - { name: scraper-chain }
@@ -111,7 +107,7 @@ services:
         module: resources.lib.scraper.igdbscraper
         class_name: IgdbScraper
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@core'
         tags:
           - { name: scraper-chain }
@@ -120,7 +116,7 @@ services:
         module: resources.lib.scraper.nvhttpscraper
         class_name: NvHTTPScraper
         arguments:
-          - '@plugin'
+          - '@addon'
           - '@core'
           - '@request-service'
         tags:
@@ -262,7 +258,7 @@ services:
         arguments:
           - '@audio-manager'
           - '@config-helper'
-          - '@plugin'
+          - '@addon'
 
     host-controller:
         module: resources.lib.controller.hostcontroller
@@ -294,5 +290,4 @@ services:
         class_name: CacheController
         arguments:
           - '@core'
-          - '@plugin'
           - '@scraper-chain'

@@ -7,10 +7,10 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 class AbstractScraper:
     __metaclass__ = ABCMeta
 
-    def __init__(self, plugin, core):
-        self.plugin = plugin
+    def __init__(self, addon, core):
+        self.addon = addon
         self.core = core
-        self.base_path = self.plugin.storage_path
+        self.base_path = self.core.storage_path
 
     @abstractproperty
     def name(self):

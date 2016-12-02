@@ -3,8 +3,8 @@ import os
 import subprocess
 import threading
 
-from xbmcswift2 import xbmc, xbmcaddon
-
+import xbmc
+import xbmcaddon
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.inputmap import InputMap
 from resources.lib.util.inputwrapper import InputWrapper
@@ -27,8 +27,8 @@ class MoonlightHelper:
     regex_certificate_gen = '(Generating certificate...done)'
     regex_connection_failed = '(Can\'t connect to server)'
 
-    def __init__(self, plugin, config_helper, logger):
-        self.plugin = plugin
+    def __init__(self, addon, config_helper, logger):
+        self.addon = addon
         self.config_helper = config_helper
         self.logger = logger
         self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -37,7 +37,7 @@ class MoonlightHelper:
     def create_ctrl_map(self, dialog, map_file):
         mapping_proc = subprocess.Popen(
             ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
-             self.plugin.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+             self.addon.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
         lines_iterator = iter(mapping_proc.stdout.readline, b"")
 
@@ -127,7 +127,7 @@ class MoonlightHelper:
             host.key_dir,
             game_id,
             self.config_helper.get_config_path(),
-            self.plugin.get_setting('enable_moonlight_debug', str)
+            self.addon.get_setting('enable_moonlight_debug', str)
         ])
 
     def list_games(self):

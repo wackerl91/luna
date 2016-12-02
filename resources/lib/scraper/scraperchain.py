@@ -8,8 +8,8 @@ from resources.lib.scraper.abcscraper import AbstractScraper
 
 
 class ScraperChain:
-    def __init__(self, plugin, game_manager, logger):
-        self.plugin = plugin
+    def __init__(self, addon, game_manager, logger):
+        self.addon = addon
         self.game_manager = game_manager
         self.logger = logger
         self.scraper_chain = []
@@ -30,7 +30,7 @@ class ScraperChain:
             game = Game(nvapp.title, None, nvapp.id)
 
             if nvapp.title == 'Steam':
-                fanart_path = os.path.join(self.plugin.addon.getAddonInfo('path'),
+                fanart_path = os.path.join(self.addon.getAddonInfo('path'),
                                            'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
                 fanart = Fanart(fanart_path, fanart_path)
                 game.fanarts[os.path.basename(fanart_path)] = fanart

@@ -3,10 +3,10 @@ from resources.lib.controller.basecontroller import BaseController, route
 
 
 class AudioController(BaseController):
-    def __init__(self, audio_manager, config_helper, plugin):
+    def __init__(self, audio_manager, config_helper, addon):
         self.audio_manager = audio_manager
         self.config_helper = config_helper
-        self.plugin = plugin
+        self.addon = addon
 
     @route(name="select")
     def select_audio_device(self):
@@ -18,7 +18,7 @@ class AudioController(BaseController):
             device_name = device_list[audio_device]
             device = self.audio_manager.get_device_by_name(device_name)
             if device:
-                self.plugin.set_setting('audio_device', device.handler)
-                self.plugin.set_setting('audio_device_name', device.name)
+                self.addon.setSetting('audio_device', device.handler)
+                self.addon.setSetting('audio_device_name', device.name)
 
         return

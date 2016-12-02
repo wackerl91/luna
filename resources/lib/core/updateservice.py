@@ -1,12 +1,12 @@
 import json
 import os
-import urllib2
-
 import re
+import urllib2
 import zipfile
 
-from xbmcswift2 import xbmcaddon, xbmcgui, xbmc
-
+import xbmc
+import xbmcaddon
+import xbmcgui
 from resources.lib.model.update import Update
 from resources.lib.views.updateinfo import UpdateInfo
 
@@ -16,8 +16,8 @@ class UpdateService:
     api_url = 'https://api.github.com/repos/wackerl91/luna/releases/latest'
     pre_api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
 
-    def __init__(self, plugin, core, logger):
-        self.plugin = plugin
+    def __init__(self, addon, core, logger):
+        self.addon = addon
         self.core = core
         self.logger = logger
         self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
@@ -32,7 +32,7 @@ class UpdateService:
         update = None
 
         if not update_storage.get('checked') or ignore_checked:
-            pre_updates_enabled = self.plugin.get_setting('enable_pre_updates', bool)
+            pre_updates_enabled = self.addon.get_setting('enable_pre_updates')
             if pre_updates_enabled:
                 response = json.load(urllib2.urlopen(self.pre_api_url))
             else:
@@ -115,6 +115,6 @@ class UpdateService:
         update.asset_url = release['assets'][0]['browser_download_url']
         update.asset_name = release['assets'][0]['name']
         update.changelog = release['body']
-        update.file_path = os.path.join(self.plugin.storage_path, update.asset_name)
+        update.file_path = os.path.join(self.core.storage_path, update.asset_name)
 
         return update

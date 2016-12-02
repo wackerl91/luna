@@ -45,12 +45,11 @@ class SelectInput(pyxbmct.AddonDialogWindow):
     def __init__(self, controller, title=''):
         super(SelectInput, self).__init__(title)
         self.controller = controller
-        self.plugin = RequiredFeature('plugin').request()
         self.core = RequiredFeature('core').request()
         self.device_wrapper = RequiredFeature('device-wrapper').request()
         self.available_devices = self.device_wrapper.devices
         self.md5 = hashlib.md5()
-        self.input_storage = self.plugin.get_storage('input_storage')
+        self.input_storage = self.core.get_storage('input_storage')
 
         background = None
         if self.core.get_active_skin() == 'skin.osmc':

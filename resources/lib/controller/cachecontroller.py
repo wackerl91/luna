@@ -2,9 +2,9 @@ from resources.lib.controller.basecontroller import BaseController, route
 
 
 class CacheController(BaseController):
-    def __init__(self, core, plugin, scraper_chain):
+    def __init__(self, core, scraper_chain):
         self.core = core
-        self.base_path = plugin.storage_path
+        self.base_path = core.storage_path
         self.scraper_chain = scraper_chain
 
     @route("reset")

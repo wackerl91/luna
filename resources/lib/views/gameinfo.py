@@ -1,8 +1,8 @@
 import os
 
 import pyxbmct.addonwindow as pyxbmct
-
-from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
+import xbmcaddon
+import xbmcgui
 
 from resources.lib.di.requiredfeature import RequiredFeature
 
@@ -16,7 +16,6 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class GameInfo(pyxbmct.AddonDialogWindow):
-    plugin = RequiredFeature('plugin')
     core = RequiredFeature('core')
 
     def __init__(self, game, title=''):
@@ -79,7 +78,7 @@ class GameInfo(pyxbmct.AddonDialogWindow):
         self.button_play = pyxbmct.Button('Play', focusTexture='', noFocusTexture='', focusedColor=COLOR_FO,
                                           textColor=COLOR_NF, font='Med', alignment=pyxbmct.ALIGN_LEFT)
         self.placeControl(self.button_play, 11, 0)
-        self.connect(self.button_play, self.launch_game)
+        # self.connect(self.button_play, self.launch_game)
 
         self.button_cover_art = pyxbmct.Button('Choose Cover Art', focusTexture='', noFocusTexture='',
                                                focusedColor=COLOR_FO, textColor=COLOR_NF, font='Med',
@@ -103,10 +102,10 @@ class GameInfo(pyxbmct.AddonDialogWindow):
 
         self.setFocus(self.button_play)
 
-    def launch_game(self):
-        xbmc.executebuiltin('XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                endpoint='launch_game',
-                game_id=self.game.name))
+    # def launch_game(self):
+    #     xbmc.executebuiltin('XBMC.RunPlugin(%s)' % self.plugin.url_for(
+    #             endpoint='launch_game',
+    #             game_id=self.game.name))
 
     def select_fanart(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Fanart', 'files', '.jpg|.png', False, False,

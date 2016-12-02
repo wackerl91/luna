@@ -33,8 +33,8 @@ STRINGS = {
 
 
 class Core:
-    def __init__(self, plugin, logger):
-        self.plugin = plugin
+    def __init__(self, addon, logger):
+        self.addon = addon
         self.logger = logger
         self.storage_path = xbmc.translatePath(
             'special://profile/addon_data/%s/.storage/' % xbmcaddon.Addon().getAddonInfo('id'))
@@ -42,7 +42,7 @@ class Core:
 
     def string(self, string_id):
         if string_id in STRINGS:
-            return self.plugin.get_string(STRINGS[string_id]).encode('utf-8')
+            return self.addon.getLocalizedString(STRINGS[string_id]).encode('utf-8')
         else:
             return string_id
 
@@ -125,7 +125,7 @@ class Core:
         return storage
 
     def get_active_skin(self):
-        userdata_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(self.plugin.storage_path))))
+        userdata_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(self.storage_path))))
         guisettings_file = os.path.join(userdata_folder, 'guisettings.xml')
         xml_root = ElementTree(file=guisettings_file).getroot()
         active_skin = xml_root.find('lookandfeel').find('skin').text

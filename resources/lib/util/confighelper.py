@@ -5,11 +5,12 @@ import os
 class ConfigHelper:
     conf = 'luna.conf'
 
-    def __init__(self, plugin, logger):
-        self.plugin = plugin
+    def __init__(self, addon, core, logger):
+        self.addon = addon
+        self.core = core
         self.logger = logger
         self._reset()
-        self.full_path = ''.join([self.plugin.storage_path, self.conf])
+        self.full_path = ''.join([self.core.storage_path, self.conf])
         self.configure(False)
 
     def _reset(self):
@@ -65,23 +66,23 @@ class ConfigHelper:
             raise ValueError('Moonlight binary could not be found.')
 
         settings = {
-            'addon_path': self.plugin.storage_path,
+            'addon_path': self.core.storage_path,
             'binary_path': binary_path,
-            'enable_custom_res': self.plugin.get_setting('enable_custom_res', bool),
-            'resolution_width': self.plugin.get_setting('resolution_width', str),
-            'resolution_height': self.plugin.get_setting('resolution_height', str),
-            'resolution': self.plugin.get_setting('resolution', str),
-            'framerate': self.plugin.get_setting('framerate', str),
-            'graphics_optimizations': self.plugin.get_setting('graphic_optimizations', bool),
-            'remote_optimizations': self.plugin.get_setting('remote_optimizations', bool),
-            'local_audio': self.plugin.get_setting('local_audio', bool),
-            'enable_custom_bitrate': self.plugin.get_setting('enable_custom_bitrate', bool),
-            'bitrate': self.plugin.get_setting('bitrate', int),
-            'packetsize': self.plugin.get_setting('packetsize', int),
-            'enable_custom_input': self.plugin.get_setting('enable_custom_input', bool),
-            'override_default_resolution': self.plugin.get_setting('override_default_resolution', bool),
-            'audio_device': self.plugin.get_setting('audio_device', str),
-            'enable_surround_audio': self.plugin.get_setting('enable_surround_audio', bool)
+            'enable_custom_res': self.addon.get_setting('enable_custom_res', bool),
+            'resolution_width': self.addon.get_setting('resolution_width', str),
+            'resolution_height': self.addon.get_setting('resolution_height', str),
+            'resolution': self.addon.get_setting('resolution', str),
+            'framerate': self.addon.get_setting('framerate', str),
+            'graphics_optimizations': self.addon.get_setting('graphic_optimizations', bool),
+            'remote_optimizations': self.addon.get_setting('remote_optimizations', bool),
+            'local_audio': self.addon.get_setting('local_audio', bool),
+            'enable_custom_bitrate': self.addon.get_setting('enable_custom_bitrate', bool),
+            'bitrate': self.addon.get_setting('bitrate', int),
+            'packetsize': self.addon.get_setting('packetsize', int),
+            'enable_custom_input': self.addon.get_setting('enable_custom_input', bool),
+            'override_default_resolution': self.addon.get_setting('override_default_resolution', bool),
+            'audio_device': self.addon.get_setting('audio_device', str),
+            'enable_surround_audio': self.addon.get_setting('enable_surround_audio', bool)
         }
         self._configure(**settings)
 
@@ -152,7 +153,7 @@ class ConfigHelper:
                 print 'Removed section %s' % section
 
         if self.enable_custom_input:
-            input_storage = self.plugin.get_storage('input_storage')
+            input_storage = self.addon.get_storage('input_storage')
             print input_storage.raw_dict()
             unmapped_devices = []
             mapped_devices = []

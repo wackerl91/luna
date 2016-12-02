@@ -5,10 +5,11 @@ from resources.lib.views.gamelist import GameList
 
 
 class GameListController(BaseController):
-    def __init__(self, game_manager, game_helper, moonlight_helper):
+    def __init__(self, game_manager, game_helper, moonlight_helper, logger):
         self.game_manager = game_manager
         self.game_helper = game_helper
         self.moonlight_helper = moonlight_helper
+        self.logger = logger
         self.window = None
 
     @route(name='list')
@@ -19,8 +20,7 @@ class GameListController(BaseController):
 
     @route(name='launch')
     def launch_game(self, game):
-        import xbmc
-        xbmc.log("Starting game by name: %s" % game.name)
+        self.logger.info("Starting game by name: %s" % game.name)
         self.moonlight_helper.launch_game(game.name)
 
     def refresh_list(self, host):

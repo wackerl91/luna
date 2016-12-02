@@ -62,6 +62,8 @@ class Router(object):
 
     def render(self, name, instance=None, args=None):
         try:
+            # TODO: splitting at the first occurrence isn't the best idea ...
+            # TODO: are duplicate prefixes on different controllers a possible use case?
             route = None
             prefix = name.split('_')[0]
             for key, _route in self.routing.iteritems():

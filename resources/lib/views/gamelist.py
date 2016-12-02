@@ -1,17 +1,12 @@
-import xbmc
 import xbmcaddon
 import xbmcgui
-
-from resources.lib.views.gamecontextmenu import GameContextMenu
 
 
 class GameList(xbmcgui.WindowXML):
     def __new__(cls, *args, **kwargs):
-        xbmc.log("GameList Open")
         return super(GameList, cls).__new__(cls, "gamelist.xml", xbmcaddon.Addon().getAddonInfo('path'))
 
     def __init__(self, controller, host, game_list):
-        xbmc.log("GameList Init")
         super(GameList, self).__init__("gamelist.xml", xbmcaddon.Addon().getAddonInfo('path'))
         self.controller = controller
         self.host = host
@@ -19,10 +14,8 @@ class GameList(xbmcgui.WindowXML):
         self.list = None
         self.cover = None
         self.fanart = None
-        xbmc.log("GameList Init - Done")
 
     def onInit(self):
-        xbmc.log("GameList onInit")
         self.games.sort(key=lambda x: x['label'], reverse=False)
         self.list = self.getControl(50)
         self.cover = self.getControl(1)
@@ -68,15 +61,15 @@ class GameList(xbmcgui.WindowXML):
             cover_cache = current_item.getProperty('icon')
 
             current_game = self.controller.get_game_by_id(self.host, current_item.getProperty('id'))
-            window = GameContextMenu(self.host, current_item, current_game)
-            window.doModal()
-            refresh = window.refresh_required
-            del window
+
+            refresh = self.controller.render('gamecontext_menu', {'host': self.host, 'list_item': current_item, 'game': current_game})
 
             loaded_game = self.controller.get_game_by_id(self.host, current_item.getProperty('id'))
+
             if fanart_cache != loaded_game.get_selected_fanart().get_original():
                 self.list.getSelectedItem().setProperty('fanart', loaded_game.get_selected_fanart().get_original())
                 self.fanart.setImage(loaded_game.get_selected_fanart().get_original())
+
             if cover_cache != loaded_game.get_selected_poster():
                 self.list.getSelectedItem().setProperty('icon', loaded_game.get_selected_poster())
                 self.cover.setImage(loaded_game.get_selected_poster())

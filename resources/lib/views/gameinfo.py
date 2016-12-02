@@ -1,12 +1,7 @@
 import os
 
 import pyxbmct.addonwindow as pyxbmct
-import xbmcaddon
 import xbmcgui
-
-from resources.lib.di.requiredfeature import RequiredFeature
-
-_addon_path = xbmcaddon.Addon().getAddonInfo('path')
 
 COLOR_FO = '0xFFE0B074'
 COLOR_NF = '0xFF808080'
@@ -16,13 +11,13 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class GameInfo(pyxbmct.AddonDialogWindow):
-    core = RequiredFeature('core')
-
-    def __init__(self, game, title=''):
+    def __init__(self, controller, game, title=''):
         super(GameInfo, self).__init__(title)
+        self.controller = controller
         self.game = game
+
         background = None
-        if self.core.get_active_skin() == 'skin.osmc':
+        if self.controller.get_active_skin() == 'skin.osmc':
             media_path = '/usr/share/kodi/addons/skin.osmc/media'
             if os.path.exists(media_path):
                 background = os.path.join(media_path, 'dialogs/DialogBackground_old.png')
@@ -112,14 +107,14 @@ class GameInfo(pyxbmct.AddonDialogWindow):
                                           self.game.get_selected_fanart().get_thumb())
         if browser:
             self.game.set_selected_fanart(browser)
-            self.core.get_storage().sync()
+            self.controller.sync_storage()
 
     def select_cover_art(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Cover Art', 'files', '.jpg|.png', False, False,
                                           self.game.get_poster(0, ''))
         if browser:
             self.game.selected_poster = browser
-            self.core.get_storage().sync()
+            self.controller.sync_storage()
             self.image = pyxbmct.Image(browser)
             self.placeControl(self.image, 2, 0, 6, 1)
 

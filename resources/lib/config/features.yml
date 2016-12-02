@@ -261,6 +261,19 @@ services:
           - '@game-manager'
           - '@game-helper'
           - '@moonlight-helper'
+          - '@logger'
+        tags:
+          - { name: logger, channel: controller }
+
+    game-context-menu-controller:
+        module: resources.lib.controller.gamecontextmenucontroller
+        class_name: GameContextMenuController
+
+    game-info-controller:
+        module: resources.lib.controller.gameinfocontroller
+        class_name: GameInfoController
+        arguments:
+          - '@core'
 
     audio-controller:
         module: resources.lib.controller.audiocontroller

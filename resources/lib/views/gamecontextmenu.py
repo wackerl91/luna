@@ -1,16 +1,14 @@
-import xbmc
 import xbmcaddon
 import xbmcgui
-from resources.lib.views.gameinfo import GameInfo
 
 
 class GameContextMenu(xbmcgui.WindowXMLDialog):
     def __new__(cls, *args, **kwargs):
-        xbmc.log("GameList Open")
         return super(GameContextMenu, cls).__new__(cls, 'lunacontextmenu.xml', xbmcaddon.Addon().getAddonInfo('path'))
 
-    def __init__(self, host, list_item, current_game):
+    def __init__(self, controller, host, list_item, current_game):
         super(GameContextMenu, self).__init__('lunacontextmenu.xml', xbmcaddon.Addon().getAddonInfo('path'))
+        self.controller = controller
         self.host = host
         self.list_item = list_item
         self.current_game = current_game
@@ -30,12 +28,9 @@ class GameContextMenu(xbmcgui.WindowXMLDialog):
         if self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_SELECT_ITEM:
             selected_position = self.list.getSelectedPosition()
             if selected_position == 0:
-                window = GameInfo(self.current_game, self.current_game.name)
-                window.doModal()
-                del window
+                self.controller.render('gameinfo_details', {'game': self.current_game, 'title': self.current_game.name})
             if selected_position == 1:
                 self.refresh_required = True
                 self.close()
-                xbmc.log('Clicked Full Refresh')
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()

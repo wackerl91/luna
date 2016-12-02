@@ -4,12 +4,13 @@
 
 from typing import Any, List
 
+from resources.lib.core.corefunctions import Core
 from resources.lib.core.logger import Logger
 from resources.lib.model.inputdevice import InputDevice
 from resources.lib.model.nvapp import NvApp
+from resources.lib.nvhttp.request.requestservice import RequestService
 from resources.lib.service.hostcontextservice import HostContextService
 from resources.lib.util.confighelper import ConfigHelper
-from xbmcaddon import Addon
 from xbmcgui import DialogProgress
 
 
@@ -20,12 +21,13 @@ class MoonlightHelper:
     regex_moonlight = ... # type: str
     regex_certificate_gen = ... # type: str
     regex_connection_failed = ... # type: str
-    addon = ... # type: Addon
+    core = ... # type: Core
     config_helper = ... # type: ConfigHelper
+    host_context_service = ... # type: HostContextService
+    request_service = ... # type: RequestService
     logger = ... # type: Logger
     internal_path = ... # type: str
-    host_context_service = ... # type: HostContextService
-    def __init__(self, addon: Addon, config_helper: ConfigHelper, logger: Logger) -> None: ...
+    def __init__(self, core: Core, config_helper: ConfigHelper, host_context_service: HostContextService, request_service: RequestService, logger: Logger) -> None: ...
     def create_ctrl_map(self, dialog: DialogProgress, map_file: str) -> bool: ...
     def create_ctrl_map_new(self, dialog: DialogProgress, map_file: str, device: InputDevice) -> bool: ...
     def pair_host(self, dialog: DialogProgress) -> (str, str): ...

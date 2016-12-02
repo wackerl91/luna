@@ -16,11 +16,10 @@ class UpdateService:
     api_url = 'https://api.github.com/repos/wackerl91/luna/releases/latest'
     pre_api_url = 'https://api.github.com/repos/wackerl91/luna/releases'
 
-    def __init__(self, addon, core, logger):
-        self.addon = addon
+    def __init__(self, core, logger):
         self.core = core
         self.logger = logger
-        self.current_version = re.match(self.regexp, xbmcaddon.Addon().getAddonInfo('version')).group()
+        self.current_version = core.current_version
         self.update_version = None
         self.asset_url = None
         self.asset_name = None
@@ -32,7 +31,7 @@ class UpdateService:
         update = None
 
         if not update_storage.get('checked') or ignore_checked:
-            pre_updates_enabled = self.addon.get_setting('enable_pre_updates')
+            pre_updates_enabled = self.core.get_setting('enable_pre_updates', bool)
             if pre_updates_enabled:
                 response = json.load(urllib2.urlopen(self.pre_api_url))
             else:
@@ -74,7 +73,7 @@ class UpdateService:
 
     def initiate_update(self, update):
         if update.asset_name is not None:
-            window = UpdateInfo(update, 'Update to Luna %s' % self.update_version)
+            window = UpdateInfo(self, update, 'Update to Luna %s' % self.update_version)
             window.doModal()
             del window
 
@@ -84,7 +83,7 @@ class UpdateService:
             asset.write(urllib2.urlopen(update.asset_url).read())
             asset.close()
         zip_file = zipfile.ZipFile(file_path)
-        zip_file.extractall(xbmcaddon.Addon().getAddonInfo('path'), self._get_members(zip_file))
+        zip_file.extractall(self.core.internal_path, self._get_members(zip_file))
 
         xbmcgui.Dialog().ok(
             self.core.string('name'),
@@ -118,3 +117,6 @@ class UpdateService:
         update.file_path = os.path.join(self.core.storage_path, update.asset_name)
 
         return update
+
+    def get_active_skin(self):
+        return self.core.get_active_skin()

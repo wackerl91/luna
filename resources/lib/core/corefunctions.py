@@ -1,16 +1,16 @@
 import os
 import stat
 
+from datetime import timedelta
 from xml.etree.ElementTree import ElementTree
 
-from datetime import timedelta
+import re
 
 import xbmc
 import xbmcaddon
 import xbmcgui
-from resources.lib.storageengine.storage import TimedStorage
 
-internal_path = xbmcaddon.Addon().getAddonInfo('path')
+from resources.lib.storageengine.storage import TimedStorage
 
 STRINGS = {
     'name':                30000,
@@ -33,33 +33,38 @@ STRINGS = {
 
 
 class Core:
-    def __init__(self, addon, logger):
-        self.addon = addon
+    regexp = '(\d+\.)?(\d+\.)?(\*|\d+)'
+
+    def __init__(self, logger):
+        self.addon = xbmcaddon.Addon()
         self.logger = logger
-        self.storage_path = xbmc.translatePath(
-            'special://profile/addon_data/%s/.storage/' % xbmcaddon.Addon().getAddonInfo('id'))
-        self.logger.info('[CoreService] - initialized')
+        self._storage_path = xbmc.translatePath(
+            'special://profile/addon_data/%s/.storage/' % self.addon.getAddonInfo('id'))
+        self._current_version = re.match(self.regexp, self.addon.getAddonInfo('version')).group()
+        self._internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
     def string(self, string_id):
         if string_id in STRINGS:
             return self.addon.getLocalizedString(STRINGS[string_id]).encode('utf-8')
+        elif isinstance(string_id, int):
+            return self.addon.getLocalizedString(string_id).encode('utf-8')
         else:
             return string_id
 
     def check_script_permissions(self):
-        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch.sh')
+        st = os.stat(self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch.sh', st.st_mode | 0111)
+            os.chmod(self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for launch')
 
-        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh')
+        st = os.stat(self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh', st.st_mode | 0111)
+            os.chmod(self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for launch-helper-osmc')
 
-        st = os.stat(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh')
+        st = os.stat(self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh')
         if not bool(st.st_mode & stat.S_IXUSR):
-            os.chmod(internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh', st.st_mode | 0111)
+            os.chmod(self.internal_path + '/resources/lib/launchscripts/osmc/moonlight-heartbeat.sh', st.st_mode | 0111)
             self.logger.info('Changed file permissions for moonlight-heartbeat')
 
     def get_storage(self, name='game_storage', file_format='pickle', TTL=None):
@@ -131,3 +136,29 @@ class Core:
         active_skin = xml_root.find('lookandfeel').find('skin').text
         return active_skin
 
+    def get_setting(self, setting_id, return_type=None):
+        setting_value = self.addon.getSetting(setting_id)
+
+        result = {
+            str: lambda x: str(x),
+            unicode: lambda x: x.decode('utf-8'),
+            bool: lambda x: x == 'true',
+            int: lambda x: int(x),
+        }.get(return_type, lambda x: x)(setting_value)
+
+        return result
+
+    def set_setting(self, setting_id, setting_value):
+        self.addon.setSetting(setting_id, str(setting_value))
+
+    @property
+    def current_version(self):
+        return self._current_version
+
+    @property
+    def internal_path(self):
+        return self._internal_path
+
+    @property
+    def storage_path(self):
+        return self._storage_path

@@ -7,8 +7,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 class AbstractScraper:
     __metaclass__ = ABCMeta
 
-    def __init__(self, addon, core):
-        self.addon = addon
+    def __init__(self, core):
         self.core = core
         self.base_path = self.core.storage_path
 

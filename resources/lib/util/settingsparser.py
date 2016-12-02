@@ -8,10 +8,10 @@ from resources.lib.model.settings.setting import Setting
 
 
 class SettingsParser(object):
-    def __init__(self, addon, logger):
-        self.settings_path = os.path.join(addon.getAddonInfo('path'), 'resources', 'settings.xml')
-        self.addon = addon
+    def __init__(self, core, logger):
+        self.core = core
         self.logger = logger
+        self.settings_path = os.path.join(core.internal_path, 'resources', 'settings.xml')
         self.settings_tree = None
         self.settings_hash = None
         self._reload_settings()
@@ -44,7 +44,7 @@ class SettingsParser(object):
 
             for category in self.settings_tree.findall('category'):
                 cat_label_id = category.get('label')
-                cat_label = self.addon.getLocalizedString(int(cat_label_id))
+                cat_label = self.core.string(int(cat_label_id))
                 cat = Category(cat_label_id, cat_label, cat_prio)
                 cat_prio += 1
 
@@ -53,13 +53,13 @@ class SettingsParser(object):
                     if setting.get('label') is not None:
                         setting_label_id = setting.get('label')
                         setting_id = setting.get('id')
-                        setting_label = self.addon.getLocalizedString(int(setting_label_id))
+                        setting_label = self.core.string(int(setting_label_id))
 
                         setting_args = {}
                         for item in setting.items():
                             setting_args[item[0]] = item[1]
 
-                        current_value = self.addon.getSetting(setting_id)
+                        current_value = self.core.string(setting_id)
                         setting_args['current_value'] = current_value
 
                         _setting = Setting(setting_id, setting_label, setting_prio, **setting_args)
@@ -76,4 +76,4 @@ class SettingsParser(object):
     def update_values(self):
         for key, category in self.settings_dict.iteritems():
             for setting_key, setting in category.settings.iteritems():
-                setting.current_value = self.addon.getSetting(setting.setting_id)
+                setting.current_value = self.core.get_setting(setting.setting_id)

@@ -2,7 +2,6 @@ import os
 
 import xbmcaddon
 import xbmcgui
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.views.hostcontextmenu import HostContextMenu
 
 
@@ -10,10 +9,10 @@ class Main(xbmcgui.WindowXML):
     def __new__(cls, *args, **kwargs):
         return super(Main, cls).__new__(cls, 'main.xml', xbmcaddon.Addon().getAddonInfo('path'))
 
-    def __init__(self, controller):
+    def __init__(self, controller, hosts):
         super(Main, self).__init__('main.xml', xbmcaddon.Addon().getAddonInfo('path'))
         self.controller = controller
-        self.hosts = {}
+        self.hosts = hosts
         self.list = None
         self.host_index_key_map = {}
         self.options_list = None
@@ -21,10 +20,8 @@ class Main(xbmcgui.WindowXML):
         self.add_host_item = None
         self.controller_config_item = None
         self.audio_config_item = None
-        self.host_manager = RequiredFeature('host-manager').request()
 
     def onInit(self):
-        self.hosts = self.host_manager.get_hosts()
         self.list = self.getControl(102)
         self.options_list = self.getControl(103)
         self.list.reset()
@@ -73,7 +70,7 @@ class Main(xbmcgui.WindowXML):
             [self.settings_item, self.controller_config_item, self.audio_config_item, self.add_host_item, ])
 
     def update(self):
-        self.hosts = self.host_manager.get_hosts()
+        self.hosts = self.controller.get_hosts()
         self.list.reset()
         self.options_list.reset()
         self.host_index_key_map.clear()

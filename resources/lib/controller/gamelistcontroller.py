@@ -1,19 +1,19 @@
 import threading
 
 from resources.lib.controller.basecontroller import BaseController, route
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.views.gamelist import GameList
 
 
 class GameListController(BaseController):
-    def __init__(self):
-        self.game_helper = RequiredFeature('game-helper').request()
-        self.moonlight_helper = RequiredFeature('moonlight-helper').request()
+    def __init__(self, game_manager, game_helper, moonlight_helper):
+        self.game_manager = game_manager
+        self.game_helper = game_helper
+        self.moonlight_helper = moonlight_helper
         self.window = None
 
     @route(name='list')
     def index_action(self, host):
-        self.window = GameList(controller=self, host=host)
+        self.window = GameList(controller=self, host=host, game_list=self.game_helper.get_games_as_list(host))
         self.window.doModal()
         del self.window
 
@@ -36,3 +36,6 @@ class GameListController(BaseController):
         background_dialog.close()
         del background_dialog
         return
+
+    def get_game_by_id(self, host, game_id):
+        return self.game_manager.get_game_by_id(host, game_id)

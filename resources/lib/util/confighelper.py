@@ -5,8 +5,7 @@ import os
 class ConfigHelper:
     conf = 'luna.conf'
 
-    def __init__(self, addon, core, logger):
-        self.addon = addon
+    def __init__(self, core, logger):
         self.core = core
         self.logger = logger
         self._reset()
@@ -68,21 +67,21 @@ class ConfigHelper:
         settings = {
             'addon_path': self.core.storage_path,
             'binary_path': binary_path,
-            'enable_custom_res': self.addon.get_setting('enable_custom_res', bool),
-            'resolution_width': self.addon.get_setting('resolution_width', str),
-            'resolution_height': self.addon.get_setting('resolution_height', str),
-            'resolution': self.addon.get_setting('resolution', str),
-            'framerate': self.addon.get_setting('framerate', str),
-            'graphics_optimizations': self.addon.get_setting('graphic_optimizations', bool),
-            'remote_optimizations': self.addon.get_setting('remote_optimizations', bool),
-            'local_audio': self.addon.get_setting('local_audio', bool),
-            'enable_custom_bitrate': self.addon.get_setting('enable_custom_bitrate', bool),
-            'bitrate': self.addon.get_setting('bitrate', int),
-            'packetsize': self.addon.get_setting('packetsize', int),
-            'enable_custom_input': self.addon.get_setting('enable_custom_input', bool),
-            'override_default_resolution': self.addon.get_setting('override_default_resolution', bool),
-            'audio_device': self.addon.get_setting('audio_device', str),
-            'enable_surround_audio': self.addon.get_setting('enable_surround_audio', bool)
+            'enable_custom_res': self.core.get_setting('enable_custom_res', bool),
+            'resolution_width': self.core.get_setting('resolution_width', str),
+            'resolution_height': self.core.get_setting('resolution_height', str),
+            'resolution': self.core.get_setting('resolution', str),
+            'framerate': self.core.get_setting('framerate', str),
+            'graphics_optimizations': self.core.get_setting('graphic_optimizations', bool),
+            'remote_optimizations': self.core.get_setting('remote_optimizations', bool),
+            'local_audio': self.core.get_setting('local_audio', bool),
+            'enable_custom_bitrate': self.core.get_setting('enable_custom_bitrate', bool),
+            'bitrate': self.core.get_setting('bitrate', int),
+            'packetsize': self.core.get_setting('packetsize', int),
+            'enable_custom_input': self.core.get_setting('enable_custom_input', bool),
+            'override_default_resolution': self.core.get_setting('override_default_resolution', bool),
+            'audio_device': self.core.get_setting('audio_device', str),
+            'enable_surround_audio': self.core.get_setting('enable_surround_audio', bool)
         }
         self._configure(**settings)
 
@@ -153,7 +152,7 @@ class ConfigHelper:
                 print 'Removed section %s' % section
 
         if self.enable_custom_input:
-            input_storage = self.addon.get_storage('input_storage')
+            input_storage = self.core.get_storage('input_storage')
             print input_storage.raw_dict()
             unmapped_devices = []
             mapped_devices = []

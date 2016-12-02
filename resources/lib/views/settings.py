@@ -2,7 +2,7 @@ import os
 
 import xbmcaddon
 import xbmcgui
-from resources.lib.di.requiredfeature import RequiredFeature
+
 from resources.lib.model.kodi_gui_workarounds.action import Action
 from resources.lib.model.kodi_gui_workarounds.linkedlistitem import LinkedListItem
 from resources.lib.model.kodi_gui_workarounds.settinggroup import SettingGroup
@@ -22,10 +22,10 @@ class Settings(xbmcgui.WindowXMLDialog):
     def __new__(cls, *args, **kwargs):
         return super(Settings, cls).__new__(cls, 'settings.xml', xbmcaddon.Addon().getAddonInfo('path'))
 
-    def __init__(self, controller):
+    def __init__(self, controller, settings):
         super(Settings, self).__init__('settings.xml', xbmcaddon.Addon().getAddonInfo('path'))
         self.controller = controller
-        self.settings_parser = RequiredFeature('settings-parser').request()
+        self.settings_list = settings
         # View Controls
         self.ok_btn = None
         self.cancel_btn = None
@@ -43,7 +43,7 @@ class Settings(xbmcgui.WindowXMLDialog):
         self.current_last = None  # Stores current category's last setting
 
     def onInit(self):
-        self.settings = [setting for key, setting in self.settings_parser.get_settings().iteritems()]
+        self.settings = [setting for key, setting in self.settings_list.iteritems()]
         self.settings.sort(key=lambda x: x.priority, reverse=False)
         self.category_list = self.getControl(302)
         self.ok_btn = self.getControl(303)

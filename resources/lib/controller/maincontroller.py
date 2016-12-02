@@ -3,24 +3,22 @@ import threading
 from requests import ConnectionError
 
 from resources.lib.controller.basecontroller import BaseController, route
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.nvhttp.request.staticrequestservice import StaticRequestService
 
 from resources.lib.views.main import Main
 
 
 class MainController(BaseController):
-    def __init__(self, addon, logger, host_context_service, host_manager):
+    def __init__(self, host_context_service, host_manager, logger):
         super(MainController, self).__init__()
-        self.addon = addon
-        self.logger = logger
         self.host_context_service = host_context_service
         self.host_manager = host_manager
+        self.logger = logger
         self.window = None
 
     @route(name="index")
     def index_action(self):
-        self.window = Main(controller=self)
+        self.window = Main(controller=self, hosts=self.get_hosts())
         self.update_host_status()
         self.window.doModal()
         del self.window
@@ -33,13 +31,13 @@ class MainController(BaseController):
         # window.doModal()
 
     def add_host(self):
-        host_controller = RequiredFeature('host-controller').request()
+        # host_controller = RequiredFeature('host-controller').request()
         self.logger.info("Calling host controller")
         ret_val = self.render('host_add')
         self.logger.info(ret_val)
         if ret_val:
             self.window.update()
-        del host_controller
+        # del host_controller
 
     @route(name="host_remove")
     def remove_host(self, host):
@@ -68,3 +66,6 @@ class MainController(BaseController):
         background_dialog.close()
         del background_dialog
         return
+
+    def get_hosts(self):
+        return self.host_manager.get_hosts()

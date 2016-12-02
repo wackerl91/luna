@@ -1,9 +1,10 @@
 from typing import Union, Dict
+from zipfile import ZipFile, ZipInfo
+from xbmcaddon import Addon
 
 from resources.lib.core.corefunctions import Core
 from resources.lib.core.logger import Logger
 from resources.lib.model.update import Update
-from xbmcaddon import Addon
 
 
 class UpdateService:
@@ -22,4 +23,5 @@ class UpdateService:
     def check_for_update(self, ignore_checked:bool) -> Union(Update, None): ...
     def initiate_update(self, update: Update) -> None: ...
     def do_update(self, update: Update) -> None: ...
+    def _get_members(self, zip_file: ZipFile) -> ZipInfo: ...
     def parse_release_information(self, release:Dict) -> Update: ...

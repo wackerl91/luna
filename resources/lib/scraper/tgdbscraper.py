@@ -15,8 +15,8 @@ from resources.lib.model.fanart import Fanart
 
 
 class TgdbScraper(AbstractScraper):
-    def __init__(self, addon, core):
-        AbstractScraper.__init__(self, addon, core)
+    def __init__(self, core):
+        AbstractScraper.__init__(self, core)
         self.api_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.fanart_cache = self._set_up_path(os.path.join(self.base_path, 'art/fanart/'))
@@ -35,7 +35,7 @@ class TgdbScraper(AbstractScraper):
         return [self.cover_cache, self.fanart_cache, self.api_cache]
 
     def is_enabled(self):
-        return self.addon.get_setting('enable_tgdb', bool)
+        return self.core.get_setting('enable_tgdb', bool)
 
     def _gather_information(self, nvapp, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, nvapp.id))

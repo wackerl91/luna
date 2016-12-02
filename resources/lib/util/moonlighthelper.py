@@ -4,8 +4,7 @@ import subprocess
 import threading
 
 import xbmc
-import xbmcaddon
-from resources.lib.di.requiredfeature import RequiredFeature
+
 from resources.lib.model.inputmap import InputMap
 from resources.lib.util.inputwrapper import InputWrapper
 from resources.lib.util.stoppableinputhandler import StoppableInputHandler
@@ -27,17 +26,18 @@ class MoonlightHelper:
     regex_certificate_gen = '(Generating certificate...done)'
     regex_connection_failed = '(Can\'t connect to server)'
 
-    def __init__(self, addon, config_helper, logger):
-        self.addon = addon
+    def __init__(self, core, config_helper, host_context_service, request_service, logger):
+        self.core = core
         self.config_helper = config_helper
+        self.host_context_service = host_context_service
+        self.request_service = request_service
         self.logger = logger
-        self.internal_path = xbmcaddon.Addon().getAddonInfo('path')
-        self.host_context_service = RequiredFeature('host-context-service').request()
+        self.internal_path = core.internal_path
 
     def create_ctrl_map(self, dialog, map_file):
         mapping_proc = subprocess.Popen(
             ['stdbuf', '-oL', self.config_helper.get_binary(), 'map', map_file, '-input',
-             self.addon.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
+             self.core.get_setting('input_device', unicode)], stdout=subprocess.PIPE)
 
         lines_iterator = iter(mapping_proc.stdout.readline, b"")
 
@@ -127,9 +127,8 @@ class MoonlightHelper:
             host.key_dir,
             game_id,
             self.config_helper.get_config_path(),
-            self.addon.get_setting('enable_moonlight_debug', str)
+            self.core.get_setting('enable_moonlight_debug', str)
         ])
 
     def list_games(self):
-        request_service = RequiredFeature('request-service').request()
-        return request_service.get_app_list()
+        return self.request_service.get_app_list()

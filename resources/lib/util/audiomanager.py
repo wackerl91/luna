@@ -1,6 +1,7 @@
 import os
 import re
 
+import xbmc
 from resources.lib.model.audiodevice import AudioDevice
 
 
@@ -41,28 +42,24 @@ class AudioManager(object):
                 card_info = f.readlines()
                 f.close()
 
-            card = card_info[0][-2]
-            dev = card_info[1][-2]
-            card_id = card_info[4].replace('\n', '')
-            name = card_info[5]
-
             device = AudioDevice()
-            audio_id = audio_id.replace('-', ' ')
+            device.original_name = audio_name
 
-            if card_id[4:] != '':
-                device.name = card_id[4:].strip()
-            else:
-                if name[6:].replace(audio_id, '').strip() == '':
-                    device.name = audio_name.replace('\n', '')
-                else:
-                    device.name = name[6:].replace('\n', '')
+            for entry in card_info:
+                entry = entry.replace('\n', '')
+                entry = entry.strip()
+                components = entry.split(':')
+                # components[0] is the key, [1] the value
+                setattr(device, components[0].strip(), components[1].strip())
 
-            device.handler = 'hw:%s,%s' % (card, dev)
-            subdevices_info.append(device)
+            device.handler = 'hw:%s,%s' % (device.card, device.device)
+            xbmc.log(device.stream)
+            if device.stream is None or device.stream == 'PLAYBACK':
+                subdevices_info.append(device)
 
         return subdevices_info
 
     def get_device_by_name(self, name):
         for device in self.devices:
-            if device.name == name:
+            if device.get_name() == name:
                 return device

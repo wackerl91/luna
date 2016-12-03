@@ -1,6 +1,3 @@
-from resources.lib.di.requiredfeature import RequiredFeature
-
-
 class Update:
     def __init__(self, current_version=None, update_version=None, asset_url=None, asset_name=None, changelog=None,
                  file_path=None):
@@ -10,8 +7,3 @@ class Update:
         self.asset_name = asset_name,
         self.changelog = changelog
         self.file_path = file_path
-
-    # TODO: move logic out of the model
-    def do_update(self):
-        updater = RequiredFeature('update-service').request()
-        updater.do_update(self)

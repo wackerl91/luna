@@ -13,6 +13,9 @@ class XBMCApplicationKernel(object):
         self.router = None
 
     def bootstrap(self, callback=None):
+        xbmc.log("[script.luna.kernel]: Bootstrapping DI ...")
+        xbmc.log("[script.luna.kernel]: Bootstrapping Router ...")
+
         self.featurebroker = FeatureBroker()
         di_thread = threading.Thread(target=self.featurebroker._parse_config())
 
@@ -22,8 +25,6 @@ class XBMCApplicationKernel(object):
 
         router_thread = threading.Thread(target=self.router._parse_config())
 
-        xbmc.log("[script.luna.kernel]: Bootstrapping DI ...")
-        xbmc.log("[script.luna.kernel]: Bootstrapping Router ...")
         di_thread.start()
         router_thread.start()
 

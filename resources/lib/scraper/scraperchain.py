@@ -1,15 +1,14 @@
 import os
 import shutil
 
-from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.fanart import Fanart
 from resources.lib.model.game import Game
 from resources.lib.scraper.abcscraper import AbstractScraper
 
 
 class ScraperChain:
-    def __init__(self, plugin, game_manager, logger):
-        self.plugin = plugin
+    def __init__(self, core, game_manager, logger):
+        self.core = core
         self.game_manager = game_manager
         self.logger = logger
         self.scraper_chain = []
@@ -30,7 +29,7 @@ class ScraperChain:
             game = Game(nvapp.title, None, nvapp.id)
 
             if nvapp.title == 'Steam':
-                fanart_path = os.path.join(self.plugin.addon.getAddonInfo('path'),
+                fanart_path = os.path.join(self.core.internal_path,
                                            'resources/statics/steam_wallpaper___globe_by_diglididudeng-d7kq9v9.jpg')
                 fanart = Fanart(fanart_path, fanart_path)
                 game.fanarts[os.path.basename(fanart_path)] = fanart

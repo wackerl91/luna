@@ -24,9 +24,8 @@ def indent(elem, level=0):
 
 
 class SkinPatcher:
-    def __init__(self, core, plugin):
+    def __init__(self, core):
         self.core = core
-        self.plugin = plugin
         self.base_path = '/usr/share/kodi/addons/skin.osmc/16x9/'
         self.shortcut_path = '/usr/share/kodi/addons/skin.osmc/shortcuts/'
         self.widget = 'Includes_Widgets.xml'
@@ -64,7 +63,7 @@ class SkinPatcher:
             self.patch_home()
             self.patch_var()
             self.patch_override()
-            self.plugin.set_setting('luna_widget_patched', 'true')
+            self.core.set_setting('luna_widget_patched', 'true')
         else:
             print 'Not Supported'
 
@@ -91,7 +90,6 @@ class SkinPatcher:
 
     def patch_home(self):
         xml_root = ElementTree.ElementTree(file=os.path.join(self.base_path, self.home)).getroot()
-        print self.plugin.get_setting('luna_force_fanart')
 
         controls = xml_root.find('controls')
         control_group = None
@@ -99,7 +97,7 @@ class SkinPatcher:
             print control.get('type')
             if control.get('type') == 'image':
                 print "Found Image Control"
-                if self.plugin.get_setting('luna_force_fanart', bool):
+                if self.core.get_setting('luna_force_fanart', bool):
                     control.find('visible').text = "True"
                     print 'Visible Text is %s' % control.find('visible').text
             if control.get('type') == 'group':
@@ -209,4 +207,4 @@ class SkinPatcher:
             shutil.move(os.path.join(self.base_path, self.var_backup), os.path.join(self.base_path, self.var))
             shutil.move(os.path.join(self.base_path, self.home_backup), os.path.join(self.base_path, self.home))
             shutil.move(os.path.join(self.shortcut_path, self.override_backup), os.path.join(self.shortcut_path, self.override))
-            self.plugin.set_setting('luna_widget_patched', 'false')
+            self.core.set_setting('luna_widget_patched', 'false')

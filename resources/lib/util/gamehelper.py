@@ -3,8 +3,7 @@ from resources.lib.model.game import Game
 
 
 class GameHelper(object):
-    def __init__(self, plugin, core, game_manager, moonlight_helper, scraper_chain, logger):
-        self.plugin = plugin
+    def __init__(self, core, game_manager, moonlight_helper, scraper_chain, logger):
         self.core = core
         self.game_manager = game_manager
         self.moonlight_helper = moonlight_helper
@@ -46,7 +45,7 @@ class GameHelper(object):
 
         # TODO: storage should be closed after access -> need to build a list(!!) of games and add them all together
         games = self.game_manager.get_games(host)
-        game_version_storage = self.plugin.get_storage('game_version')
+        game_version_storage = self.core.get_storage('game_version')
 
         cache = {}
         if game_version_storage.get('version') == Game.version:
@@ -103,6 +102,9 @@ class GameHelper(object):
             games = self.get_games(host)
         if force_refresh:
             games = self.get_games(host, silent=True)
+
+        if games is None:
+            return
 
         items = []
         for i, game_name in enumerate(games):

@@ -1,17 +1,8 @@
 services:
-    plugin:
-        module: xbmcswift2
-        class_name: Plugin
-
-    addon:
-        module: xbmcaddon
-        class_name: Addon
-
     core:
         module: resources.lib.core.corefunctions
         class_name: Core
         arguments:
-          - '@plugin'
           - '@logger'
         tags:
           - { name: logger, channel: core }
@@ -20,7 +11,7 @@ services:
         module: resources.lib.util.confighelper
         class_name: ConfigHelper
         arguments:
-          - '@plugin'
+          - '@core'
           - '@logger'
         tags:
           - { name: logger, channel: config }
@@ -38,8 +29,10 @@ services:
         module: resources.lib.util.moonlighthelper
         class_name: MoonlightHelper
         arguments:
-          - '@plugin'
+          - '@core'
           - '@config-helper'
+          - '@host-context-service'
+          - '@request-service'
           - '@logger'
         tags:
           - { name: logger, channel: moonlight }
@@ -48,7 +41,6 @@ services:
         module: resources.lib.util.gamehelper
         class_name: GameHelper
         arguments:
-          - '@plugin'
           - '@core'
           - '@game-manager'
           - '@moonlight-helper'
@@ -62,7 +54,6 @@ services:
         module: resources.lib.core.updateservice
         class_name: UpdateService
         arguments:
-          - '@plugin'
           - '@core'
           - '@logger'
         tags:
@@ -73,58 +64,10 @@ services:
         class_name: SkinPatcher
         arguments:
           - '@core'
-          - '@plugin'
 
     device-wrapper:
         module: resources.lib.util.devicewrapper
         class_name: DeviceWrapper
-
-    scraper-chain:
-        module: resources.lib.scraper.scraperchain
-        class_name: ScraperChain
-        arguments:
-          - '@plugin'
-          - '@game-manager'
-          - '@logger'
-        tags:
-          - { name: logger, channel: scraper }
-
-    omdb-scraper:
-        module: resources.lib.scraper.omdbscraper
-        class_name: OmdbScraper
-        arguments:
-          - '@plugin'
-          - '@core'
-        tags:
-          - { name: scraper-chain }
-
-    tgdb-scraper:
-        module: resources.lib.scraper.tgdbscraper
-        class_name: TgdbScraper
-        arguments:
-          - '@plugin'
-          - '@core'
-        tags:
-          - { name: scraper-chain }
-
-    igdb-scraper:
-        module: resources.lib.scraper.igdbscraper
-        class_name: IgdbScraper
-        arguments:
-          - '@plugin'
-          - '@core'
-        tags:
-          - { name: scraper-chain }
-
-    nvhttp-scraper:
-        module: resources.lib.scraper.nvhttpscraper
-        class_name: NvHTTPScraper
-        arguments:
-          - '@plugin'
-          - '@core'
-          - '@request-service'
-        tags:
-          - { name: scraper-chain }
 
     connection-manager:
         module: resources.lib.nvhttp.connectionmanager.connectionmanager
@@ -152,52 +95,6 @@ services:
         module: resources.lib.nvhttp.mdns.discoveryagent
         class_name: DiscoveryAgent
 
-    host-controller:
-        module: resources.lib.controller.hostcontroller
-        class_name: HostController
-        arguments:
-          - '@logger'
-          - '@core'
-          - '@connection-manager'
-          - '@host-manager'
-          - '@host-context-service'
-        tags:
-          - { name: logger, channel: host }
-
-    host-repository:
-        module: resources.lib.repository.hostrepository
-        class_name: HostRepository
-        arguments:
-          - '@core'
-          - '@logger'
-        tags:
-          - { name: logger, channel: repository }
-
-    host-manager:
-        module: resources.lib.manager.hostmanager
-        class_name: HostManager
-        arguments:
-          - '@host-repository'
-        tags:
-          - { name: manager }
-
-    game-repository:
-        module: resources.lib.repository.gamerepository
-        class_name: GameRepository
-        arguments:
-          - '@core'
-          - '@logger'
-        tags:
-          - { name: logger, channel: repository }
-
-    game-manager:
-        module: resources.lib.manager.gamemanager
-        class_name: GameManager
-        arguments:
-          - '@game-repository'
-        tags:
-          - { name: manager }
-
     host-context-service:
         module: resources.lib.service.hostcontextservice
         class_name: HostContextService
@@ -224,18 +121,120 @@ services:
           - '@config-helper'
           - '@host-context-service'
 
-    router:
-        module: resources.lib.routing.router
-        class_name: Router
-
     settings-parser:
         module: resources.lib.util.settingsparser
         class_name: SettingsParser
         arguments:
-          - '@addon'
+          - '@core'
           - '@logger'
         tags:
           - { name: logger, channel: core }
+
+    #
+    # Scrapers
+    #
+
+    scraper-chain:
+        module: resources.lib.scraper.scraperchain
+        class_name: ScraperChain
+        arguments:
+          - '@core'
+          - '@game-manager'
+          - '@logger'
+        tags:
+          - { name: logger, channel: scraper }
+
+    omdb-scraper:
+        module: resources.lib.scraper.omdbscraper
+        class_name: OmdbScraper
+        arguments:
+          - '@core'
+        tags:
+          - { name: scraper-chain }
+
+    tgdb-scraper:
+        module: resources.lib.scraper.tgdbscraper
+        class_name: TgdbScraper
+        arguments:
+          - '@core'
+        tags:
+          - { name: scraper-chain }
+
+    igdb-scraper:
+        module: resources.lib.scraper.igdbscraper
+        class_name: IgdbScraper
+        arguments:
+          - '@core'
+        tags:
+          - { name: scraper-chain }
+
+    nvhttp-scraper:
+        module: resources.lib.scraper.nvhttpscraper
+        class_name: NvHTTPScraper
+        arguments:
+          - '@core'
+          - '@request-service'
+        tags:
+          - { name: scraper-chain }
+
+    #
+    # Managers
+    #
+
+    host-manager:
+        module: resources.lib.manager.hostmanager
+        class_name: HostManager
+        arguments:
+          - '@host-repository'
+        tags:
+          - { name: manager }
+
+    game-manager:
+        module: resources.lib.manager.gamemanager
+        class_name: GameManager
+        arguments:
+          - '@game-repository'
+        tags:
+          - { name: manager }
+
+    input-manager:
+        module: resources.lib.manager.inputmanager
+        class_name: InputManager
+        arguments:
+          - '@input-repository'
+        tags:
+          - { name: manager }
+
+    #
+    # Repository
+    #
+
+    input-repository:
+        module: resources.lib.repository.inputrepository
+        class_name: InputRepository
+        arguments:
+          - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: repository }
+
+    game-repository:
+        module: resources.lib.repository.gamerepository
+        class_name: GameRepository
+        arguments:
+          - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: repository }
+
+    host-repository:
+        module: resources.lib.repository.hostrepository
+        class_name: HostRepository
+        arguments:
+          - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: repository }
 
     #
     # Controllers
@@ -245,24 +244,52 @@ services:
         module: resources.lib.controller.maincontroller
         class_name: MainController
         arguments:
-          - '@addon'
-          - '@logger'
           - '@host-context-service'
           - '@host-manager'
+          - '@logger'
+        tags:
+          - { name: logger, channel: controller }
+
+    host-controller:
+        module: resources.lib.controller.hostcontroller
+        class_name: HostController
+        arguments:
+          - '@logger'
+          - '@core'
+          - '@connection-manager'
+          - '@host-manager'
+          - '@host-context-service'
         tags:
           - { name: logger, channel: controller }
 
     game-list-controller:
         module: resources.lib.controller.gamelistcontroller
         class_name: GameListController
+        arguments:
+          - '@game-manager'
+          - '@game-helper'
+          - '@moonlight-helper'
+          - '@logger'
+        tags:
+          - { name: logger, channel: controller }
+
+    game-context-menu-controller:
+        module: resources.lib.controller.gamecontextmenucontroller
+        class_name: GameContextMenuController
+
+    game-info-controller:
+        module: resources.lib.controller.gameinfocontroller
+        class_name: GameInfoController
+        arguments:
+          - '@core'
 
     audio-controller:
         module: resources.lib.controller.audiocontroller
         class_name: AudioController
         arguments:
+          - '@core'
           - '@audio-manager'
           - '@config-helper'
-          - '@plugin'
 
     host-controller:
         module: resources.lib.controller.hostcontroller
@@ -279,12 +306,18 @@ services:
     controller-config-controller:
         module: resources.lib.controller.controllerconfigurationcontroller
         class_name: ControllerConfigurationController
+        arguments:
+          - '@core'
+          - '@device-wrapper'
+          - '@input-manager'
+          - '@moonlight-helper'
 
     settings-controller:
         module: resources.lib.controller.settingscontroller
         class_name: SettingsController
         arguments:
-          - '@addon'
+          - '@core'
+          - '@settings-parser'
           - '@logger'
         tags:
           - { name: logger, channel: controller }
@@ -294,5 +327,4 @@ services:
         class_name: CacheController
         arguments:
           - '@core'
-          - '@plugin'
           - '@scraper-chain'

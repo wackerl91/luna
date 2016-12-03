@@ -9,6 +9,16 @@ routing:
         service: '@game-list-controller'
         prefix: 'game'
 
+    luna.routes.game-context-menu:
+        class_name: GameContextMenuController
+        service: '@game-context-menu-controller'
+        prefix: 'gamecontext'
+
+    luna.routes.game-info:
+        class_name: GameInfoController
+        service: '@game-info-controller'
+        prefix: 'gameinfo'
+
     luna.routes.audio:
         class_name: AudioController
         service: '@audio-controller'

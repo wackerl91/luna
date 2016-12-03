@@ -57,8 +57,7 @@ class HostController(BaseController):
             if self.discovery_agent is not None:
                 self.discovery_agent.start_discovery()
                 hosts = self.discovery_agent.available_hosts
-                self.logger.info("Hosts Found: ")
-                self.logger.info(len(hosts))
+                self.logger.info("Hosts discovered via zeroconf: %s" % len(hosts))
                 if len(hosts) > 0:
                     return self.select_host(hosts)
                 else:

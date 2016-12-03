@@ -5,8 +5,8 @@ from resources.lib.scraper.abcscraper import AbstractScraper
 
 
 class NvHTTPScraper(AbstractScraper):
-    def __init__(self, plugin, core, request_service):
-        AbstractScraper.__init__(self, plugin, core)
+    def __init__(self, core, request_service):
+        AbstractScraper.__init__(self, core)
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.request_service = request_service
 

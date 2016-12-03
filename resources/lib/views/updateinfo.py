@@ -2,9 +2,8 @@ import os
 
 import pyxbmct.addonwindow as pyxbmct
 
-from xbmcswift2 import xbmcaddon
+import xbmcaddon
 
-from resources.lib.di.requiredfeature import RequiredFeature
 
 _addon_path = xbmcaddon.Addon().getAddonInfo('path')
 
@@ -16,14 +15,12 @@ COLOR_SELECTED = '0xFFF1F1F1'
 
 
 class UpdateInfo(pyxbmct.AddonDialogWindow):
-    plugin = RequiredFeature('plugin')
-    core = RequiredFeature('core')
-
-    def __init__(self, update, title=''):
+    def __init__(self, controller, update, title=''):
         super(UpdateInfo, self).__init__(title)
+        self.controller = controller
         self.update = update
         background = None
-        if self.core.get_active_skin() == 'skin.osmc':
+        if self.controller.get_active_skin() == 'skin.osmc':
             media_path = '/usr/share/kodi/addons/skin.osmc/media'
             if os.path.exists(media_path):
                 background = os.path.join(media_path, 'dialogs/DialogBackground_old.png')
@@ -80,7 +77,7 @@ class UpdateInfo(pyxbmct.AddonDialogWindow):
         self.setFocus(self.button_update)
 
     def do_update(self):
-        self.update.do_update()
+        self.controller.do_update(self.update)
         self.close()
 
     def cancel(self):

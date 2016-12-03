@@ -103,7 +103,7 @@ class Main(xbmcgui.WindowXML):
                 if self.options_list.getSelectedPosition() == 2:
                     self.controller.render('audio_select')
                 if self.options_list.getSelectedPosition() == 3:
-                    self.controller.add_host()
+                    self.controller.render('main_add_host')
 
         if focus_item == self.list:
             if action == xbmcgui.ACTION_CONTEXT_MENU:

@@ -103,6 +103,9 @@ class GameHelper(object):
         if force_refresh:
             games = self.get_games(host, silent=True)
 
+        if games is None:
+            return
+
         items = []
         for i, game_name in enumerate(games):
             game = games.get(game_name)

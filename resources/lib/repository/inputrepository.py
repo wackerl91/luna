@@ -4,7 +4,7 @@ class InputRepository(object):
         self.logger = logger
 
     def get_input_devices(self):
-        return self.storage.raw_dict()
+        return dict((key, value[0]) for (key, value) in self.storage.raw_dict().iteritems())
 
     def add_input_device(self, device_id, device, flush=True):
         if device_id not in self.storage.keys():
@@ -29,7 +29,7 @@ class InputRepository(object):
             self.storage[device_id] = device
 
             if flush:
-                self.storage.flush()
+                self.storage.sync()
         else:
             self.logger.warning("Attempted to update non-existent device: '%s'" % device_id)
 

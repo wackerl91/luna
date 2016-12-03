@@ -4,6 +4,7 @@ import uuid
 import xml.etree.ElementTree as ETree
 
 import requests
+from requests import ConnectionError
 
 from resources.lib.model.hostdetails import HostDetails
 from resources.lib.model.nvapp import NvApp
@@ -88,7 +89,11 @@ class RequestService(AbstractRequestService):
                 response = requests.get(url, timeout=(3, None), cert=(cert, key),
                                         verify=False)
         except (IOError, ValueError):
-            response = requests.get(url, timeout=(3, 5), verify=False)
+            try:
+                response = requests.get(url, timeout=(3, 5), verify=False)
+            except ConnectionError, e:
+                self.logger.error("Request failed. URL: '%s', reason: '%s'" % (url, e.message))
+                return
 
         if content_only:
             return response.content
@@ -118,8 +123,11 @@ class RequestService(AbstractRequestService):
         self._reconfigure()
         response = self.open_http_connection(self.base_url_https + '/applist?' + self.build_uid_uuid_string(), False,
                                              False)
-        if response.status_code in [401, 404]:
-            return []
+        if not response:
+            self.logger.error("No response received when trying to get host list - host is either unknown or offline.")
+            app_list = []
+        elif response.status_code in [401, 404]:
+            app_list = []
         else:
             self.logger.info(response.content)
             app_list = self.get_app_list_from_string(response.content)

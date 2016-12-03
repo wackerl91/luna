@@ -59,7 +59,7 @@ class SettingsParser(object):
                         for item in setting.items():
                             setting_args[item[0]] = item[1]
 
-                        current_value = self.core.string(setting_id)
+                        current_value = self.core.get_setting(setting_id)
                         setting_args['current_value'] = current_value
 
                         _setting = Setting(setting_id, setting_label, setting_prio, **setting_args)

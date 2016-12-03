@@ -32,7 +32,10 @@ class GameListController(BaseController):
         background_dialog = xbmcgui.DialogProgressBG()
         background_dialog.create('Refreshing Game List', 'Host: %s' % host.name)
         games = self.game_helper.get_games_as_list(host, True)
-        self.window.update(games)
+
+        if games:
+            self.window.update(games)
+
         background_dialog.close()
         del background_dialog
         return

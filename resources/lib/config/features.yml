@@ -69,6 +69,71 @@ services:
         module: resources.lib.util.devicewrapper
         class_name: DeviceWrapper
 
+    connection-manager:
+        module: resources.lib.nvhttp.connectionmanager.connectionmanager
+        class_name: ConnectionManager
+        arguments:
+          - '@request-service'
+          - '@pairing-manager'
+        lazy: true
+
+    pairing-manager:
+        module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
+        class_name: PairingManagerWrapper
+        arguments:
+          - '@crypto-provider'
+          - '@config-helper'
+          - '@logger'
+        tags:
+          - { name: logger, channel: nvhttp }
+
+    audio-manager:
+        module: resources.lib.util.audiomanager
+        class_name: AudioManager
+
+    discovery-agent:
+        module: resources.lib.nvhttp.mdns.discoveryagent
+        class_name: DiscoveryAgent
+
+    host-context-service:
+        module: resources.lib.service.hostcontextservice
+        class_name: HostContextService
+        arguments:
+          - '@logger'
+        tags:
+          - { name: logger, channel: context }
+
+    request-service:
+        module: resources.lib.nvhttp.request.requestservice
+        class_name: RequestService
+        arguments:
+          - '@crypto-provider'
+          - '@config-helper'
+          - '@host-context-service'
+          - '@logger'
+        tags:
+          - { name: logger, channel: nvhttp }
+
+    crypto-provider:
+        module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
+        class_name: CryptoProviderWrapper
+        arguments:
+          - '@config-helper'
+          - '@host-context-service'
+
+    settings-parser:
+        module: resources.lib.util.settingsparser
+        class_name: SettingsParser
+        arguments:
+          - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: core }
+
+    #
+    # Scrapers
+    #
+
     scraper-chain:
         module: resources.lib.scraper.scraperchain
         class_name: ScraperChain
@@ -112,52 +177,9 @@ services:
         tags:
           - { name: scraper-chain }
 
-    connection-manager:
-        module: resources.lib.nvhttp.connectionmanager.connectionmanager
-        class_name: ConnectionManager
-        arguments:
-          - '@request-service'
-          - '@pairing-manager'
-        lazy: true
-
-    pairing-manager:
-        module: resources.lib.nvhttp.pairingmanager.pairingmanagerwrapper
-        class_name: PairingManagerWrapper
-        arguments:
-          - '@crypto-provider'
-          - '@config-helper'
-          - '@logger'
-        tags:
-          - { name: logger, channel: nvhttp }
-
-    audio-manager:
-        module: resources.lib.util.audiomanager
-        class_name: AudioManager
-
-    discovery-agent:
-        module: resources.lib.nvhttp.mdns.discoveryagent
-        class_name: DiscoveryAgent
-
-    host-controller:
-        module: resources.lib.controller.hostcontroller
-        class_name: HostController
-        arguments:
-          - '@logger'
-          - '@core'
-          - '@connection-manager'
-          - '@host-manager'
-          - '@host-context-service'
-        tags:
-          - { name: logger, channel: host }
-
-    host-repository:
-        module: resources.lib.repository.hostrepository
-        class_name: HostRepository
-        arguments:
-          - '@core'
-          - '@logger'
-        tags:
-          - { name: logger, channel: repository }
+    #
+    # Managers
+    #
 
     host-manager:
         module: resources.lib.manager.hostmanager
@@ -167,15 +189,6 @@ services:
         tags:
           - { name: manager }
 
-    game-repository:
-        module: resources.lib.repository.gamerepository
-        class_name: GameRepository
-        arguments:
-          - '@core'
-          - '@logger'
-        tags:
-          - { name: logger, channel: repository }
-
     game-manager:
         module: resources.lib.manager.gamemanager
         class_name: GameManager
@@ -183,6 +196,18 @@ services:
           - '@game-repository'
         tags:
           - { name: manager }
+
+    input-manager:
+        module: resources.lib.manager.inputmanager
+        class_name: InputManager
+        arguments:
+          - '@input-repository'
+        tags:
+          - { name: manager }
+
+    #
+    # Repository
+    #
 
     input-repository:
         module: resources.lib.repository.inputrepository
@@ -193,52 +218,23 @@ services:
         tags:
           - { name: logger, channel: repository }
 
-    input-manager:
-        module: resources.lib.manager.inputmanager
-        class_name: InputManager
-        arguments:
-          - '@input-repository'
-        tags:
-          - { name: manager }
-
-    host-context-service:
-        module: resources.lib.service.hostcontextservice
-        class_name: HostContextService
-        arguments:
-          - '@logger'
-        tags:
-          - { name: logger, channel: context }
-
-    request-service:
-        module: resources.lib.nvhttp.request.requestservice
-        class_name: RequestService
-        arguments:
-          - '@crypto-provider'
-          - '@config-helper'
-          - '@host-context-service'
-          - '@logger'
-        tags:
-          - { name: logger, channel: nvhttp }
-
-    crypto-provider:
-        module: resources.lib.nvhttp.cryptoprovider.cryptoproviderwrapper
-        class_name: CryptoProviderWrapper
-        arguments:
-          - '@config-helper'
-          - '@host-context-service'
-
-    router:
-        module: resources.lib.routing.router
-        class_name: Router
-
-    settings-parser:
-        module: resources.lib.util.settingsparser
-        class_name: SettingsParser
+    game-repository:
+        module: resources.lib.repository.gamerepository
+        class_name: GameRepository
         arguments:
           - '@core'
           - '@logger'
         tags:
-          - { name: logger, channel: core }
+          - { name: logger, channel: repository }
+
+    host-repository:
+        module: resources.lib.repository.hostrepository
+        class_name: HostRepository
+        arguments:
+          - '@core'
+          - '@logger'
+        tags:
+          - { name: logger, channel: repository }
 
     #
     # Controllers
@@ -251,6 +247,18 @@ services:
           - '@host-context-service'
           - '@host-manager'
           - '@logger'
+        tags:
+          - { name: logger, channel: controller }
+
+    host-controller:
+        module: resources.lib.controller.hostcontroller
+        class_name: HostController
+        arguments:
+          - '@logger'
+          - '@core'
+          - '@connection-manager'
+          - '@host-manager'
+          - '@host-context-service'
         tags:
           - { name: logger, channel: controller }
 

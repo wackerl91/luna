@@ -66,7 +66,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         self.setGeometry(1280, 720, 12, 6, padding=60)
         self.place_add_ctrl_btn()
         self.setFocus(self.add_ctrl_btn)
-        self.connect(pyxbmct.ACTION_NAV_BACK, self.close())
+        self.connect(pyxbmct.ACTION_NAV_BACK, self.close)
         self.init_existing_controls()  # initalise controls / mappings read from .storage
 
     def place_add_ctrl_btn(self):

@@ -30,14 +30,11 @@ class MainController(BaseController):
         # window = GameList(host)
         # window.doModal()
 
+    @route(name="add_host")
     def add_host(self):
-        # host_controller = RequiredFeature('host-controller').request()
-        self.logger.info("Calling host controller")
         ret_val = self.render('host_add')
-        self.logger.info(ret_val)
         if ret_val:
             self.window.update()
-        # del host_controller
 
     @route(name="host_remove")
     def remove_host(self, host):

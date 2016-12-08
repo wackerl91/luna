@@ -1,5 +1,6 @@
 import os
 
+import xbmc
 import xbmcaddon
 import xbmcgui
 
@@ -8,17 +9,10 @@ from resources.lib.model.kodi_gui_workarounds.linkedlistitem import LinkedListIt
 from resources.lib.model.kodi_gui_workarounds.settinggroup import SettingGroup
 from resources.lib.model.kodi_gui_workarounds.rotaryselect import RotarySelect
 from resources.lib.model.kodi_gui_workarounds.slider import Slider
-
-ALIGN_LEFT = 0
-ALIGN_RIGHT = 1
-ALIGN_CENTER_X = 2
-ALIGN_CENTER_Y = 4
-ALIGN_CENTER = 6
-ALIGN_TRUNCATED = 8
-ALIGN_JUSTIFY = 10
+from resources.lib.views.windowxmldialog import WindowXMLDialog
 
 
-class Settings(xbmcgui.WindowXMLDialog):
+class Settings(WindowXMLDialog):
     def __new__(cls, *args, **kwargs):
         return super(Settings, cls).__new__(cls, 'settings.xml', xbmcaddon.Addon().getAddonInfo('path'))
 
@@ -49,6 +43,11 @@ class Settings(xbmcgui.WindowXMLDialog):
         self.ok_btn = self.getControl(303)
         self.cancel_btn = self.getControl(304)
         self.build_list()
+
+        self.connect(xbmcgui.ACTION_NAV_BACK, self.close)
+        self.connect(self.cancel_btn, self.close)
+        self.connect(self.ok_btn, self.save_and_close)
+
         self.setFocusId(302)
 
     def build_list(self):
@@ -210,13 +209,14 @@ class Settings(xbmcgui.WindowXMLDialog):
 
     def build_button_for_type(self, control_type, item_offset, setting):
         value = setting.current_value
+
         if control_type == 'text':
             button = xbmcgui.ControlButton(
                 400,
                 152 + (44 * item_offset),
                 780,  # <--- 1280 - 400 (x-coord) - 100 (border)
                 44,
-                alignment=ALIGN_RIGHT,
+                alignment=self.ALIGN_RIGHT,
                 label=value,
                 textColor='0xFF808080',
                 focusedColor='0xFFE0B074',
@@ -304,7 +304,7 @@ class Settings(xbmcgui.WindowXMLDialog):
                 152 + (44 * item_offset),
                 780,  # <--- 1280 - 400 (x-coord) - 100 (border)
                 44,
-                alignment=ALIGN_RIGHT,
+                alignment=self.ALIGN_RIGHT,
                 label='',
                 textColor='0xFF808080',
                 font='Small'
@@ -329,6 +329,23 @@ class Settings(xbmcgui.WindowXMLDialog):
             self.forward_controls.append(button)
             return button
 
+        elif control_type == 'file':
+            xbmc.log("Adding file button with init value: %s" % value)
+            button = xbmcgui.ControlButton(
+                700,
+                152 + (44 * item_offset),
+                1200,
+                44,
+                label=value,
+                textColor='0xFF808080',
+                focusedColor='0xFFE0B074',
+                font='Small'
+            )
+            self.addControl(button)
+            self.connect(button, lambda: self.select_api_file(button))
+
+            return button
+
         else:
             button = xbmcgui.ControlButton(
                 700,
@@ -347,9 +364,18 @@ class Settings(xbmcgui.WindowXMLDialog):
         return {condition.strip()[3:-1].split(',')[0]: condition.strip()[3:-1].split(',')[1] for condition in
                 condition_string.split("+")}
 
+    def select_api_file(self, button):
+        if button.getLabel() != '':
+            default = button.getLabel()
+        else:
+            default = os.path.expanduser('~')
+        browser = xbmcgui.Dialog().browse(1, 'Select API Key File', 'files', '.conf', False, False, default)
+
+        if browser != default:
+            button.setLabel(browser)
+
     def onAction(self, action):
-        if action == xbmcgui.ACTION_NAV_BACK:
-            self.close()
+        super(Settings, self).onAction(action)
 
         selected_category = self.category_list.getSelectedItem()
         selected_category_label = selected_category.getLabel()
@@ -366,9 +392,6 @@ class Settings(xbmcgui.WindowXMLDialog):
             pass
             return
 
-        # pos = "%s:%s" % (selected_category_label, focus.getY())
-
-        # if pos in self.setting_groups[selected_category_label] and focus != self.category_list:
         if focus.getId() in self.btn_id_group and focus != self.category_list:
             current_control = self.btn_id_group.get(focus.getId())
 
@@ -431,16 +454,13 @@ class Settings(xbmcgui.WindowXMLDialog):
             for control in self.needs_state_update[selected_category_label]:
                 control.update_state()
 
-        if action == xbmcgui.ACTION_SELECT_ITEM and focus == self.ok_btn:
-            for setting_id, setting_ctrl_group in self.setting_id_group.iteritems():
-                for category in self.settings:
-                    if setting_id in category.settings:
-                        _setting = category.settings[setting_id]
-                        new_setting_value = setting_ctrl_group.get_value()
-                        _setting.current_value = new_setting_value
+    def save_and_close(self):
+        for setting_id, setting_ctrl_group in self.setting_id_group.iteritems():
+            for category in self.settings:
+                if setting_id in category.settings:
+                    _setting = category.settings[setting_id]
+                    new_setting_value = setting_ctrl_group.get_value()
+                    _setting.current_value = new_setting_value
 
-            self.controller.save(self.settings)
-            self.close()
-
-        if action == xbmcgui.ACTION_SELECT_ITEM and focus == self.cancel_btn:
-            self.close()
+        self.controller.save(self.settings)
+        self.close()

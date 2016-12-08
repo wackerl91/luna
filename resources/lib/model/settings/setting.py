@@ -53,3 +53,8 @@ class Setting(object):
             self.route = kwargs['action']
         else:
             self.route = None
+
+        if 'file_mask' in kwargs.keys():
+            self.file_mask = kwargs['file_mask']
+        else:
+            self.file_mask = ""

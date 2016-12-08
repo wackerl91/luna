@@ -330,7 +330,6 @@ class Settings(WindowXMLDialog):
             return button
 
         elif control_type == 'file':
-            xbmc.log("Adding file button with init value: %s" % value)
             button = xbmcgui.ControlButton(
                 700,
                 152 + (44 * item_offset),
@@ -342,7 +341,7 @@ class Settings(WindowXMLDialog):
                 font='Small'
             )
             self.addControl(button)
-            self.connect(button, lambda: self.select_api_file(button))
+            self.connect(button, lambda: self.file_browser(button, setting))
 
             return button
 
@@ -364,12 +363,13 @@ class Settings(WindowXMLDialog):
         return {condition.strip()[3:-1].split(',')[0]: condition.strip()[3:-1].split(',')[1] for condition in
                 condition_string.split("+")}
 
-    def select_api_file(self, button):
+    def file_browser(self, button, setting):
         if button.getLabel() != '':
             default = button.getLabel()
         else:
             default = os.path.expanduser('~')
-        browser = xbmcgui.Dialog().browse(1, 'Select API Key File', 'files', '.conf', False, False, default)
+
+        browser = xbmcgui.Dialog().browse(1, setting.setting_label, 'files', setting.file_mask, False, False, default)
 
         if browser != default:
             button.setLabel(browser)

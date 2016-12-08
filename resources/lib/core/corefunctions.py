@@ -136,6 +136,40 @@ class Core:
         active_skin = xml_root.find('lookandfeel').find('skin').text
         return active_skin
 
+    def prepare_init_scripts(self):
+        if not self.get_setting('enable_init_scripts', bool):
+            self.logger.info("Init Scripts have been disabled, returning empty strings")
+            return '', ''
+
+        pre_script = self.get_setting('pre_script', str)
+        post_script = self.get_setting('post_script', str)
+
+        if pre_script != '' and not self._check_file(pre_script):
+            self.logger.warning("Pre Script does not exist or is not executable: %s" % pre_script)
+            xbmcgui.Dialog().notification(
+                self.string('name'),
+                'Pre Script does not exist or is not executable'
+            )
+            pre_script = ''
+
+        if post_script != '' and not self._check_file(post_script):
+            self.logger.warning("Pre Script does not exist or is not executable: %s" % pre_script)
+            xbmcgui.Dialog().notification(
+                self.string('name'),
+                'Post Script does not exist or is not executable'
+            )
+            post_script = ''
+
+        return pre_script, post_script
+
+    def _check_file(self, file_path):
+        if os.path.isfile(file_path):
+            st = os.stat(file_path)
+            if bool(st.st_mode & stat.S_IXUSR):
+                return True
+
+        return False
+
     def get_setting(self, setting_id, return_type=None):
         setting_value = self.addon.getSetting(setting_id)
 

@@ -119,6 +119,11 @@ class MoonlightHelper:
     def launch_game(self, game_id):
         self.config_helper.configure()
         host = self.host_context_service.get_current_context()
+
+        (pre_script, post_script) = self.core.prepare_init_scripts()
+
+        self.logger.info("Got script paths: %s and %s" % (pre_script, post_script))
+
         subprocess.call([
             self.internal_path + '/resources/lib/launchscripts/osmc/launch-helper-osmc.sh',
             self.internal_path + '/resources/lib/launchscripts/osmc/launch.sh',
@@ -127,7 +132,9 @@ class MoonlightHelper:
             host.key_dir,
             game_id,
             self.config_helper.get_config_path(),
-            self.core.get_setting('enable_moonlight_debug', str)
+            self.core.get_setting('enable_moonlight_debug', str),
+            pre_script,
+            post_script
         ])
 
     def list_games(self):

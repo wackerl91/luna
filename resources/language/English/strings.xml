@@ -42,6 +42,10 @@
     <string id="30037">Select Audio Device</string>
     <string id="30038">Enable Moonlight Debug Output</string>
     <string id="30039">Enable Surround Sound</string>
+    <string id="30040">Init Scripts</string>
+    <string id="30041">Enable pre / post scripts</string>
+    <string id="30042">Pre Script</string>
+    <string id="30043">Post Script</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

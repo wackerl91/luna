@@ -10,8 +10,14 @@ KEY_DIR=$4
 GAME=$5
 CONF_PATH=$6
 DEBUG_ENABLED=$7
+PRE_SCRIPT=$8
+POST_SCRIPT=$9
 
-sudo su osmc -c "sh $HEARTBEAT_PATH &" &
+if [ ${PRE_SCRIPT} != "" ]; then
+    ${PRE_SCRIPT} \"${HOST}\" \"${GAME}\"
+fi
+
+sudo su osmc -c "sh $HEARTBEAT_PATH ${POST_SCRIPT} &" &
 
 sudo su osmc -c "nohup openvt -c 7 -s -f bash $LAUNCHER_PATH \"${HOST}\" \"${GAME}\" $CONF_PATH ${KEY_DIR} $DEBUG_ENABLED >/dev/null 2>&1 &" &
 

@@ -33,8 +33,13 @@
         <setting label="30025" enable="eq(-1,false)" type="bool" id="enable_omdb" default="true"/>
         <setting label="30026" enable="eq(-2,false)" type="bool" id="enable_tgdb" default="true"/>
         <setting label="30027" enable="eq(-3,false)" type="bool" id="enable_igdb" default="false"/>
-        <setting label="30028" type="file" id="api_key_file" visible="eq(-1,true)" enable="eq(-1,true)" default=""/>
+        <setting label="30028" type="file" id="api_key_file" file_mask=".conf" visible="eq(-1,true)" enable="eq(-1,true)" default=""/>
         <setting label="30022" type="action" id="reset_cache_action" action="cache_reset"/>
+    </category>
+    <category label="30040">
+        <setting label="30041" type="bool" id="enable_init_scripts" default="false"/>
+        <setting label="30042" enable="eq(-1,true)" type="file" id="pre_script"/>
+        <setting label="30043" enable="eq(-2,true)" type="file" id="post_script"/>
     </category>
     <category label="30029">
         <setting label="30030" type="bool" id="luna_widget_enable" default="false"/>

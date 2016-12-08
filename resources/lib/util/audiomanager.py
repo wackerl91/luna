@@ -53,7 +53,7 @@ class AudioManager(object):
                 setattr(device, components[0].strip(), components[1].strip())
 
             device.handler = 'hw:%s,%s' % (device.card, device.device)
-            xbmc.log(device.stream)
+
             if device.stream is None or device.stream == 'PLAYBACK':
                 subdevices_info.append(device)
 

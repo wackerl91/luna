@@ -114,6 +114,8 @@ class SettingGroup(object):
                 return True
             else:
                 return False
+        if isinstance(self.control, xbmcgui.ControlButton):
+            return self.control.getLabel()
 
     def get_main_control(self):
         try:

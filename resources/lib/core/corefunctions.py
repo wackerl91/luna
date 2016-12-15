@@ -43,6 +43,8 @@ class Core:
         self._current_version = re.match(self.regexp, self.addon.getAddonInfo('version')).group()
         self._internal_path = xbmcaddon.Addon().getAddonInfo('path')
 
+        self._create_path()
+
     def string(self, string_id):
         if string_id in STRINGS:
             return self.addon.getLocalizedString(STRINGS[string_id]).encode('utf-8')
@@ -184,6 +186,12 @@ class Core:
 
     def set_setting(self, setting_id, setting_value):
         self.addon.setSetting(setting_id, str(setting_value))
+
+    def _create_path(self):
+        if os.path.exists(self._storage_path):
+            return
+
+        os.makedirs(self._storage_path)
 
     @property
     def current_version(self):

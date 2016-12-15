@@ -70,6 +70,7 @@ class ScraperChain:
 
     def _append_scraper(self, scraper):
         if isinstance(scraper, AbstractScraper):
+            self.logger.info("Appending Scraper: %s" % scraper.name())
             self.scraper_chain.append(scraper)
         else:
             raise AssertionError('Expected to receive an instance of AbstractScraper, got %s instead' % type(scraper))

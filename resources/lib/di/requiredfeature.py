@@ -82,7 +82,7 @@ class RequiredFeature(object):
                 tagged_features = featurebroker.features.get_tagged_features(self.feature)
                 if featurebroker.has_methods('append')(instance):
                     for key, tagged_feature in enumerate(tagged_features):
-                        tagged_features[key] = RequiredFeature(tagged_feature).request()
+                        tagged_features[key] = RequiredFeature(tagged_feature.name).request()
 
                     instance.append(tagged_features)
             except KeyError:

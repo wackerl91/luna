@@ -29,9 +29,9 @@
         <setting label="30038" type="bool" id="enable_moonlight_debug" default="false"/>
     </category>
     <category label="30021">
-        <setting label="30025" enable="eq(-1,false)" type="bool" id="enable_omdb" default="true"/>
-        <setting label="30026" enable="eq(-2,false)" type="bool" id="enable_tgdb" default="true"/>
-        <setting label="30027" enable="eq(-3,false)" type="bool" id="enable_igdb" default="false"/>
+        <setting label="30025" type="bool" id="enable_omdb" default="true"/>
+        <setting label="30026" type="bool" id="enable_tgdb" default="true"/>
+        <setting label="30027" type="bool" id="enable_igdb" default="false"/>
         <setting label="30028" type="file" id="api_key_file" file_mask=".conf" visible="eq(-1,true)" enable="eq(-1,true)" default=""/>
         <setting label="30022" type="action" id="reset_cache_action" action="cache_reset"/>
     </category>

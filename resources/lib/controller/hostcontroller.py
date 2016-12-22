@@ -53,17 +53,16 @@ class HostController(BaseController):
 
     @route(name='add')
     def initiate(self):
-        try:
-            if self.discovery_agent is not None:
-                self.discovery_agent.start_discovery()
-                hosts = self.discovery_agent.available_hosts
-                self.logger.info("Hosts discovered via zeroconf: %s" % len(hosts))
-                if len(hosts) > 0:
-                    return self.select_host(hosts)
-                else:
-                    raise ValueError
-        except ValueError:
-            return self.enter_ip()
+        if self.discovery_agent is not None:
+            self.discovery_agent.start_discovery()
+            hosts = self.discovery_agent.available_hosts
+            self.logger.info("Hosts discovered via zeroconf: %s" % len(hosts))
+            if len(hosts) > 0:
+                self.logger.info("Passing hosts to select screen.")
+                return self.select_host(hosts)
+
+        self.logger.info("DiscoveryAgent failed to load or no hosts could be found, falling back to IP input.")
+        return self.enter_ip()
 
     @route(name='remove')
     def remove_host(self, host):
@@ -83,7 +82,6 @@ class HostController(BaseController):
             'Starting Pairing'
         )
 
-        self.logger.info('About to call lazy class!')
         message, state = self.connection_manager.pair(pair_dialog)
         pair_dialog.close()
 
@@ -139,5 +137,5 @@ class HostController(BaseController):
             class_name = 'DiscoveryAgent'
             class_ = getattr(module, class_name)
             self.discovery_agent = class_()
-        except ImportError:
-            self.logger.info("Couldn't load discovery agent")
+        except ImportError as e:
+            self.logger.info("Couldn't load DiscoveryAgent: %s" % e.message)

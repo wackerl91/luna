@@ -13,6 +13,15 @@ class XBMCApplicationKernel(object):
         self.router = None
 
     def bootstrap(self, callback=None):
+        try:
+            self._bootstrap(callback)
+        except Exception as e:
+            xbmc.executebuiltin("Dialog.Close(busydialog)")
+            xbmc.log("[script.luna.kernel]: Failed to start Luna: %s" % e.message, xbmc.LOGERROR)
+
+    def _bootstrap(self, callback=None):
+        xbmc.executebuiltin("ActivateWindow(busydialog)")
+
         xbmc.log("[script.luna.kernel]: Bootstrapping DI ...")
         xbmc.log("[script.luna.kernel]: Bootstrapping Router ...")
 
@@ -29,24 +38,32 @@ class XBMCApplicationKernel(object):
         router_thread.start()
 
         di_thread.join()
+
+        warmup_thread = None
+        preload_thread = None
+
         if not di_thread.isAlive():
             featurebroker.features = self.featurebroker
             xbmc.log("[script.luna.kernel]: Bootstrapping DI ... done")
-            self.warmup_repositories()
+            xbmc.log('[script.luna.kernel]: Warming up managers ...')
+            warmup_thread = threading.Thread(target=self._warmup_repositories())
+            warmup_thread.start()
 
         router_thread.join()
         if not router_thread.isAlive():
             xbmc.log("[script.luna.kernel]: Bootstrapping Router ... done")
-            self.preload_controllers()
+            xbmc.log("[script.luna.kernel]: Pre-Loading Controllers ...")
+            preload_thread = threading.Thread(target=self._preload_controllers)
+            preload_thread.start()
 
         if not di_thread.isAlive() and not router_thread.isAlive():
-            if callback:
-                return callback()
+            warmup_thread.join()
+            preload_thread.join()
 
-    def warmup_repositories(self):
-        xbmc.log('[script.luna.kernel]: Warming up managers ...')
-        warmup_thread = threading.Thread(target=self._warmup_repositories())
-        warmup_thread.start()
+            if not warmup_thread.isAlive() and not preload_thread.isAlive():
+                xbmc.executebuiltin("Dialog.Close(busydialog)")
+                if callback:
+                    return callback()
 
     def _warmup_repositories(self):
         managers = featurebroker.features.get_tagged_features('manager')
@@ -54,11 +71,6 @@ class XBMCApplicationKernel(object):
             xbmc.log("[script.luna.kernel]: Currently warming up: %s" % manager.name)
             RequiredFeature(manager.name).request()
         xbmc.log('[script.luna.kernel]: Warming up managers ... done')
-
-    def preload_controllers(self):
-        preload_thread = threading.Thread(target=self._preload_controllers)
-        xbmc.log("[script.luna.kernel]: Pre-Loading Controllers ...")
-        preload_thread.start()
 
     def _preload_controllers(self):
         from resources.lib.di.requiredfeature import RequiredFeature

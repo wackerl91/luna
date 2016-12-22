@@ -14,9 +14,9 @@ class SimplePairingManager(AbstractPairingManager):
         self.logger = logger
 
     def pair(self, request_service, server_info, dialog):
-        self.logger.info('[MoonlightHelper] - Attempting to pair host: ' + self.config_helper.host_ip)
+        self.logger.info('Attempting to pair host: ' + request_service.host_ip)
         pairing_proc = subprocess.Popen(
-            ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', self.config_helper.host_ip,
+            ['stdbuf', '-oL', self.config_helper.get_binary(), 'pair', request_service.host_ip,
              '--keydir', self.crypto_provider.get_key_dir()],
             stdout=subprocess.PIPE)
 

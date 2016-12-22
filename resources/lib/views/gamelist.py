@@ -12,14 +12,24 @@ class GameList(xbmcgui.WindowXML):
         self.host = host
         self.games = game_list
         self.list = None
-        self.cover = None
-        self.fanart = None
+        self.host_online_img = None
+        self.host_offline_img = None
+        self.host_name_label = None
 
     def onInit(self):
         self.games.sort(key=lambda x: x['label'], reverse=False)
         self.list = self.getControl(50)
-        self.cover = self.getControl(1)
-        self.fanart = self.getControl(2)
+        self.host_online_img = self.getControl(2)
+        self.host_offline_img = self.getControl(3)
+        self.host_name_label = self.getControl(4)
+
+        if self.host.state == self.host.STATE_OFFLINE:
+            self.host_online_img.setVisible(False)
+        else:
+            self.host_offline_img.setVisible(False)
+
+        self.host_name_label.setLabel("%s | GPU: %s" % (self.host.name, self.host.gpu_type))
+
         self.build_list()
         self.setFocusId(50)
 
@@ -39,22 +49,10 @@ class GameList(xbmcgui.WindowXML):
             items.append(item)
 
         self.list.addItems(items)
-        try:
-            current_item = self.list.getListItem(self.list.getSelectedPosition())
-            self.cover.setImage(current_item.getProperty('icon'))
-            self.fanart.setImage(current_item.getProperty('fanart'))
-        except RuntimeError:
-            pass
 
     def onAction(self, action):
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
-
-        if self.getFocus() == self.list and (
-                action.getId() == xbmcgui.ACTION_MOVE_UP or action.getId() == xbmcgui.ACTION_MOVE_DOWN):
-            current_item = self.list.getListItem(self.list.getSelectedPosition())
-            self.cover.setImage(current_item.getProperty('icon'))
-            self.fanart.setImage(current_item.getProperty('fanart'))
         elif self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_CONTEXT_MENU:
             current_item = self.list.getListItem(self.list.getSelectedPosition())
             fanart_cache = current_item.getProperty('fanart')
@@ -68,11 +66,9 @@ class GameList(xbmcgui.WindowXML):
 
             if fanart_cache != loaded_game.get_selected_fanart().get_original():
                 self.list.getSelectedItem().setProperty('fanart', loaded_game.get_selected_fanart().get_original())
-                self.fanart.setImage(loaded_game.get_selected_fanart().get_original())
 
             if cover_cache != loaded_game.get_selected_poster():
                 self.list.getSelectedItem().setProperty('icon', loaded_game.get_selected_poster())
-                self.cover.setImage(loaded_game.get_selected_poster())
 
             if refresh:
                 self.controller.refresh_list(self.host)

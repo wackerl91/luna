@@ -102,11 +102,11 @@ class Game:
     def get_selected_fanart(self):
         if hasattr(self, 'selected_fanart'):
             if self.selected_fanart.get_thumb() == '':
-                self.selected_fanart = self.get_fanart('')
+                self.selected_fanart = self.get_fanart('common/mesh.png')
 
             return self.selected_fanart
         else:
-            self.selected_fanart = self.get_fanart('')
+            self.selected_fanart = self.get_fanart('common/mesh.png')
             return self.selected_fanart
 
     def set_selected_fanart(self, uri):

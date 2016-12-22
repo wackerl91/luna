@@ -1,7 +1,7 @@
 from typing import List
 
 import xbmcgui
-from xbmcgui import Action, ControlImage, ControlList
+from xbmcgui import Action, ControlImage, ControlList, ControlLabel
 
 from resources.lib.controller import gamelistcontroller
 from resources.lib.controller.gamelistcontroller import GameListController
@@ -18,8 +18,9 @@ class GameList(xbmcgui.WindowXML):
     games = ... # type: List(Game)
     logger = ... # type: Logger
     list = ... # type: ControlList
-    cover = ... # type: ControlImage
-    fanart = ... # type: ControlImage
+    host_online_img = ... # type: ControlImage
+    host_offline_img = ... # type: ControlImage
+    host_name_label = ... # type: ControlLabel
     def __init__(self:GameListType, controller: gamelistcontroller, host:HostDetails, game_list:List[object]): ...
     def onInit(self): ...
     def build_list(self): ...

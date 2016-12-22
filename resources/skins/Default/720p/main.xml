@@ -20,6 +20,27 @@
             <aspectratio>keep</aspectratio>
             <texture>common/luna.png</texture>
         </control>
+        <!-- System Clock widget is copied from the old OSMC skin to match their location -->
+        <control type="label">
+            <right>47</right>
+            <top>44</top>
+            <width>800</width>
+            <height>40</height>
+            <align>right</align>
+            <label>$INFO[System.Time]</label>
+            <font>Large</font>
+            <textcolor>ColorHeading</textcolor>
+        </control>
+        <control type="label">
+            <right>47</right>
+            <top>88</top>
+            <width>800</width>
+            <height>33</height>
+            <align>right</align>
+            <label>$INFO[System.Date]</label>
+            <font>XSmall</font>
+            <textcolor>ColorDetails</textcolor>
+        </control>
         <control type="panel" id="102">
             <left>100</left>
             <top>250</top>

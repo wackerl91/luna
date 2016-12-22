@@ -3,6 +3,36 @@
     <animation effect="fade" time="500" start="0" end="100">WindowOpen</animation>
     <animation effect="fade" time="500" start="100" end="0">WindowClose</animation>
     <controls>
+        <control type="image">
+            <description>luna logo</description>
+            <top>50</top>
+            <left>50</left>
+            <width>100</width>
+            <height>50</height>
+            <aspectratio>keep</aspectratio>
+            <texture>common/luna.png</texture>
+        </control>
+        <!-- System Clock widget is copied from the old OSMC skin to match their location -->
+        <control type="label">
+            <right>47</right>
+            <top>44</top>
+            <width>800</width>
+            <height>40</height>
+            <align>right</align>
+            <label>$INFO[System.Time]</label>
+            <font>Large</font>
+            <textcolor>ColorHeading</textcolor>
+        </control>
+        <control type="label">
+            <right>47</right>
+            <top>88</top>
+            <width>800</width>
+            <height>33</height>
+            <align>right</align>
+            <label>$INFO[System.Date]</label>
+            <font>XSmall</font>
+            <textcolor>ColorDetails</textcolor>
+        </control>
         <control type="image" id="2">
             <description>background image</description>
             <posx>0</posx>
@@ -13,8 +43,8 @@
             <texture colordiffuse="50D3D3D3"></texture>
         </control>
         <control type="image" id="1">
-            <top>100</top>
-            <left>100</left>
+            <top>150</top>
+            <left>10</left>
             <width>330</width>
             <height>330</height>
             <aspectratio>keep</aspectratio>
@@ -23,7 +53,7 @@
         </control>
         <control type="scrollbar" id="61">
             <left>1180</left>
-            <top>100</top>
+            <top>150</top>
             <width>10</width>
             <height>520</height>
             <onleft>50</onleft>
@@ -36,8 +66,8 @@
             <textureslidernibfocus>-</textureslidernibfocus>
         </control>
         <control type="list" id="50">
-            <left>430</left>
-            <top>100</top>
+            <left>330</left>
+            <top>150</top>
             <bottom>100</bottom>
             <width>850</width>
             <height>520</height>

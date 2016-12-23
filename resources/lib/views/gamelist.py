@@ -35,7 +35,7 @@ class GameList(xbmcgui.WindowXML):
 
     def build_list(self):
         items = []
-        # game = self.games[0]
+
         for game in self.games:
             item = xbmcgui.ListItem()
             item.setLabel(game['label'])
@@ -69,11 +69,10 @@ class GameList(xbmcgui.WindowXML):
 
             if cover_cache != loaded_game.get_selected_poster():
                 self.list.getSelectedItem().setProperty('icon', loaded_game.get_selected_poster())
+                self.list.getSelectedItem().setThumbnailImage(loaded_game.get_selected_poster())
 
             if refresh:
                 self.controller.refresh_list(self.host)
-
-            self.setFocus(self.list)
 
         elif self.getFocus() == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
             current_item = self.list.getListItem(self.list.getSelectedPosition())

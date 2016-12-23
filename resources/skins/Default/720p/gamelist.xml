@@ -94,7 +94,6 @@
                     <left>0</left>
                     <width>200</width>
                     <height>267</height>
-                    <aspectratio>keep</aspectratio>
                     <animation effect="zoom" start="110,110" end="100,100" center="auto" time="300">Unfocus</animation>
                     <texture>$INFO[ListItem.Art(thumb)]</texture>
                 </control>
@@ -108,7 +107,7 @@
                     <align>center</align>
                     <wrapmultiline>true</wrapmultiline>
                     <animation effect="slide" end="0,0" time="300">Unfocus</animation>
-                    <info>ListItem.Label</info>
+                    <label>$INFO[ListItem.Label]</label>
                 </control>
             </itemlayout>
             <focusedlayout width="325" height="150">
@@ -125,7 +124,6 @@
                     <left>0</left>
                     <width>200</width>
                     <height>267</height>
-                    <aspectratio>keep</aspectratio>
                     <animation effect="zoom" start="100,100" end="110,110" center="auto" time="300">Focus</animation>
                     <texture>$INFO[ListItem.Art(thumb)]</texture>
                 </control>
@@ -139,7 +137,7 @@
                     <align>center</align>
                     <wrapmultiline>true</wrapmultiline>
                     <animation effect="slide" end="0,10" time="300">Focus</animation>
-                    <info>ListItem.Label</info>
+                    <label>$INFO[ListItem.Label]</label>
                 </control>
             </focusedlayout>
         </control>

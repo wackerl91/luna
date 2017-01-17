@@ -8,26 +8,28 @@ class InputDevice:
         self.mapping = None
 
     def is_kbd(self):
-        found_kbd = False
-        found_js = False
-        for _handler in self.handlers:
-            if _handler[:-1] == 'kbd':
-                found_kbd = True
-            if _handler[:-1] == 'js':
-                found_js = True
-
-        return found_kbd and not found_js
+        return False
+        # found_kbd = False
+        # found_js = False
+        # for _handler in self.handlers:
+        #     if _handler[:-1] == 'kbd':
+        #         found_kbd = True
+        #     if _handler[:-1] == 'js':
+        #         found_js = True
+        #
+        # return found_kbd and not found_js
 
     def is_mouse(self):
-        found_mouse = False
-        found_js = False
-        for _handler in self.handlers:
-            if _handler[:-1] == 'mouse':
-                found_mouse = True
-            if _handler[:-1] == 'js':
-                found_js = True
-
-        return found_mouse and not found_js
+        return False
+        # found_mouse = False
+        # found_js = False
+        # for _handler in self.handlers:
+        #     if _handler[:-1] == 'mouse':
+        #         found_mouse = True
+        #     if _handler[:-1] == 'js':
+        #         found_js = True
+        #
+        # return found_mouse and not found_js
 
     def is_none_device(self):
         return self.name == 'None (Disabled)'

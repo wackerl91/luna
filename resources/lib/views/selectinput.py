@@ -284,7 +284,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
                 del_keys.append(key)
 
         for key in del_keys:
-            self.remove_input(key)
+            self.remove_input_device(key)
 
         for key, device in self.input_devices.iteritems():
             self.add_ctrl(device)

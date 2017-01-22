@@ -328,3 +328,33 @@ services:
         arguments:
           - '@core'
           - '@scraper-chain'
+
+    eos-helper:
+        module: resources.lib.eos.eoshelper
+        class_name: EosHelper
+        arguments:
+          - '@core'
+          - '@host-manager'
+          - '@game-manager'
+
+    #
+    # Loggers
+    #
+
+    default-logger:
+        module: resources.lib.core.logger.logger
+        class_name: Logger
+        arguments:
+          - 'debug'
+        tags:
+          - { name: logger-chain }
+
+    eos-logger:
+        module: resources.lib.core.logger.eoslogger
+        class_name: EosLogger
+        arguments:
+          - 'info'
+        tags:
+          - { name: logger-chain }
+        calls:
+          - [ set_helper, ['@eos-helper'] ]

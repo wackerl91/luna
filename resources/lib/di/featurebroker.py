@@ -73,7 +73,8 @@ class FeatureBroker:
         if tag not in self.tags[tag.name]:
             self.tags[tag.name].append(tag)
 
-        self.tagged_features[tag.name].append(feature)
+        if feature not in self.tagged_features[tag.name]:
+            self.tagged_features[tag.name].append(feature)
 
     def get_tagged_features(self, tag_name):
         try:
@@ -84,8 +85,8 @@ class FeatureBroker:
         return tagged_features
 
     def _provide_loggers(self):
-        module = importlib.import_module('resources.lib.core.logger')
-        class_name = 'Logger'
+        module = importlib.import_module('resources.lib.core.logger.loggerchain')
+        class_name = 'LoggerChain'
         class_ = getattr(module, class_name)
 
         addon_id = xbmcaddon.Addon().getAddonInfo('id')
@@ -93,6 +94,24 @@ class FeatureBroker:
         for logger_definition in self.tags['logger']:
             logger_prefix = '%s.%s' % (addon_id, logger_definition.channel)
             _logger = class_(logger_prefix)
+
+            logger_services = list(self.tagged_features['logger-chain'])
+
+            del_keys = []
+
+            for key, logger_service in enumerate(logger_services):
+                from resources.lib.di.requiredfeature import RequiredFeature
+                for tag in logger_service.tags:
+                    if tag.name == 'logger-chain':
+                        if hasattr(tag, 'ignore_channel') and tag.ignore_channel == logger_definition.channel:
+                            del_keys.append(key)
+                        else:
+                            logger_services[key] = RequiredFeature(logger_service.name).request()
+
+            for key in del_keys:
+                del logger_services[key]
+
+            _logger.append(logger_services)
 
             _logger_service_name = 'logger.%s' % logger_definition.channel
 
@@ -126,6 +145,37 @@ class FeatureBroker:
         if not self.allow_replace:
             assert feature not in self.initialized, "Duplicate instance: %s" % feature
         self.initialized[feature] = instance
+
+    def execute_calls(self):
+        for feature_name, feature in self.providers.iteritems():
+            if not isinstance(feature, Component):
+                continue
+            instance = self.get_initialized(feature.name)
+            if instance and hasattr(feature, 'calls') and feature.calls is not None:
+                import xbmc
+                xbmc.log("Trying to execute calls for %s" % feature.name)
+                for call in feature.calls:
+                    method = call[0]
+                    args = call[1]
+
+                    for key, arg in enumerate(args):
+                        if arg[:1] == '@':
+                            if self.get_initialized(arg[1:]) is not None:
+                                args[key] = self.get_initialized(arg[1:])
+                            else:
+                                from resources.lib.di.requiredfeature import RequiredFeature
+                                args[key] = RequiredFeature(arg[1:]).request()
+
+                    resolved_all_services = True
+                    for key, arg in enumerate(args):
+                        if isinstance(arg, str) and arg[:1] == '@':
+                            resolved_all_services = False
+
+                    if resolved_all_services:
+                        if hasattr(instance, method):
+                            method_ = getattr(instance, method)
+                            xbmc.log(str(*args))
+                            method_(*args)
 
     def __getitem__(self, feature):
         try:

@@ -1,3 +1,4 @@
+import json
 import os
 import stat
 
@@ -38,6 +39,7 @@ class Core:
     def __init__(self, logger):
         self.addon = xbmcaddon.Addon()
         self.logger = logger
+        self.kodi_version = None
         self._storage_path = xbmc.translatePath(
             'special://profile/addon_data/%s/.storage/' % self.addon.getAddonInfo('id'))
         self._current_version = re.match(self.regexp, self.addon.getAddonInfo('version')).group()
@@ -192,6 +194,19 @@ class Core:
             return
 
         os.makedirs(self._storage_path)
+
+    def get_kodi_version(self):
+        if self.kodi_version is None:
+            response = xbmc.executeJSONRPC(
+                '{ "jsonrpc": "2.0", "method": "Application.GetProperties", "params": {"properties": ["version", "name"]}, "id": 1 }')
+            self.logger.info(response)
+            response = unicode(response, 'utf-8')
+            response = json.loads(response)
+
+            if 'result' in response and 'version' in response['result']:
+                self.kodi_version = response['result']['version']
+
+        return self.kodi_version
 
     @property
     def current_version(self):

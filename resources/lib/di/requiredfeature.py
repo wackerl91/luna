@@ -90,4 +90,22 @@ class RequiredFeature(object):
 
             featurebroker.features.set_initialized(self.feature, instance)
 
+            if hasattr(feature, 'calls') and feature.calls is not None:
+                for call in feature.calls:
+                    method = call[0]
+                    args = call[1]
+
+                    for key, arg in enumerate(args):
+                        if arg[:1] == '@':
+                            if featurebroker.features.get_initialized(arg[:1]) is not None:
+                                args[key] = featurebroker.features.get_initialized(arg[:1])
+
+                    resolved_all_services = True
+                    for key, arg in enumerate(args):
+                        if isinstance(arg, str) and arg[:1] == '@':
+                            resolved_all_services = False
+
+                    if resolved_all_services:
+                        method(instance, **args)
+
         return instance

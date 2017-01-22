@@ -33,6 +33,7 @@ class StaticRequestService(AbstractRequestService):
         host.pair_state = int(StaticRequestService.get_xml_string(server_info, 'PairStatus'))
         host.gpu_type = StaticRequestService.get_xml_string(server_info, 'gputype')
         host.gamelist_id = StaticRequestService.get_xml_string(server_info, 'gamelistid')
+        host.server_version = StaticRequestService.get_server_version(server_info)
         host.key_dir = os.path.join(AbstractCryptoProvider.get_key_base_path(), host.uuid)
         host.state = HostDetails.STATE_ONLINE
 

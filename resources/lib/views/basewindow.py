@@ -1,4 +1,5 @@
 from xbmcgui import Action, Control
+from resources.lib.views import register_exception_hooks
 
 
 class _BaseWindow(object):
@@ -9,6 +10,10 @@ class _BaseWindow(object):
     ALIGN_CENTER = 6
     ALIGN_TRUNCATED = 8
     ALIGN_JUSTIFY = 10
+
+    def __new__(cls, *args, **kwargs):
+        register_exception_hooks(cls)
+        return super(_BaseWindow, cls).__new__(cls, *args)
 
     def __init__(self):
         self._connected_actions = {}

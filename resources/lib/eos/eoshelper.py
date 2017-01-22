@@ -207,7 +207,6 @@ class EosHelper(object):
         url = url.replace('{userId}', self.uid)
 
         url = os.path.join(self.base_url, url)
-        self.logger.info("script.luna.eos", "Calling URL: %s" % url)
 
         response = None
 

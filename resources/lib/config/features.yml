@@ -353,7 +353,7 @@ services:
         module: resources.lib.core.logger.eoslogger
         class_name: EosLogger
         arguments:
-          - 'info'
+          - 'warning'
         tags:
           - { name: logger-chain }
         calls:

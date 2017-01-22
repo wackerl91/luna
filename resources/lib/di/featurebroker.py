@@ -152,8 +152,6 @@ class FeatureBroker:
                 continue
             instance = self.get_initialized(feature.name)
             if instance and hasattr(feature, 'calls') and feature.calls is not None:
-                import xbmc
-                xbmc.log("Trying to execute calls for %s" % feature.name)
                 for call in feature.calls:
                     method = call[0]
                     args = call[1]
@@ -174,7 +172,6 @@ class FeatureBroker:
                     if resolved_all_services:
                         if hasattr(instance, method):
                             method_ = getattr(instance, method)
-                            xbmc.log(str(*args))
                             method_(*args)
 
     def __getitem__(self, feature):

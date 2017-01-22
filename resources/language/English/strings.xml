@@ -45,6 +45,7 @@
     <string id="30041">Enable pre / post scripts</string>
     <string id="30042">Pre Script</string>
     <string id="30043">Post Script</string>
+    <string id="30044">Enable Telemetry Data via Eos</string>
     <!-- Context Menu -->
     <string id="30100">Addon Settings</string>
     <string id="30101">Full Refresh</string>

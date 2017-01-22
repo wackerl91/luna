@@ -21,7 +21,9 @@ class RequiredFeature(object):
         args = getattr(feature, 'arguments', None)
         if args is not None:
             for index, arg in enumerate(feature.arguments):
-                if arg[:1] == '@':
+                # TODO: checking for instance is generally a bad idea and only a temporary workaround to allow
+                # eos-helper's functionality
+                if isinstance(arg, str) and arg[:1] == '@':
                     feature.arguments[index] = RequiredFeature(arg[1:]).request()
             args = inspect.getargspec(class_.__init__)[0]
             if args[0] == 'self':

@@ -20,6 +20,8 @@ def register_exception_hooks(cls):
             pass
 
     class_methods = [name for name in dir(cls) if not name.startswith('__') and not name.endswith('__')]
+
     for method_name in class_methods:
         add_exception_hook(method_name)
+
     return cls

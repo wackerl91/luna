@@ -24,11 +24,17 @@ class EosHelper(object):
         self.core = core
         self.host_manager = host_manager
         self.game_manager = game_manager
+
         from resources.lib.core.logger.logger import Logger
         self.logger = Logger('debug')
 
+        self.eos_enabled = self.core.get_setting('enable_telemetry', bool)
+
         self.base_url = 'https://www-eos.herokuapp.com/'
         self.uid = None
+
+        if not self.eos_enabled:
+            self._disable_methods()
 
         self._load_or_get_uid()
         self.update_system_information()
@@ -213,3 +219,14 @@ class EosHelper(object):
             response = requests.post(url, data=data, json=data, timeout=timeout)
 
         return response
+
+    def _disable_methods(self):
+        class_methods = [name for name in dir(self) if not name.startswith('_')]
+        for class_method in class_methods:
+            existing_method = getattr(self, class_method, None)
+
+            if existing_method and callable(existing_method):
+                def func(*args, **kwargs):
+                    pass
+
+                setattr(self, class_method, func)

@@ -5,17 +5,18 @@ def register_exception_hooks(cls):
     def add_exception_hook(name):
         existing = getattr(cls, name, None)
 
-        def exc_hook(self, *args, **kw):
+        def exc_hook(self, *args, **kwargs):
             if existing is not None:
                 try:
-                    return existing(self, *args, **kw)
-                except Exception, e:
+                    return existing(self, *args, **kwargs)
+                except Exception as e:
                     exc_type, exc_value, exc_tb = sys.exc_info()
                     sys.excepthook(exc_type, exc_value, exc_tb)
-            raise AttributeError(name)
 
         try:
-            setattr(cls, name, exc_hook)
+            # Don't replace anything but methods
+            if callable(existing):
+                setattr(cls, name, exc_hook)
         except (AttributeError, TypeError):
             pass
 

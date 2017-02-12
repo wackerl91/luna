@@ -36,13 +36,20 @@ class Settings(WindowXMLDialog):
         self.btn_id_group = {}  # Button ID -> SettingGroup Map (used for determining focus group)
         self.current_last = None  # Stores current category's last setting
 
+        self.initialized = False
+
     def onInit(self):
-        self.settings = [setting for key, setting in self.settings_list.iteritems()]
-        self.settings.sort(key=lambda x: x.priority, reverse=False)
-        self.category_list = self.getControl(302)
-        self.ok_btn = self.getControl(303)
-        self.cancel_btn = self.getControl(304)
-        self.build_list()
+        if not self.initialized:
+            self.settings = [setting for key, setting in self.settings_list.iteritems()]
+            self.settings.sort(key=lambda x: x.priority, reverse=False)
+            self.category_list = self.getControl(302)
+            self.ok_btn = self.getControl(303)
+            self.cancel_btn = self.getControl(304)
+            self.build_list()
+            self.initialized = True
+
+        if self.selected_cat_cache:
+            self.switch_settings_to_category(self.selected_cat_cache, '')
 
         self.connect(xbmcgui.ACTION_NAV_BACK, self.close)
         self.connect(self.cancel_btn, self.close)
@@ -210,7 +217,7 @@ class Settings(WindowXMLDialog):
     def build_button_for_type(self, control_type, item_offset, setting):
         value = setting.current_value
 
-        if control_type == 'text':
+        if control_type == 'text' or control_type == 'string':
             button = xbmcgui.ControlButton(
                 400,
                 152 + (44 * item_offset),
@@ -220,6 +227,8 @@ class Settings(WindowXMLDialog):
                 label=value,
                 textColor='0xFF808080',
                 focusedColor='0xFFE0B074',
+                focusTexture='',
+                noFocusTexture='',
                 font='Small'
             )
             self.addControl(button)
@@ -241,7 +250,9 @@ class Settings(WindowXMLDialog):
                 focusOnTexture=focus_texture_on,
                 focusOffTexture=focus_texture_off,
                 noFocusOnTexture=nofocus_texture_on,
-                noFocusOffTexture=nofocus_texture_off
+                noFocusOffTexture=nofocus_texture_off,
+                noFocusTexture='',
+                focusTexture=''
             )
             button.setRadioDimension(1157, 152 + (44 * item_offset), 23, 23)
             self.addControl(button)
@@ -307,7 +318,9 @@ class Settings(WindowXMLDialog):
                 alignment=self.ALIGN_RIGHT,
                 label='',
                 textColor='0xFF808080',
-                font='Small'
+                font='Small',
+                focusTexture='',
+                noFocusTexture=''
             )
 
             range_items = setting.range.split(',')
@@ -322,7 +335,9 @@ class Settings(WindowXMLDialog):
                 152 + (44 * item_offset),
                 780,  # <--- 1280 - 400 (x-coord) - 100 (border)
                 44,
-                label=''
+                label='',
+                focusTexture='',
+                noFocusTexture=''
             )
 
             button = Action(self, label, setting.route)
@@ -338,7 +353,9 @@ class Settings(WindowXMLDialog):
                 label=value,
                 textColor='0xFF808080',
                 focusedColor='0xFFE0B074',
-                font='Small'
+                font='Small',
+                focusTexture='',
+                noFocusTexture=''
             )
             self.addControl(button)
             self.connect(button, lambda: self.file_browser(button, setting))

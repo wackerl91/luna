@@ -21,7 +21,7 @@
             <align>right</align>
             <label>$INFO[System.Time]</label>
             <font>Large</font>
-            <textcolor>ColorHeading</textcolor>
+            <textcolor>FFD6D6D6</textcolor>
         </control>
         <control type="label">
             <right>47</right>
@@ -31,7 +31,7 @@
             <align>right</align>
             <label>$INFO[System.Date]</label>
             <font>XSmall</font>
-            <textcolor>ColorDetails</textcolor>
+            <textcolor>FF707070</textcolor>
         </control>
 
         <control type="label" id="4">
@@ -39,7 +39,7 @@
             <top>140</top>
             <left>100</left>
             <font>XSmall</font>
-            <textcolor>ColorHeading</textcolor>
+            <textcolor>FFD6D6D6</textcolor>
         </control>
 
         <control type="image">

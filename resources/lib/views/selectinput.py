@@ -48,11 +48,8 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         self.md5 = hashlib.md5()
         self.input_devices = input_devices
 
-        background = None
-        if self.controller.get_active_skin() == 'skin.osmc':
-            media_path = '/usr/share/kodi/addons/skin.osmc/media'
-            if os.path.exists(media_path):
-                background = os.path.join(media_path, 'dialogs/DialogBackground_old.png')
+        background = os.path.join(self.controller.get_internal_path(),
+                                  'resources/skins/Default/media/common/DialogBackground_old.png')
 
         if background is not None:
             self.background.setImage(background)
@@ -141,7 +138,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
             control.input_select_btn.controlDown(self.add_ctrl_btn)
         previous_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            if _control.idx == control.idx-1:
+            if _control.idx == control.idx - 1:
                 previous_control = _control
         if previous_control:
             if previous_control.adv_on_flag:
@@ -196,7 +193,7 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         control.set_internal_navigation()
         next_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            if _control.idx == control.idx+1:
+            if _control.idx == control.idx + 1:
                 next_control = _control
         if next_control:
             control.adv_select_mapping.controlDown(next_control.input_select_btn)
@@ -211,13 +208,13 @@ class SelectInput(pyxbmct.AddonDialogWindow):
         control.set_internal_navigation()
         control.unset_mapping_file()
         for key, device in self.input_devices.iteritems():
-                if device.name == control.device.name:
-                    device.mapping = None
-                    self.update_input_device(control.idx, device)
-                    break
+            if device.name == control.device.name:
+                device.mapping = None
+                self.update_input_device(control.idx, device)
+                break
         next_control = None
         for _ctrl_id, _control in self.controls.iteritems():
-            if _control.idx == control.idx+1:
+            if _control.idx == control.idx + 1:
                 next_control = _control
         if next_control:
             control.input_select_btn.controlDown(next_control.input_select_btn)
@@ -253,9 +250,9 @@ class SelectInput(pyxbmct.AddonDialogWindow):
 
         if success:
             confirmed = xbmcgui.Dialog().yesno(
-                    self.controller.get_string('name'),
-                    self.controller.get_string('mapping_success'),
-                    self.controller.get_string('set_mapping_active')
+                self.controller.get_string('name'),
+                self.controller.get_string('mapping_success'),
+                self.controller.get_string('set_mapping_active')
             )
 
             if confirmed:
@@ -268,8 +265,8 @@ class SelectInput(pyxbmct.AddonDialogWindow):
 
         else:
             xbmcgui.Dialog().ok(
-                    self.controller.get_string('name'),
-                    self.controller.get_string('mapping_failure')
+                self.controller.get_string('name'),
+                self.controller.get_string('mapping_failure')
             )
 
     def init_existing_controls(self):

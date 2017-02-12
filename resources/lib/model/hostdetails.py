@@ -18,5 +18,6 @@ class HostDetails(object):
         self.gpu_type = None
         self.gamelist_id = None
         self.key_dir = None
+        self.server_version = None
         self.state = self.STATE_UNKNOWN
         self.reachability = self.REACH_UNKNOWN

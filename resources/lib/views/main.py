@@ -1,11 +1,12 @@
 import os
-
 import xbmcaddon
 import xbmcgui
+
 from resources.lib.views.hostcontextmenu import HostContextMenu
+from resources.lib.views.windowxml import WindowXML
 
 
-class Main(xbmcgui.WindowXML):
+class Main(WindowXML):
     def __new__(cls, *args, **kwargs):
         return super(Main, cls).__new__(cls, 'main.xml', xbmcaddon.Addon().getAddonInfo('path'))
 

@@ -67,6 +67,7 @@ class RequestService(AbstractRequestService):
         host.pair_state = int(self.get_xml_string(server_info, 'PairStatus'))
         host.gpu_type = self.get_xml_string(server_info, 'gputype')
         host.gamelist_id = self.get_xml_string(server_info, 'gamelistid')
+        host.server_version = self.get_server_version(server_info)
         host.key_dir = os.path.join(AbstractCryptoProvider.get_key_base_path(), host.uuid)
         host.state = HostDetails.STATE_ONLINE
 

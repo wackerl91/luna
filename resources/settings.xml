@@ -41,6 +41,7 @@
         <setting label="30043" enable="eq(-2,true)" type="file" id="post_script"/>
     </category>
     <category label="30029">
+        <setting label="30044" type="bool" id="enable_telemetry" default="true" />
         <setting label="30030" type="bool" id="luna_widget_enable" default="false"/>
         <setting label="30033" type="bool" id="luna_force_fanart" default="false"/>
         <!--<setting label="30031" type="action" enable="eq(2,false)" visible="eq(-2,true)" action="XBMC.RunPlugin(plugin://script.luna/actions/patch-osmc)" option="close"/>

@@ -21,7 +21,9 @@ class RequiredFeature(object):
         args = getattr(feature, 'arguments', None)
         if args is not None:
             for index, arg in enumerate(feature.arguments):
-                if arg[:1] == '@':
+                # TODO: checking for instance is generally a bad idea and only a temporary workaround to allow
+                # eos-helper's functionality
+                if isinstance(arg, str) and arg[:1] == '@':
                     feature.arguments[index] = RequiredFeature(arg[1:]).request()
             args = inspect.getargspec(class_.__init__)[0]
             if args[0] == 'self':
@@ -89,5 +91,23 @@ class RequiredFeature(object):
                 pass
 
             featurebroker.features.set_initialized(self.feature, instance)
+
+            if hasattr(feature, 'calls') and feature.calls is not None:
+                for call in feature.calls:
+                    method = call[0]
+                    args = call[1]
+
+                    for key, arg in enumerate(args):
+                        if arg[:1] == '@':
+                            if featurebroker.features.get_initialized(arg[:1]) is not None:
+                                args[key] = featurebroker.features.get_initialized(arg[:1])
+
+                    resolved_all_services = True
+                    for key, arg in enumerate(args):
+                        if isinstance(arg, str) and arg[:1] == '@':
+                            resolved_all_services = False
+
+                    if resolved_all_services:
+                        method(instance, **args)
 
         return instance

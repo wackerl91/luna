@@ -58,5 +58,3 @@ class CryptoProviderWrapper(AbstractCryptoProvider):
             raise ValueError('Crypto provider can\'t be loaded as it is not configured.')
         class_ = getattr(module, class_name)
         self._crypto_provider = class_(self.host_context_service, self._config_helper)
-
-

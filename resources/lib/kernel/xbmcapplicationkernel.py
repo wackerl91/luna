@@ -1,3 +1,4 @@
+import sys
 import threading
 import xbmc
 
@@ -13,11 +14,14 @@ class XBMCApplicationKernel(object):
         self.router = None
 
     def bootstrap(self, callback=None):
+        xbmc.executebuiltin("Dialog.Close(busydialog)")
         try:
             self._bootstrap(callback)
         except Exception as e:
             xbmc.executebuiltin("Dialog.Close(busydialog)")
             xbmc.log("[script.luna.kernel]: Failed to start Luna: %s" % e.message, xbmc.LOGERROR)
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            sys.excepthook(exc_type, exc_value, exc_tb)
 
     def _bootstrap(self, callback=None):
         xbmc.executebuiltin("ActivateWindow(busydialog)")
@@ -26,6 +30,7 @@ class XBMCApplicationKernel(object):
         xbmc.log("[script.luna.kernel]: Bootstrapping Router ...")
 
         self.featurebroker = FeatureBroker()
+        featurebroker.features = self.featurebroker
         di_thread = threading.Thread(target=self.featurebroker._parse_config())
 
         self.router = Router()
@@ -43,7 +48,7 @@ class XBMCApplicationKernel(object):
         preload_thread = None
 
         if not di_thread.isAlive():
-            featurebroker.features = self.featurebroker
+            self.featurebroker.execute_calls()
             xbmc.log("[script.luna.kernel]: Bootstrapping DI ... done")
             xbmc.log('[script.luna.kernel]: Warming up managers ...')
             warmup_thread = threading.Thread(target=self._warmup_repositories())
@@ -63,7 +68,11 @@ class XBMCApplicationKernel(object):
             if not warmup_thread.isAlive() and not preload_thread.isAlive():
                 xbmc.executebuiltin("Dialog.Close(busydialog)")
                 if callback:
-                    return callback()
+                    try:
+                        return callback()
+                    except Exception, e:
+                        exc_type, exc_value, exc_tb = sys.exc_info()
+                        sys.excepthook(exc_type, exc_value, exc_tb)
 
     def _warmup_repositories(self):
         managers = featurebroker.features.get_tagged_features('manager')

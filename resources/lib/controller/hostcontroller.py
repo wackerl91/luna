@@ -53,15 +53,22 @@ class HostController(BaseController):
 
     @route(name='add')
     def initiate(self):
+        xbmc.executebuiltin("ActivateWindow(busydialog)")
         if self.discovery_agent is not None:
-            self.discovery_agent.start_discovery()
-            hosts = self.discovery_agent.available_hosts
-            self.logger.info("Hosts discovered via zeroconf: %s" % len(hosts))
-            if len(hosts) > 0:
-                self.logger.info("Passing hosts to select screen.")
-                return self.select_host(hosts)
+            try:
+                self.discovery_agent.start_discovery()
+                hosts = self.discovery_agent.available_hosts
+                self.logger.info("Hosts discovered via zeroconf: %s" % len(hosts))
+                if len(hosts) > 0:
+                    self.logger.info("Passing hosts to select screen.")
+                    xbmc.executebuiltin("Dialog.Close(busydialog)")
+                    return self.select_host(hosts)
+            except Exception as e:
+                xbmc.executebuiltin("Dialog.Close(busydialog)")
+                raise e
 
         self.logger.info("DiscoveryAgent failed to load or no hosts could be found, falling back to IP input.")
+        xbmc.executebuiltin("Dialog.Close(busydialog)")
         return self.enter_ip()
 
     @route(name='remove')

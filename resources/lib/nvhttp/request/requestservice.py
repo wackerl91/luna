@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import uuid
@@ -13,8 +14,9 @@ from resources.lib.nvhttp.request.abstractrequestservice import AbstractRequestS
 
 
 class RequestService(AbstractRequestService):
-    def __init__(self, crypto_provider, config_helper, host_context_service, logger):
+    def __init__(self, core, crypto_provider, config_helper, host_context_service, logger):
         super(RequestService, self).__init__(logger)
+        self.core = core
         self.crypto_provider = crypto_provider
         self.config_helper = config_helper
         self.host_context_service = host_context_service
@@ -77,6 +79,7 @@ class RequestService(AbstractRequestService):
             cert = self.crypto_provider.get_cert_path()
             key = self.crypto_provider.get_key_path()
 
+            self.logger.info(str(url))
             if not os.path.isfile(cert) or not os.path.isfile(key):
                 raise IOError
 
@@ -168,9 +171,42 @@ class RequestService(AbstractRequestService):
                                                                                      self.build_uid_uuid_string(),
                                                                                      str(app_id), str(asset_type),
                                                                                      str(asset_idx)),
-            True)
+            True, content_only=False)
 
-        return response
+        if response.status_code == 404:
+            return False
+        else:
+            return response.content
+
+    def get_box_art_alternate(self, nvapp):
+        self.logger.info(nvapp.short_name)
+
+        file_path = os.path.join(self.core.storage_path, 'nv_cache', nvapp.short_name + '.json')
+
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        if not os.path.isfile(file_path):
+            response = requests.get('https://services.gfe.nvidia.com/GFE/v1.0/streaming-assets/{0:s}'.format(nvapp.short_name))
+
+            ofile = open(file_path, 'w')
+            ofile.write(response.content)
+            ofile.close()
+
+        ifile = open(file_path, 'r')
+        json_data = json.load(ifile)
+        ifile.close()
+
+        box_art_url = ''
+
+        for _file in json_data['files']:
+            if _file['filename'].endswith('.png'):
+                box_art_url = _file['url']
+                break
+
+        box_art_raw = requests.get(box_art_url).content
+
+        return box_art_raw
 
 #    def unpair(self):
 #        self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)

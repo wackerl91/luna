@@ -107,6 +107,7 @@ services:
         module: resources.lib.nvhttp.request.requestservice
         class_name: RequestService
         arguments:
+          - '@core'
           - '@crypto-provider'
           - '@config-helper'
           - '@host-context-service'

@@ -19,6 +19,9 @@ class ControllerConfigurationController(BaseController):
         self.window.doModal()
         del self.window
 
+    def get_internal_path(self):
+        return self.core.internal_path
+
     def get_active_skin(self):
         return self.core.get_active_skin()
 

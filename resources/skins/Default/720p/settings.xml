@@ -89,12 +89,16 @@
             <control type="button" id="303">
                 <width>266</width>
                 <label>186</label>
+                <texturefocus> </texturefocus>
+                <texturenofocus> </texturenofocus>
             </control>
 
             <!-- Cancel Button -->
             <control type="button" id="304">
                 <width>266</width>
                 <label>222</label>
+                <texturefocus> </texturefocus>
+                <texturenofocus> </texturenofocus>
             </control>
         </control>
     </controls>

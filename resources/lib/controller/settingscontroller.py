@@ -13,9 +13,9 @@ class SettingsController(BaseController):
     @route(name='index')
     def index_action(self):
         settings = self.settings_parser.get_settings()
-        window = Settings(controller=self, settings=settings)
-        window.doModal()
-        del window
+        if not self.window:
+            self.window = Settings(controller=self, settings=settings)
+        self.window.doModal()
 
     def save(self, settings):
         for category in settings:

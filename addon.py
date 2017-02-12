@@ -12,4 +12,13 @@ if __name__ == '__main__':
         router = RequiredFeature('router').request()
         router.render('main_index')
 
+        # do some cleanup
+        from resources.lib.di import featurebroker
+        controller_list = featurebroker.features.get_tagged_features('controller')
+        for definition in controller_list:
+            instance = featurebroker.features.get_initialized(definition.name)
+            if instance and hasattr(instance, 'window'):
+                delattr(instance, 'window')
+
+
     XBMCApplicationKernel().bootstrap(callback)

@@ -9,7 +9,7 @@
             <posy>0</posy>
             <width>1280</width>
             <height>720</height>
-            <texture>dialogs/DialogBackground_old.png</texture>
+            <texture>common/DialogBackground_old.png</texture>
         </control>
         <control type="panel" id="202">
             <left>100</left>

@@ -30,7 +30,7 @@
             <align>right</align>
             <label>$INFO[System.Time]</label>
             <font>Large</font>
-            <textcolor>ColorHeading</textcolor>
+            <textcolor>FFD6D6D6</textcolor>
         </control>
         <control type="label">
             <right>47</right>
@@ -40,7 +40,7 @@
             <align>right</align>
             <label>$INFO[System.Date]</label>
             <font>XSmall</font>
-            <textcolor>ColorDetails</textcolor>
+            <textcolor>FF707070</textcolor>
         </control>
 
         <control type="image">
@@ -59,7 +59,7 @@
             <width>600</width>
             <height>230</height>
             <wrapmultiline>true</wrapmultiline>
-            <textcolor>ColorHeading</textcolor>
+            <textcolor>FFD6D6D6</textcolor>
             <font>XSmall</font>
             <autoscroll delay="10000" time="3000" repeat="10000">true</autoscroll>
             <label>$INFO[Container(51).ListItem(0).Property(description)]</label>
@@ -82,7 +82,7 @@
                     <top>150</top>
                     <width>880</width>
                     <font>Large</font>
-                    <textcolor>ColorHeading</textcolor>
+                    <textcolor>FFD6D6D6</textcolor>
                     <info>ListItem.Label</info>
                 </control>
                 <control type="label">
@@ -90,7 +90,7 @@
                     <top>180</top>
                     <width>400</width>
                     <font>XSmall</font>
-                    <textcolor>ColorDetails</textcolor>
+                    <textcolor>FF707070</textcolor>
                     <info>ListItem.Property(year_genre)</info>
                 </control>
             </itemlayout>
@@ -108,7 +108,7 @@
                     <top>150</top>
                     <width>880</width>
                     <font>Large</font>
-                    <textcolor>ColorHeading</textcolor>
+                    <textcolor>FFD6D6D6</textcolor>
                     <info>ListItem.Label</info>
                 </control>
                 <control type="label">
@@ -116,7 +116,7 @@
                     <top>180</top>
                     <width>400</width>
                     <font>XSmall</font>
-                    <textcolor>ColorDetails</textcolor>
+                    <textcolor>FF707070</textcolor>
                     <info>ListItem.Property(year_genre)</info>
                 </control>
             </focusedlayout>
@@ -131,6 +131,8 @@
             <focusedcolor>FFE0B074</focusedcolor>
             <onleft>54</onleft>
             <onright>53</onright>
+            <texturefocus colordiffuse="FFE5A00D"> </texturefocus>
+            <texturenofocus colordiffuse="99FFFFFF"> </texturenofocus>
         </control>
 
         <control type="button" id="53">
@@ -142,6 +144,8 @@
             <focusedcolor>FFE0B074</focusedcolor>
             <onleft>52</onleft>
             <onright>54</onright>
+            <texturefocus> </texturefocus>
+            <texturenofocus> </texturenofocus>
         </control>
 
         <control type="button" id="54">
@@ -153,6 +157,8 @@
             <focusedcolor>FFE0B074</focusedcolor>
             <onright>52</onright>
             <onleft>53</onleft>
+            <texturefocus> </texturefocus>
+            <texturenofocus> </texturenofocus>
         </control>
     </controls>
 </window>

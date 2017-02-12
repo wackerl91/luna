@@ -250,6 +250,7 @@ services:
           - '@logger'
         tags:
           - { name: logger, channel: controller }
+          - { name: controller }
 
     host-controller:
         module: resources.lib.controller.hostcontroller
@@ -262,6 +263,7 @@ services:
           - '@host-context-service'
         tags:
           - { name: logger, channel: controller }
+          - { name: controller }
 
     game-list-controller:
         module: resources.lib.controller.gamelistcontroller
@@ -273,16 +275,21 @@ services:
           - '@logger'
         tags:
           - { name: logger, channel: controller }
+          - { name: controller }
 
     game-context-menu-controller:
         module: resources.lib.controller.gamecontextmenucontroller
         class_name: GameContextMenuController
+        tags:
+          - { name: controller }
 
     game-info-controller:
         module: resources.lib.controller.gameinfocontroller
         class_name: GameInfoController
         arguments:
           - '@core'
+        tags:
+          - { name: controller }
 
     audio-controller:
         module: resources.lib.controller.audiocontroller
@@ -291,6 +298,8 @@ services:
           - '@core'
           - '@audio-manager'
           - '@config-helper'
+        tags:
+          - { name: controller }
 
     host-controller:
         module: resources.lib.controller.hostcontroller
@@ -303,6 +312,7 @@ services:
           - '@host-context-service'
         tags:
           - { name: logger, channel: controller }
+          - { name: controller }
 
     controller-config-controller:
         module: resources.lib.controller.controllerconfigurationcontroller
@@ -312,6 +322,8 @@ services:
           - '@device-wrapper'
           - '@input-manager'
           - '@moonlight-helper'
+        tags:
+          - { name: controller }
 
     settings-controller:
         module: resources.lib.controller.settingscontroller
@@ -322,6 +334,7 @@ services:
           - '@logger'
         tags:
           - { name: logger, channel: controller }
+          - { name: controller }
 
     cache-controller:
         module: resources.lib.controller.cachecontroller
@@ -329,3 +342,5 @@ services:
         arguments:
           - '@core'
           - '@scraper-chain'
+        tags:
+          - { name: controller }

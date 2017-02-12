@@ -23,3 +23,6 @@ class BaseController(object):
 
     def route_exists(self, name):
         return router.route_exists(name)
+
+    def cleanup(self):
+        raise NotImplementedError("Cleanup needs to be implemented.")

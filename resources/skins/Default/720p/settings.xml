@@ -89,6 +89,8 @@
             <control type="button" id="303">
                 <width>266</width>
                 <label>186</label>
+                <textcolor>FF808080</textcolor>
+                <focusedcolor>FFE0B074</focusedcolor>
                 <texturefocus> </texturefocus>
                 <texturenofocus> </texturenofocus>
             </control>
@@ -97,6 +99,8 @@
             <control type="button" id="304">
                 <width>266</width>
                 <label>222</label>
+                <textcolor>FF808080</textcolor>
+                <focusedcolor>FFE0B074</focusedcolor>
                 <texturefocus> </texturefocus>
                 <texturenofocus> </texturenofocus>
             </control>

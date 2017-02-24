@@ -93,32 +93,36 @@ class Main(WindowXML):
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
 
-        focus_item = self.getFocus()
-        if focus_item == self.options_list:
-            if action == xbmcgui.ACTION_SELECT_ITEM:
-                # TODO: Assign actions as item properties and call them
-                if self.options_list.getSelectedPosition() == 0:
-                    self.controller.render('settings_index')
-                if self.options_list.getSelectedPosition() == 1:
-                    self.controller.render('controller_select')
-                if self.options_list.getSelectedPosition() == 2:
-                    self.controller.render('audio_select')
-                if self.options_list.getSelectedPosition() == 3:
-                    self.controller.render('main_add_host')
+        focus_item_id = self.getFocusId()
 
-        if focus_item == self.list:
-            if action == xbmcgui.ACTION_CONTEXT_MENU:
-                selected_item = self.list.getSelectedItem()
-                host = self.hosts[selected_item.getProperty('uuid')]
+        if focus_item_id:
+            focus_item = self.getControl(focus_item_id)
 
-                window = HostContextMenu(host, self.controller)
-                window.doModal()
-                del window
-                if len(self.host_index_key_map) > 0:
-                    self.setFocusId(102)
-                else:
-                    self.setFocusId(103)
-            if action == xbmcgui.ACTION_SELECT_ITEM:
-                selected_item = self.list.getSelectedItem()
-                host = self.hosts[selected_item.getProperty('uuid')]
-                self.controller.render('main_host_select', {'host': host})
+            if focus_item == self.options_list:
+                if action == xbmcgui.ACTION_SELECT_ITEM:
+                    # TODO: Assign actions as item properties and call them
+                    if self.options_list.getSelectedPosition() == 0:
+                        self.controller.render('settings_index')
+                    if self.options_list.getSelectedPosition() == 1:
+                        self.controller.render('controller_select')
+                    if self.options_list.getSelectedPosition() == 2:
+                        self.controller.render('audio_select')
+                    if self.options_list.getSelectedPosition() == 3:
+                        self.controller.render('main_add_host')
+
+            if focus_item == self.list:
+                if action == xbmcgui.ACTION_CONTEXT_MENU:
+                    selected_item = self.list.getSelectedItem()
+                    host = self.hosts[selected_item.getProperty('uuid')]
+
+                    window = HostContextMenu(host, self.controller)
+                    window.doModal()
+                    del window
+                    if len(self.host_index_key_map) > 0:
+                        self.setFocusId(102)
+                    else:
+                        self.setFocusId(103)
+                if action == xbmcgui.ACTION_SELECT_ITEM:
+                    selected_item = self.list.getSelectedItem()
+                    host = self.hosts[selected_item.getProperty('uuid')]
+                    self.controller.render('main_host_select', {'host': host})

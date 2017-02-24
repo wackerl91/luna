@@ -25,12 +25,18 @@ class GameContextMenu(xbmcgui.WindowXMLDialog):
         self.list.addItems(items)
 
     def onAction(self, action):
-        if self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_SELECT_ITEM:
-            selected_position = self.list.getSelectedPosition()
-            if selected_position == 0:
-                self.controller.render('gameinfo_details', {'host': self.host, 'game': self.current_game})
-            if selected_position == 1:
-                self.refresh_required = True
-                self.close()
+        focus_item_id = self.getFocusId()
+
+        if focus_item_id:
+            focus_item = self.getControl(focus_item_id)
+
+            if focus_item == self.list and action.getId() == xbmcgui.ACTION_SELECT_ITEM:
+                selected_position = self.list.getSelectedPosition()
+                if selected_position == 0:
+                    self.controller.render('gameinfo_details', {'host': self.host, 'game': self.current_game})
+                if selected_position == 1:
+                    self.refresh_required = True
+                    self.close()
+
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()

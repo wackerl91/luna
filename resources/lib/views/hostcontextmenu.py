@@ -24,11 +24,17 @@ class HostContextMenu(xbmcgui.WindowXMLDialog):
     def onAction(self, action):
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
-        if self.getFocus() == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
-            selected_position = self.list.getSelectedPosition()
-            if selected_position == 0:
-                self.controller.render('host_wake', {'host': self.host})
-                self.close()
-            if selected_position == 1:
-                self.controller.render('main_host_remove', {'host': self.host})
-                self.close()
+
+        focus_item_id = self.getFocusId()
+
+        if focus_item_id:
+            focus_item = self.getControl(focus_item_id)
+
+            if focus_item == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
+                selected_position = self.list.getSelectedPosition()
+                if selected_position == 0:
+                    self.controller.render('host_wake', {'host': self.host})
+                    self.close()
+                if selected_position == 1:
+                    self.controller.render('main_host_remove', {'host': self.host})
+                    self.close()

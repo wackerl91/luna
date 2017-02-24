@@ -20,7 +20,12 @@ class ScraperChain:
         if nvapp.title not in self.game_blacklist:
             for scraper in self.scraper_chain:
                 if scraper.is_enabled():
-                    api_response = scraper.get_game_information(nvapp)
+                    try:
+                        api_response = scraper.get_game_information(nvapp)
+                    except Exception as e:
+                        self.logger.warning("Scraper {0:s} failed: {1:s}".format(scraper.name, e.message))
+                        continue
+
                     game = Game.from_api_response(api_response)
                     game.id = nvapp.id
                     game_info.append(game)

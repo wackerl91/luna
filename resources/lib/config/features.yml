@@ -145,13 +145,13 @@ services:
         tags:
           - { name: logger, channel: scraper }
 
-    omdb-scraper:
-        module: resources.lib.scraper.omdbscraper
-        class_name: OmdbScraper
-        arguments:
-          - '@core'
-        tags:
-          - { name: scraper-chain }
+#    omdb-scraper:
+#        module: resources.lib.scraper.omdbscraper
+#        class_name: OmdbScraper
+#        arguments:
+#          - '@core'
+#        tags:
+#          - { name: scraper-chain }
 
     tgdb-scraper:
         module: resources.lib.scraper.tgdbscraper
@@ -161,13 +161,13 @@ services:
         tags:
           - { name: scraper-chain }
 
-    igdb-scraper:
-        module: resources.lib.scraper.igdbscraper
-        class_name: IgdbScraper
-        arguments:
-          - '@core'
-        tags:
-          - { name: scraper-chain }
+#    igdb-scraper:
+#        module: resources.lib.scraper.igdbscraper
+#        class_name: IgdbScraper
+#        arguments:
+#          - '@core'
+#        tags:
+#          - { name: scraper-chain }
 
     nvhttp-scraper:
         module: resources.lib.scraper.nvhttpscraper

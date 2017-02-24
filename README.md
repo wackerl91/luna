@@ -39,9 +39,7 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 ## Credits
 - Logo [Ben Biedrawa](http://BengerengTV.com)
 - Icons from [Freepik](http://www.flaticon.com/authors/freepik), provided by [flaticon](www.flaticon.com)
-- Game information and posters are provided by [OMDB](http://www.omdbapi.com) under CC-BY4.0
-- Additional game information and posters provided by [TheGamesDB](http://thegamesdb.net)
-- Some more information is being pulled from [IGDB](https://www.igdb.com) (very developer friendly terms, thank you so much!)
+- Game information and posters provided by [TheGamesDB](http://thegamesdb.net)
 - Steam Background from DiglidiDudeNG over at [deviantart](http://diglididudeng.deviantart.com/art/Steam-Wallpaper-Globe-458081397)
 - most of the common assets (like arrows, ...) are taken from OSMCs skin (GPLv2)
 - mesh background from pixabay.com (CC0)

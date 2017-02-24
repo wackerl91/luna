@@ -179,36 +179,6 @@ class RequestService(AbstractRequestService):
         else:
             return response.content
 
-    def get_box_art_alternate(self, nvapp):
-        self.logger.info(nvapp.short_name)
-
-        file_path = os.path.join(self.core.storage_path, 'nv_cache', nvapp.short_name + '.json')
-
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if not os.path.isfile(file_path):
-            response = requests.get('https://services.gfe.nvidia.com/GFE/v1.0/streaming-assets/{0:s}'.format(nvapp.short_name))
-
-            ofile = open(file_path, 'w')
-            ofile.write(response.content)
-            ofile.close()
-
-        ifile = open(file_path, 'r')
-        json_data = json.load(ifile)
-        ifile.close()
-
-        box_art_url = ''
-
-        for _file in json_data['files']:
-            if _file['filename'].endswith('.png'):
-                box_art_url = _file['url']
-                break
-
-        box_art_raw = requests.get(box_art_url).content
-
-        return box_art_raw
-
 #    def unpair(self):
 #        self.open_http_connection(self.base_url_https + '/unpair?' + self.build_uid_uuid_string(), True)
 

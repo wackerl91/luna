@@ -27,14 +27,54 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 - Game View similar to Kodi's movie view (cover art / fanart support)
 - extensive configuration which supports nearly all of moonlight-embedded's launch options
 
-## Issues
-- Controller Mapping sometimes not working
-- Audio Device Selection might or might not be working; haven't gotten any input on this so far
-- Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
-
 ## Bugs / Feature Requests
 - Please report any bugs or feature requests on the issue tracker - I can only make Luna better if you're willing to report every issue you run into!
 - Have a look at existing issues (this includes closed ones!) before opening a new one
+
+## Eos
+Luna uses a web support called [Eos](https://github.com/wackerl91/eos) for telemetry data and exception / error reporting.
+
+This is in place for mainly two reasons:
+- to get a better understanding of the user base in general (total number of users, 'active' users, currently installed versions, ...)
+- to be able to compile a list of common exceptions / errors in the log, as most users either don't report them or don't include logs right away.
+While I still rely on issues being reported, this takes some responsibility away from the users as I can just have a look at the database
+every now and then and fix stuff that I wouldn't even know about otherwise.
+
+The following information is gathered:
+- current Luna version (no history, just plain current version in use), e.g. `0.7.0~rc6`
+- system identifier, e.g. `Linux osmc 4.4.27-7-osmc`
+- system version (again, no history), e.g. `2017.02-2`
+- Kodi version, e.g. `17.1.1 - releasecandidate`
+- number of hosts, number of games per host and GFE server version per host, e.g. `7.1.351.0` for a gen 7 server and `5` for five games on that host
+(the relevance here is that there are sometimes issues that are tied to a specific GFE version, the number of hosts / games will be averaged
+over all users to see if and when the main menu / game list needs UI improvements)
+- each opening of Luna is logged per day (no timestamp), e.g. `2017-02-12` and tied to the user information to get usage percentage, filter out 'one-time' starters, ...
+- logs are saved including the timestamp of occurrence (normalized to my timezone), log level, channel and message and tied to the user information, e.g.
+```
+logLevel: "warning",
+logChannel: "script.luna.repository",
+logMessage: "Attempted to remove non-existent device: 'None'"
+```
+- exceptions contain their exception type, exception message and a full stacktrace leading up to the failure; again tied to the user information. Example:
+```
+exceptionType: "<type 'exceptions.ValueError'>",
+exceptionValue: "Moonlight binary could not be found.",
+traceback: [snip]
+
+```
+- linking user information to logs / exceptions is important e.g. for calculating averages over either all or more active users, thus providing a
+measure of overall functionality
+
+From the above information I am not able to identify single users (i.e. don't know who they are and where they come from, meaning each single user is just a number in the system),
+but I am able to track them through the system (usage count, logs, exceptions).
+
+Since Eos already helped out a lot in identifying bugs I feel it's the right thing to do and thus it is enabled by default. If you don't think so,
+however, you can disable it completely in the settings. If you don't want the very first start to be registered, you should do so before starting
+Luna after installing / re-installing the add-on. That being said, users with no additional information attached are hard-deleted every few weeks, since it's clear they
+opted out but did so after starting Luna for the first time.
+
+In the future, Eos will also provide different other services (proxied API access, ...), but they will always be optional (if possible) and not dependent on each other,
+i.e. never require you to opt-in for telemetry just so you can use something else.
 
 ## Credits
 - Logo [Ben Biedrawa](http://BengerengTV.com)

@@ -402,15 +402,14 @@ class Settings(WindowXMLDialog):
             self.selected_cat_cache = selected_category_label
             self.switch_settings_to_category(selected_category_label, previous_cat)
 
-        try:
-            focus = self.getFocus()
-        # RuntimeError happens when using a mouse, which causes all elements to lose focus until selected
-        except RuntimeError:
-            pass
-            return
+        focus_id = self.window.getFocusId()
+        focused_item = None
 
-        if focus.getId() in self.btn_id_group and focus != self.category_list:
-            current_control = self.btn_id_group.get(focus.getId())
+        if focus_id:
+            focused_item = self.window.getControl(focus_id)
+
+        if focused_item and focused_item.getId() in self.btn_id_group and focused_item != self.category_list:
+            current_control = self.btn_id_group.get(focused_item.getId())
 
             previously_selected_control = None
             if action == xbmcgui.ACTION_MOVE_DOWN:
@@ -452,7 +451,7 @@ class Settings(WindowXMLDialog):
                     font='Small'
                 )
 
-        elif focus == self.ok_btn or focus == self.cancel_btn:
+        elif focused_item and (focused_item == self.ok_btn or focused_item == self.cancel_btn):
             if action == xbmcgui.ACTION_MOVE_DOWN and self.current_last is not None:
                 if self.current_last.getLabel()[1:6] == 'COLOR':
                     self.current_last.setLabel(

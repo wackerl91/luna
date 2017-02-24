@@ -153,7 +153,17 @@ class EosHelper(object):
             with open(uid_file, 'rb') as f:
                 uid = f.read()
 
-        self.uid = uid.replace('"', '')
+        if not uid:
+            self.logger.warning("script.luna.eos", "Loading / getting UID failed; UID file (if exists) "
+                                                   "will be removed and Eos disabled")
+
+            if os.path.isfile(uid_file):
+                os.remove(uid_file)
+
+            self._disable_methods()
+
+        else:
+            self.uid = uid.replace('"', '')
 
     def _get_uid(self):
         hardware_id = self._generate_hardware_id()
@@ -220,7 +230,7 @@ class EosHelper(object):
         return response
 
     def _disable_methods(self):
-        class_methods = [name for name in dir(self) if not name.startswith('_')]
+        class_methods = [name for name in dir(self) if not name.startswith('__')]
         for class_method in class_methods:
             existing_method = getattr(self, class_method, None)
 

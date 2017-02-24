@@ -60,6 +60,11 @@ class Action(object):
         self.label.controlRight(control)
 
     def forward_input(self, actionId):
-        if self.window.getFocus() == self.label:
-            if actionId == xbmcgui.ACTION_SELECT_ITEM:
-                return self._route
+        focus_id = self.window.getFocusId()
+
+        if focus_id:
+            focused_item = self.window.getControl(focus_id)
+
+            if focused_item == self.label:
+                if actionId == xbmcgui.ACTION_SELECT_ITEM:
+                    return self._route

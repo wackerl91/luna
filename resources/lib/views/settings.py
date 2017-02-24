@@ -402,11 +402,11 @@ class Settings(WindowXMLDialog):
             self.selected_cat_cache = selected_category_label
             self.switch_settings_to_category(selected_category_label, previous_cat)
 
-        focus_id = self.window.getFocusId()
+        focus_id = self.getFocusId()
         focused_item = None
 
         if focus_id:
-            focused_item = self.window.getControl(focus_id)
+            focused_item = self.getControl(focus_id)
 
         if focused_item and focused_item.getId() in self.btn_id_group and focused_item != self.category_list:
             current_control = self.btn_id_group.get(focused_item.getId())

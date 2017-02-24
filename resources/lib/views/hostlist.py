@@ -36,12 +36,17 @@ class HostList(xbmcgui.WindowXMLDialog):
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
 
-        if self.getFocus() == self.list:
-            if action == xbmcgui.ACTION_SELECT_ITEM:
-                selected_item = self.list.getSelectedItem()
-                try:
-                    selected_host = self.hosts[selected_item.getProperty('uuid')]
-                    self.selected_host = selected_host
-                    self.close()
-                except KeyError:
-                    pass
+        focus_item_id = self.getFocusId()
+
+        if focus_item_id:
+            focus_item = self.getControl(focus_item_id)
+
+            if focus_item == self.list:
+                if action == xbmcgui.ACTION_SELECT_ITEM:
+                    selected_item = self.list.getSelectedItem()
+                    try:
+                        selected_host = self.hosts[selected_item.getProperty('uuid')]
+                        self.selected_host = selected_host
+                        self.close()
+                    except KeyError:
+                        pass

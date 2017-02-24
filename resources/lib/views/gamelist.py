@@ -51,9 +51,16 @@ class GameList(xbmcgui.WindowXML):
         self.list.addItems(items)
 
     def onAction(self, action):
+        focus_item_id = self.getFocusId()
+        focus_item = None
+
+        if focus_item_id:
+            focus_item = self.getControl(focus_item_id)
+
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
-        elif self.getFocus() == self.list and action.getId() == xbmcgui.ACTION_CONTEXT_MENU:
+
+        elif focus_item and focus_item == self.list and action.getId() == xbmcgui.ACTION_CONTEXT_MENU:
             current_item = self.list.getListItem(self.list.getSelectedPosition())
             fanart_cache = current_item.getProperty('fanart')
             cover_cache = current_item.getProperty('icon')
@@ -74,7 +81,7 @@ class GameList(xbmcgui.WindowXML):
             if refresh:
                 self.controller.refresh_list(self.host)
 
-        elif self.getFocus() == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
+        elif focus_item and focus_item == self.list and action == xbmcgui.ACTION_SELECT_ITEM:
             current_item = self.list.getListItem(self.list.getSelectedPosition())
             loaded_game = self.controller.get_game_by_id(self.host, current_item.getProperty('id'))
 

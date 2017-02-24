@@ -24,9 +24,13 @@ class RotarySelect(object):
         return
 
     def forward_input(self, action_id):
-        if action_id == 7:
-            focused_item = self.window.getFocus()
+        focus_id = self.window.getFocusId()
+        focused_item = None
 
+        if focus_id:
+            focused_item = self.window.getControl(focus_id)
+
+        if focused_item and action_id == 7:
             if focused_item == self.btn_up:
                 self.selected_index -= 1
                 self.set_selected()
@@ -36,7 +40,7 @@ class RotarySelect(object):
                 self.set_selected()
                 self.set_label_color()
         else:
-            if self.window.getFocus() != self.btn_up and self.window.getFocus() != self.btn_down:
+            if not focused_item or (focused_item != self.btn_up and focused_item != self.btn_down):
                 self.unset_label_color()
             else:
                 self.set_label_color()
